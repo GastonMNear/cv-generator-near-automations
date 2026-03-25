@@ -1,11 +1,12 @@
 ---
 name: email-replies-workflow
 description: >
-  This skill orchestrates the complete CV generation workflow from Clay lead data.
-  Use this skill when given a lead email address and Clay table name to automatically
-  fetch lead data from Clay, extract LinkedIn job details, and generate a tailored
-  LATAM CV as a Google Doc. This skill combines clay-api, linkedin-job-extractor,
-  and latam-cv-generator skills into a single automated end-to-end workflow.
+  Orchestrates the complete CV generation workflow from Clay lead data. Always use this
+  skill when given a lead email address and a Clay table name (or campaign name that maps
+  to a table) — it automatically fetches lead data via temp/fetch_lead.py, extracts LinkedIn
+  job details, and generates a tailored LATAM CV as a Google Doc. Trigger this skill any time
+  someone says "generate CV for [email]", "process lead [email]", or provides an email with
+  a Clay table context, even if they don't explicitly ask for "the workflow".
 ---
 
 # Email Replies Workflow
@@ -223,7 +224,7 @@ Format the final output with all relevant information. The output must always in
 
 Email: {lead_email}
 Name: {candidate_name or "Not specified"}
-Source Table: {table_name} ({table_id})
+Source Table: {table_name}
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
@@ -264,7 +265,7 @@ The CV is ready to send to {lead_email}!
 👥 # Employees (LinkedIn): {company_employee_count or "Not available"}
 ```
 
-**Important:** The employee count comes from the Clay table record fetched in Step 6. Always display it at the end of the output even if the value is "Not available". Do not skip this field.
+**Important:** The employee count comes from the Clay table record fetched in Step 1. Always display it at the end of the output even if the value is "Not available". Do not skip this field.
 
 **Output:** Formatted results string for user
 
@@ -546,18 +547,5 @@ Note: LatAm HMs field IDs are assumed from US/Canada HMs schema — verify on fi
 
 - **Total execution time:** 30-60 seconds (depends on table size and API response times)
 - **Clay API rate limits:** Respect rate limits, retry with backoff if rate limited
-- **Batch size:** 100 records per batch (optimal for Clay API)
-- **Session reuse:** Always authenticate fresh - session cookies expire quickly
-
-## Future Enhancements
-
-Potential improvements for future versions:
-
-1. **Campaign Mapping:** Add automatic campaign-to-table mapping from .env
-2. **Parallel Processing:** Batch process multiple leads simultaneously
-3. **Caching:** Cache table metadata and field maps to reduce API calls
-4. **Field Mapping Storage:** Store learned field mappings per table for faster resolution
-5. **Webhook Integration:** Trigger automatically on Smartlead reply events
-6. **Error Recovery:** Automatic retry with exponential backoff for transient failures
-7. **Monitoring:** Log metrics for each workflow step (timing, success rate)
-8. **Notification:** Send email/Slack notification when CV is ready
+- **Batch size:** 10,000 records per batch (tested maximum — reduces scan from 100+ calls to 1-3 calls)
+- **Session reuse:** Always authenticate fresh — session cookies expire quickly

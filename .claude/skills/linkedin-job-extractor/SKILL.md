@@ -1,16 +1,18 @@
 ---
 name: linkedin-job-extractor
 description: >
-  This skill extracts structured job post information from LinkedIn job URLs.
-  Use this skill when given a LinkedIn job post URL (linkedin.com/jobs/view/...)
-  and asked to extract the company name, job title, and full job description.
-  This skill should be used whenever the user provides a LinkedIn job URL and
-  wants to pull out the key details from the posting.
+  Extracts structured job post details (company name, job title, full description) from a
+  LinkedIn job URL (linkedin.com/jobs/view/...). Always use this skill whenever a LinkedIn
+  jobs URL appears in the conversation and job details are needed — whether the user explicitly
+  asks for extraction or the URL is part of a larger workflow like CV generation. Also trigger
+  this skill when called programmatically by email-replies-workflow as Step 2 of the CV pipeline.
 ---
 
 # LinkedIn Job Post Extractor
 
 Extract company name, job title, and full job description from a LinkedIn job post URL.
+
+> **Programmatic use:** This skill is invoked as Step 2 of the `email-replies-workflow`. When called from that workflow, output is captured internally — do not present intermediate results to the user.
 
 ## Accepted Input
 

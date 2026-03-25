@@ -1,14 +1,13 @@
 ---
 name: latam-cv-generator
 description: >
-  This skill generates realistic, human CVs for strong LATAM candidates (Argentina,
-  Colombia, Mexico, Brazil) based on job descriptions and automatically creates them
-  as Google Docs. Use this skill when given a job title and job description and asked
-  to create a CV for a candidate from LATAM. The skill ensures authenticity with real
-  universities, large companies, natural career progressions, and cultural appropriateness
-  while avoiding AI-generated patterns. Output is always a Google Doc URL saved to the
-  configured Drive folder. This skill should be used as part of the automation workflow
-  when a tailored CV is needed for a specific job posting.
+  Generates realistic, human CVs for strong LATAM candidates (Argentina, Colombia, Mexico,
+  Brazil) based on job descriptions and automatically creates them as Google Docs. Always use
+  this skill when given a job title and job description and asked to create a CV for a LATAM
+  candidate — whether triggered interactively or as Step 3 of the email-replies-workflow CV
+  pipeline. The skill ensures authenticity with real universities, large companies, natural
+  career progressions, and cultural appropriateness while avoiding AI-generated patterns.
+  Output is always a Google Doc URL saved to the configured Drive folder.
 ---
 
 # LATAM CV Generator
@@ -40,7 +39,7 @@ If this information is not provided, use the `linkedin-job-extractor` skill firs
 
 ### Step 2: Load the Prompt Template
 
-Read the CV generation prompt from `references/prompt-template.md`. This file contains the complete 6-part GPT-5 prompt structure (Role, Task, Context, Reasoning, Output Format, Stop Condition) with all requirements embedded.
+Read the CV generation prompt from `references/prompt-template.md`. This file contains the complete 6-part prompt structure (Role, Task, Context, Reasoning, Output Format, Stop Condition) with all requirements embedded.
 
 ### Step 3: Load Reference Data
 
@@ -360,7 +359,7 @@ Smartlead reply → Clay data → LinkedIn job URL → Job details → CV genera
 **Expected Output:**
 - **Format:** Google Doc URL (not markdown text)
 - **Location:** Saved in Google Drive folder ID from `.env` (`GOOGLE_DRIVE_FOLDER_ID`)
-- **Title:** "{Candidate Full Name} - {Candidate Title}"
+- **Title:** `{Candidate First Name} - {Candidate Current Title} - {Company Name}`
 
 When invoked programmatically, pass:
 - `job_title` (string): The position title

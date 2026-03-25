@@ -34,6 +34,88 @@ TABLE_ID = sys.argv[2]
 ctx = ssl.create_default_context()
 BASE = "https://api.clay.com/v3"
 
+# ── Known table cache ─────────────────────────────────────────────────────────
+# Skips the metadata API call for known tables — speeds up runs by ~0.5–1s.
+#
+# HOW TO UPDATE when field IDs change:
+#   1. Find the new ID in Clay (or check known-tables.md)
+#   2. Edit the matching table entry below
+#   3. The change takes effect immediately on next run
+#
+# SAFE TO LEAVE STALE: if a cached email ID is wrong, the script automatically
+# falls back to dynamic field discovery and retries — stale entries cause a
+# slow retry, not a crash. Other stale IDs (title/employee/job_post) just
+# return None for that field; the dynamic fallback will find the right one.
+#
+# Canonical field ID source: .claude/skills/clay-api/references/known-tables.md
+#
+# Per-entry keys:
+#   view     — Default View ID
+#   emails   — ALL email field IDs to search, in priority order (checked per-record)
+#   employee — employee count field ID (or None to discover dynamically)
+#   job_post — job posting URL field ID (linkedin.com/jobs/view/...) (or None)
+#   title    — lead's personal job title field ID (or None)
+#   linkedin — lead's personal LinkedIn profile field ID (or None)
+KNOWN_TABLES = {
+    "t_0t59d2y3ZuD4396Kz5B": {  # US Open Jobs - No Hiring Manager
+        "view":     "gv_TgwDWXPdg8Ci",
+        "emails":   ["f_ztbbU4PJ8rD5", "f_yMCMAWQoiYox", "f_39H5yXmFjRi5",
+                     "f_0tc2a2qEFRZthdct3Cs", "f_SUTHMU5bi2XD"],
+        "employee": "f_0t5mtcfvJknGywASv4z",
+        "job_post": "f_QIP4GfH5XFZo",
+        "title":    "f_9XFV2vIqjwAh",   # open_role_title
+        "linkedin": None,                # personal profile URL — discover dynamically
+    },
+    "t_0tbt48xVeCFCi8pFzip": {  # Copy of Leads - US OJ No HM (fallback table)
+        "view":     "gv_TgwDWXPdg8Ci",
+        "emails":   ["f_0tbt65uGbguMonif8dU", "f_0tbt65kNZrgzvDoEAmi"],
+        "employee": "f_0t5mtcfvJknGywASv4z",
+        "job_post": "f_QIP4GfH5XFZo",
+        "title":    None,
+        "linkedin": None,
+    },
+    "t_0t5pvx3g4o5WfysopqA": {  # US Open Jobs - Hiring Managers
+        "view":     "gv_TgwDWXPdg8Ci",
+        "emails":   ["f_0t063ygVDhWMs5MT4MD"],
+        "employee": "f_0t062fr5fKsUy27nJhf",
+        "job_post": "f_0t06147KZtafpAaiDTz",
+        "title":    "f_0t060rsDJXy6EbBFdCD",  # Imported Job Title
+        "linkedin": None,
+    },
+    "t_aNvk4jWMNeG7": {  # LatAm Open Jobs - No HMs
+        "view":     "gv_TgwDWXPdg8Ci",
+        "emails":   ["f_SUTHMU5bi2XD"],
+        "employee": "f_0t6acqvuQxjjQNTWhbK",
+        "job_post": "f_QIP4GfH5XFZo",
+        "title":    None,
+        "linkedin": None,
+    },
+    "t_0t6ghvgCsvvvqAus4bp": {  # LatAm Open Jobs - Hiring Managers (assumed same schema as US HMs)
+        "view":     "gv_TgwDWXPdg8Ci",
+        "emails":   ["f_0t063ygVDhWMs5MT4MD"],
+        "employee": "f_0t062fr5fKsUy27nJhf",
+        "job_post": "f_0t06147KZtafpAaiDTz",
+        "title":    "f_0t060rsDJXy6EbBFdCD",
+        "linkedin": None,
+    },
+    "t_0taasak5KAa5zbTmTJd": {  # Canada Open Jobs - No HM
+        "view":     "gv_3cMh8vzuFqm4",
+        "emails":   ["f_0taaxyjNBGfFWKYUnxK", "f_0taaxydYnGTxbpHQFnp"],
+        "employee": "f_0taay8jKxJZYCy4AoV6",
+        "job_post": "f_0taawsuMjxnV74YtCZ8",
+        "title":    "f_0taaxpwuXVMYbRoGAA7",  # Lead Title
+        "linkedin": None,
+    },
+    "t_0t746txPqz5sjFMtut2": {  # Canada Open Jobs - HMs
+        "view":     "gv_TgwDWXPdg8Ci",
+        "emails":   ["f_0t063ygVDhWMs5MT4MD"],
+        "employee": "f_0t062fr5fKsUy27nJhf",
+        "job_post": "f_0t06147KZtafpAaiDTz",
+        "title":    "f_0t060rsDJXy6EbBFdCD",
+        "linkedin": None,
+    },
+}
+
 print(f"Starting lead data extraction...")
 print(f"  Lead email: {TARGET_EMAIL}")
 print(f"  Table ID:   {TABLE_ID}")
@@ -85,31 +167,6 @@ def api_post(path, data):
     return json.loads(urllib.request.urlopen(r, context=ctx).read())
 
 
-# ── Step 2: Table metadata + field map ───────────────────────────────────────
-print(f"\n[2/5] Fetching table metadata for {TABLE_ID}...")
-try:
-    table_meta = api_get(f"/tables/{TABLE_ID}")
-    table_info = table_meta.get("table", table_meta)
-    fields = table_info.get("fields", [])
-    views = table_info.get("views", [])
-
-    if not fields:
-        print(f"ERROR: Table {TABLE_ID} has no fields")
-        sys.exit(1)
-    if not views:
-        print("ERROR: Table has no views")
-        sys.exit(1)
-
-    view_id = views[0]["id"]
-    print(f"[OK] {len(fields)} fields found, view: {views[0].get('name', view_id)}")
-except Exception as e:
-    print(f"ERROR: Failed to fetch table metadata: {e}")
-    sys.exit(1)
-
-
-# ── Step 3: Resolve field IDs ─────────────────────────────────────────────────
-print("\n[3/5] Resolving field IDs...")
-
 def find_field(fields, patterns, exclude_patterns=None, label="field"):
     """Find first field whose name contains any pattern (and none of the exclude patterns)."""
     for f in fields:
@@ -122,90 +179,172 @@ def find_field(fields, patterns, exclude_patterns=None, label="field"):
     return None, None
 
 
-# Email field (to find the record)
-EMAIL_PATTERNS = ["validated email", "email one", "email", "contact email", "work email"]
-email_field_id, email_field_name = find_field(fields, EMAIL_PATTERNS, label="email")
-if not email_field_id:
-    print("ERROR: Cannot identify email field. Available fields:")
-    for f in fields[:30]:
-        print(f"  - {f['name']} ({f['id']})")
-    sys.exit(1)
-print(f"[OK] Email field: {email_field_name}")
+def fetch_metadata_and_resolve_fields(missing_only=None):
+    """Fetch table metadata and resolve field IDs via pattern matching.
+    missing_only: set of field names to resolve ('title','linkedin','employee','job_post','email').
+                  If None, resolve all.
+    Returns (view_id, email_fids, title_id, linkedin_id, employee_id, jobpost_id, fields_list).
+    """
+    print(f"  Fetching table metadata for {TABLE_ID}...")
+    table_meta = api_get(f"/tables/{TABLE_ID}")
+    table_info = table_meta.get("table", table_meta)
+    fields = table_info.get("fields", [])
+    views  = table_info.get("views", [])
 
-# Job title (lead's personal title)
-TITLE_PATTERNS = ["job title", "title", "position", "role"]
-TITLE_EXCLUDE = ["company", "url", "link"]
-title_field_id, title_field_name = find_field(fields, TITLE_PATTERNS, TITLE_EXCLUDE, "job title")
-if title_field_id:
-    print(f"[OK] Job title field: {title_field_name}")
+    if not fields:
+        print(f"ERROR: Table {TABLE_ID} has no fields"); sys.exit(1)
+    if not views:
+        print("ERROR: Table has no views"); sys.exit(1)
+
+    default_view = next((v for v in views if "default" in v.get("name","").lower()), views[0])
+    v_id = default_view["id"]
+    print(f"  [OK] {len(fields)} fields, view: {default_view.get('name', v_id)}")
+
+    EMAIL_PATTERNS = ["work email", "find work email", "validated email", "contact email", "email"]
+    EMAIL_EXCLUDE  = ["email one", "email two", "email three", "email body", "email copy"]
+    TITLE_PATTERNS = ["job title", "title", "position", "role"]
+    TITLE_EXCLUDE  = ["company", "url", "link"]
+    LINKEDIN_PATTERNS  = ["prospect linkedin", "contact linkedin", "person linkedin", "linkedin url", "linkedin profile"]
+    EMPLOYEE_PATTERNS  = ["employee count", "# employees", "num employees", "headcount", "company size", "employees"]
+    JOB_POST_PATTERNS  = ["job post url", "job post linkedin", "linkedin job", "opening url", "posting url", "job url", "job link"]
+    JOB_POST_EXCLUDE   = ["prospect", "person", "profile", "company linkedin"]
+
+    target = missing_only or {"email", "title", "linkedin", "employee", "job_post"}
+
+    e_id, e_name   = find_field(fields, EMAIL_PATTERNS, EMAIL_EXCLUDE, "email") if "email" in target else (None, None)
+    t_id, t_name   = find_field(fields, TITLE_PATTERNS, TITLE_EXCLUDE, "title") if "title" in target else (None, None)
+    li_id, li_name = find_field(fields, LINKEDIN_PATTERNS, label="linkedin")     if "linkedin" in target else (None, None)
+    ec_id, ec_name = find_field(fields, EMPLOYEE_PATTERNS, label="employee")     if "employee" in target else (None, None)
+    jp_id, jp_name = find_field(fields, JOB_POST_PATTERNS, JOB_POST_EXCLUDE, "job_post") if "job_post" in target else (None, None)
+
+    return v_id, ([e_id] if e_id else []), t_id, t_name, li_id, li_name, ec_id, ec_name, jp_id, jp_name, fields
+
+
+# ── Step 2: Resolve field IDs ─────────────────────────────────────────────────
+cache = KNOWN_TABLES.get(TABLE_ID)
+
+if cache:
+    print(f"\n[2/5] Known table — using cached field IDs (metadata call skipped)")
+    view_id       = cache["view"]
+    search_email_fids = cache["emails"]
+
+    title_field_id    = cache.get("title")
+    title_field_name  = "cached" if title_field_id else None
+    linkedin_field_id = cache.get("linkedin")
+    linkedin_field_name = "cached" if linkedin_field_id else None
+    employee_field_id = cache.get("employee")
+    employee_field_name = "cached" if employee_field_id else None
+    jobpost_field_id  = cache.get("job_post")
+    jobpost_field_name = "cached" if jobpost_field_id else None
+
+    # Fetch metadata only for fields not in cache
+    uncached = {k for k, v in [("title", title_field_id), ("linkedin", linkedin_field_id),
+                                ("employee", employee_field_id), ("job_post", jobpost_field_id)] if v is None}
+    if uncached:
+        print(f"  Fields not cached ({', '.join(uncached)}) — fetching metadata to resolve them...")
+        try:
+            _, _, t, tn, li, lin, ec, ecn, jp, jpn, _ = fetch_metadata_and_resolve_fields(uncached)
+            if "title"    in uncached: title_field_id,    title_field_name    = t,  tn
+            if "linkedin" in uncached: linkedin_field_id, linkedin_field_name = li, lin
+            if "employee" in uncached: employee_field_id, employee_field_name = ec, ecn
+            if "job_post" in uncached: jobpost_field_id,  jobpost_field_name  = jp, jpn
+        except Exception as e:
+            print(f"  [WARN] Partial metadata fetch failed: {e}. Affected fields will be None.")
+
+    email_field_id   = search_email_fids[0]
+    email_field_name = "Work Email (cached)"
+
 else:
-    print("[WARN] Job title field not found")
+    # Unknown table — full dynamic discovery
+    print(f"\n[2/5] Unknown table — fetching metadata + discovering fields dynamically...")
+    try:
+        view_id, efids, title_field_id, title_field_name, linkedin_field_id, linkedin_field_name, \
+            employee_field_id, employee_field_name, jobpost_field_id, jobpost_field_name, _ \
+            = fetch_metadata_and_resolve_fields()
 
-# Lead's personal LinkedIn URL
-LINKEDIN_PERSON_PATTERNS = ["prospect linkedin", "contact linkedin", "person linkedin", "linkedin url", "linkedin profile"]
-linkedin_field_id, linkedin_field_name = find_field(fields, LINKEDIN_PERSON_PATTERNS, label="lead LinkedIn")
-if linkedin_field_id:
-    print(f"[OK] Lead LinkedIn field: {linkedin_field_name}")
-else:
-    print("[WARN] Lead LinkedIn URL field not found")
+        if not efids:
+            print("ERROR: Cannot identify email field in table"); sys.exit(1)
+        search_email_fids = efids
+        email_field_id    = efids[0]
+        email_field_name  = "discovered"
+    except Exception as e:
+        print(f"ERROR: Failed to fetch table metadata: {e}"); sys.exit(1)
 
-# Employee count
-EMPLOYEE_PATTERNS = ["employee count", "# employees", "num employees", "headcount", "company size", "employees"]
-employee_field_id, employee_field_name = find_field(fields, EMPLOYEE_PATTERNS, label="employee count")
-if employee_field_id:
-    print(f"[OK] Employee count field: {employee_field_name}")
-else:
-    print("[WARN] Employee count field not found")
+# Report field resolution
+print(f"[OK] Email fields: {search_email_fids}")
+for label, fid, fname in [("title", title_field_id, title_field_name),
+                           ("linkedin", linkedin_field_id, linkedin_field_name),
+                           ("employee", employee_field_id, employee_field_name),
+                           ("job_post", jobpost_field_id, jobpost_field_name)]:
+    if fid:
+        print(f"[OK] {label}: {fname} ({fid})")
+    else:
+        print(f"[WARN] {label}: not found")
 
-# Job post LinkedIn URL (job being hired for — NOT the lead's profile)
-JOB_POST_PATTERNS = ["job post url", "job post linkedin", "linkedin job", "opening url", "posting url", "job url", "job link"]
-JOB_POST_EXCLUDE = ["prospect", "person", "profile", "company linkedin"]
-jobpost_field_id, jobpost_field_name = find_field(fields, JOB_POST_PATTERNS, JOB_POST_EXCLUDE, "job post URL")
-if jobpost_field_id:
-    print(f"[OK] Job post URL field: {jobpost_field_name}")
-else:
-    print("[WARN] Job post URL field not found")
 
-# ── Step 4: Search for lead by email ─────────────────────────────────────────
-print(f"\n[4/5] Searching for lead '{TARGET_EMAIL}'...")
-try:
-    ids_resp = api_get(f"/tables/{TABLE_ID}/views/{view_id}/records/ids")
+# ── Step 3: Search for lead by email ─────────────────────────────────────────
+def scan_for_lead(table_id, view_id, email_fids):
+    """Scan table batches for a lead matching TARGET_EMAIL. Returns record or None."""
+    ids_resp   = api_get(f"/tables/{table_id}/views/{view_id}/records/ids")
     record_ids = ids_resp.get("results", [])
-    print(f"[OK] Total records: {len(record_ids)}")
+    print(f"  Total records: {len(record_ids)}")
 
     if not record_ids:
-        print("ERROR: Table is empty")
-        sys.exit(1)
+        return None
 
-    BATCH_SIZE = 100
-    found_record = None
-
+    BATCH_SIZE = 10_000  # tested — Clay handles up to 10k records per call
     for i in range(0, len(record_ids), BATCH_SIZE):
         batch = record_ids[i:i + BATCH_SIZE]
-        print(f"  Scanning records {i+1}–{min(i+BATCH_SIZE, len(record_ids))} of {len(record_ids)}...")
-        records_resp = api_post(f"/tables/{TABLE_ID}/bulk-fetch-records", {"recordIds": batch})
-        for rec in records_resp.get("results", []):
+        print(f"  Scanning {i+1}–{min(i+BATCH_SIZE, len(record_ids))} of {len(record_ids)}...")
+        resp = api_post(f"/tables/{table_id}/bulk-fetch-records", {"recordIds": batch})
+        for rec in resp.get("results", []):
             cells = rec.get("cells", {})
-            email_cell = cells.get(email_field_id, {})
-            email_val = (email_cell.get("value", "") or "") if isinstance(email_cell, dict) else ""
-            if TARGET_EMAIL in email_val.lower():
-                found_record = rec
-                print(f"[OK] Found lead — record ID: {rec['id']}")
-                break
-        if found_record:
-            break
+            for fid in email_fids:
+                cell = cells.get(fid, {})
+                val  = cell.get("value", "") if isinstance(cell, dict) else ""
+                val  = val.replace("✅ ", "").strip() if isinstance(val, str) else ""
+                if TARGET_EMAIL in val.lower():
+                    return rec
+    return None
+
+
+print(f"\n[3/5] Searching for lead '{TARGET_EMAIL}'...")
+try:
+    found_record = scan_for_lead(TABLE_ID, view_id, search_email_fids)
+
+    # If not found and we used cached IDs, the cache may be stale — retry with dynamic discovery
+    if not found_record and cache:
+        print(f"\n[WARN] Lead not found using cached email field IDs.")
+        print(f"       Cached IDs may be stale. Falling back to dynamic field discovery...")
+        print(f"       Fix: update the '{TABLE_ID}' entry in KNOWN_TABLES (emails list) in this script.")
+        print(f"       Reference: .claude/skills/clay-api/references/known-tables.md")
+        try:
+            _, efids, title_field_id, title_field_name, linkedin_field_id, linkedin_field_name, \
+                employee_field_id, employee_field_name, jobpost_field_id, jobpost_field_name, _ \
+                = fetch_metadata_and_resolve_fields()
+            if efids:
+                search_email_fids = efids
+                email_field_id    = efids[0]
+                email_field_name  = "dynamically discovered"
+                print(f"  Retrying with discovered email field(s): {efids}")
+                found_record = scan_for_lead(TABLE_ID, view_id, search_email_fids)
+        except Exception as e:
+            print(f"ERROR: Dynamic discovery fallback failed: {e}"); sys.exit(1)
 
     if not found_record:
         print(f"ERROR: Lead '{TARGET_EMAIL}' not found in table {TABLE_ID}")
         sys.exit(1)
 
+    print(f"[OK] Found lead — record ID: {found_record['id']}")
+
+except SystemExit:
+    raise
 except Exception as e:
-    print(f"ERROR: Search failed: {e}")
-    sys.exit(1)
+    print(f"ERROR: Search failed: {e}"); sys.exit(1)
 
 
-# ── Step 5: Extract fields ────────────────────────────────────────────────────
-print(f"\n[5/5] Extracting fields...")
+# ── Step 4: Extract fields ────────────────────────────────────────────────────
+print(f"\n[4/5] Extracting fields...")
 cells = found_record.get("cells", {})
 
 
@@ -218,12 +357,11 @@ def get_cell_value(field_id):
     return None
 
 
-job_title     = get_cell_value(title_field_id)
-linkedin_url  = get_cell_value(linkedin_field_id)
+job_title      = get_cell_value(title_field_id)
+linkedin_url   = get_cell_value(linkedin_field_id)
 employee_count = get_cell_value(employee_field_id)
-job_post_url  = get_cell_value(jobpost_field_id)
+job_post_url   = get_cell_value(jobpost_field_id)
 
-# Normalise employee count — may be int or string
 if isinstance(employee_count, (int, float)):
     employee_count = str(int(employee_count))
 

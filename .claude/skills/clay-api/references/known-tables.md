@@ -17,13 +17,14 @@ If a table is NOT listed here or the reference is ambiguous, fall back to the se
 | **Aliases** | US OJ - No HM, US OJ - No hiring managers |
 | **Default View ID** | `gv_TgwDWXPdg8Ci` |
 
-**Field IDs** (verified 2026-03-23):
+**Field IDs** (updated 2026-03-25 — email fields corrected via live record inspection):
 
 | Field | ID | Name | Notes |
 |-------|----|------|-------|
-| Email (primary) | `f_0tc2a2qEFRZthdct3Cs` | Work Email | Plain email, most reliable — use this first |
-| Email (fallback) | `f_SUTHMU5bi2XD` | Validated Email | May be empty for some leads |
-| Email (fallback 2) | `f_0tc2a2nscarDNn3TRFU` | Find work email | Has `✅` prefix — strip before comparing |
+| Email (primary) | `f_ztbbU4PJ8rD5` | Work Email | Confirmed present in 31/50 records — use this first |
+| Email (alt 1) | `f_yMCMAWQoiYox` | Work Email (alt) | Present in 5/50 records — search as fallback |
+| Email (alt 2) | `f_39H5yXmFjRi5` | Work Email (alt 2) | Present in 6/50 records — search as fallback |
+| Email (old/unused) | `f_0tc2a2qEFRZthdct3Cs` | Work Email (stale) | Old cached ID — no longer populated; kept as last-resort fallback |
 | LinkedIn Job URL | `f_QIP4GfH5XFZo` | Written Job URL | |
 | Full Name | `f_rOj3SQqDVF8U` | Full Name (cleaned) | |
 | Employee Count | `f_0t5mtcfvJknGywASv4z` | Employee Count | |
@@ -31,7 +32,7 @@ If a table is NOT listed here or the reference is ambiguous, fall back to the se
 | Last Name | `f_fvs0rK0ntN1H` | Last Name (cleaned) | |
 | Open Role Title | `f_9XFV2vIqjwAh` | open_role_title | |
 
-**Email field note (discovered 2026-03-23):** `f_SUTHMU5bi2XD` (Validated Email) is empty for some leads. Always search `f_0tc2a2qEFRZthdct3Cs` (Work Email) first — it is populated more consistently.
+**Email field note (updated 2026-03-25):** Previously cached email field `f_0tc2a2qEFRZthdct3Cs` is no longer reliably populated. Live record inspection confirmed `f_ztbbU4PJ8rD5` as the active Work Email field (31/50 records). Always search all three active email fields: `f_ztbbU4PJ8rD5`, `f_yMCMAWQoiYox`, `f_39H5yXmFjRi5`. All values may have `✅ ` prefix — strip before comparing.
 
 **Fallback table:** If a lead is not found here, also search `t_0tbt48xVeCFCi8pFzip` (Copy of Leads - US OJ no hiring manager). Same aliases, same view ID (`gv_TgwDWXPdg8Ci`, 509 records). Email field is different — see table 1b below.
 

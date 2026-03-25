@@ -1,6 +1,15 @@
 ---
 name: clay-api
-description: This skill provides comprehensive guidance for interacting with the Clay API (api.clay.com). Use this skill when reading data from Clay tables, listing workspace resources, fetching row data, authenticating with Clay, or building automations that pull data from Clay. The skill covers the undocumented internal API patterns, curl-based session authentication, endpoint discovery, and correct data fetching workflows.
+description: >
+  Guidance for interacting with the Clay API (api.clay.com). Always use this skill whenever
+  you need to read from Clay tables, authenticate with Clay, look up workspace resources, find
+  table or field IDs, or build any automation that touches Clay data. Covers the undocumented
+  internal api.clay.com/v3 endpoints, session-cookie auth (curl-based login), the 3-step data
+  fetching workflow (authenticate → get record IDs → bulk-fetch records), and endpoint reference.
+  Trigger this skill on Clay 401 errors, rate-limit issues, field resolution questions, or any
+  time you need to resolve a table name or field ID. When in doubt about Clay data access,
+  always consult this skill first — it has pre-cached table and field IDs that eliminate API
+  lookup round-trips.
 ---
 
 # Clay API Skill
