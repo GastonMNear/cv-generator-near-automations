@@ -1,0 +1,684 @@
+{
+  "total_fields": 97,
+  "fields": [
+    {
+      "index": 1,
+      "name": "Find jobs",
+      "id": "f_0t060i4UEcB7VkX9rrE",
+      "type": "source",
+      "email_related": false
+    },
+    {
+      "index": 2,
+      "name": "Company Name",
+      "id": "f_0t060r658Wja27AstZG",
+      "type": "formula",
+      "email_related": false
+    },
+    {
+      "index": 3,
+      "name": "Imported Company LinkedIn",
+      "id": "f_0t060rfjM2N6ThkzmBi",
+      "type": "formula",
+      "email_related": false
+    },
+    {
+      "index": 4,
+      "name": "Imported Job Title",
+      "id": "f_0t060rsDJXy6EbBFdCD",
+      "type": "formula",
+      "email_related": false
+    },
+    {
+      "index": 5,
+      "name": "Imported Job Location",
+      "id": "f_0t060s6E7DDNpbJtJvj",
+      "type": "formula",
+      "email_related": false
+    },
+    {
+      "index": 6,
+      "name": "Imported Company Domain",
+      "id": "f_0t060sk49TGcMceaDYK",
+      "type": "formula",
+      "email_related": false
+    },
+    {
+      "index": 7,
+      "name": "Previously Found Recruiting Company?",
+      "id": "f_0t0610iofiKiiw4Wg8J",
+      "type": "action",
+      "email_related": false
+    },
+    {
+      "index": 8,
+      "name": "Previously Found Recruiting Company? (2)",
+      "id": "f_0t0611bNpMVqV8fJ6AR",
+      "type": "action",
+      "email_related": false
+    },
+    {
+      "index": 9,
+      "name": "Job LinkedIn URL",
+      "id": "f_0t06147KZtafpAaiDTz",
+      "type": "formula",
+      "email_related": false
+    },
+    {
+      "index": 10,
+      "name": "Timing Check",
+      "id": "f_0t061609aYkjv7xv2iq",
+      "type": "formula",
+      "email_related": false
+    },
+    {
+      "index": 11,
+      "name": "companyType",
+      "id": "f_0t061asPUwcwqmVNhFa",
+      "type": "action",
+      "email_related": false
+    },
+    {
+      "index": 12,
+      "name": "Find Company Domain",
+      "id": "f_0t061d4X5MFPjeA6poy",
+      "type": "action",
+      "email_related": false
+    },
+    {
+      "index": 13,
+      "name": "Initial Company Domain",
+      "id": "f_0t061e0xsXaeWJ4duEr",
+      "type": "formula",
+      "email_related": false
+    },
+    {
+      "index": 14,
+      "name": "Company Linkedin URL",
+      "id": "f_0t061h6ryQbbCENDRfw",
+      "type": "formula",
+      "email_related": false
+    },
+    {
+      "index": 15,
+      "name": "Write to Other Table",
+      "id": "f_0t061ofXiGMrS8uWX4v",
+      "type": "action",
+      "email_related": false
+    },
+    {
+      "index": 16,
+      "name": "HS Lookup Company",
+      "id": "f_0t061snbVnhRU4YivUf",
+      "type": "action",
+      "email_related": false
+    },
+    {
+      "index": 17,
+      "name": "Hs Company Id",
+      "id": "f_0t061ufCrex9oVZX6SP",
+      "type": "formula",
+      "email_related": false
+    },
+    {
+      "index": 18,
+      "name": "Can Contact?",
+      "id": "f_0t061wgvu8ZqoaN8tuT",
+      "type": "formula",
+      "email_related": true
+    },
+    {
+      "index": 19,
+      "name": "companyIdentifier",
+      "id": "f_0t062cekVKKzMXGhjkf",
+      "type": "formula",
+      "email_related": false
+    },
+    {
+      "index": 20,
+      "name": "Enrich Company",
+      "id": "f_0t062fn5XVTbWYj3y9o",
+      "type": "action",
+      "email_related": false
+    },
+    {
+      "index": 21,
+      "name": "Employee Count",
+      "id": "f_0t062fr5fKsUy27nJhf",
+      "type": "formula",
+      "email_related": false
+    },
+    {
+      "index": 22,
+      "name": "Description",
+      "id": "f_0t062ftEuyDGZXnQ2tv",
+      "type": "formula",
+      "email_related": false
+    },
+    {
+      "index": 23,
+      "name": "Country",
+      "id": "f_0t062fuo2qETByKxCMv",
+      "type": "formula",
+      "email_related": false
+    },
+    {
+      "index": 24,
+      "name": "Industry",
+      "id": "f_0t062fwsvxAYR4U5Tnz",
+      "type": "formula",
+      "email_related": false
+    },
+    {
+      "index": 25,
+      "name": "Qualified?",
+      "id": "f_0t062k4WkGUVw7Hz22o",
+      "type": "formula",
+      "email_related": false
+    },
+    {
+      "index": 26,
+      "name": "Find Employee Headcount by Country",
+      "id": "f_0t062lz6w78f6bt6DHn",
+      "type": "action",
+      "email_related": false
+    },
+    {
+      "index": 27,
+      "name": "Country Count",
+      "id": "f_0t062mlQwseaw2sGuVi",
+      "type": "formula",
+      "email_related": false
+    },
+    {
+      "index": 28,
+      "name": "List of Countries",
+      "id": "f_0t062n3UUkSBEJNkYCf",
+      "type": "formula",
+      "email_related": false
+    },
+    {
+      "index": 29,
+      "name": "Contains LatAm?",
+      "id": "f_0t062nzS8fGru8teeX8",
+      "type": "formula",
+      "email_related": false
+    },
+    {
+      "index": 30,
+      "name": "All LatAm Countries",
+      "id": "f_0t062pbpwdQ7be2K6wb",
+      "type": "formula",
+      "email_related": false
+    },
+    {
+      "index": 31,
+      "name": "latam_countries",
+      "id": "f_0t062u7nHGkVSwxT7m8",
+      "type": "formula",
+      "email_related": false
+    },
+    {
+      "index": 32,
+      "name": "Remote Countries",
+      "id": "f_0t062weqC4ZbYAj7MUh",
+      "type": "formula",
+      "email_related": false
+    },
+    {
+      "index": 33,
+      "name": "Lookup Company",
+      "id": "f_0t062zgwHiQnuWvaKeP",
+      "type": "action",
+      "email_related": false
+    },
+    {
+      "index": 34,
+      "name": "First Occurrence of Company?",
+      "id": "f_0t0631wbbVYMnFMBZFC",
+      "type": "formula",
+      "email_related": false
+    },
+    {
+      "index": 35,
+      "name": "Prospect Linkedin URl",
+      "id": "f_0t0637iRkhckEvyaxoW",
+      "type": "formula",
+      "email_related": false
+    },
+    {
+      "index": 36,
+      "name": "Recruiter Name (uncleaned)",
+      "id": "f_0t06398Jpx33mhUdC2F",
+      "type": "formula",
+      "email_related": true
+    },
+    {
+      "index": 37,
+      "name": "Open Role Persona",
+      "id": "f_0t063jouM5TpzrRcAhq",
+      "type": "action",
+      "email_related": false
+    },
+    {
+      "index": 38,
+      "name": "Company Name (casual)",
+      "id": "f_0t063pqqvK9zMDbQc4B",
+      "type": "action",
+      "email_related": false
+    },
+    {
+      "index": 39,
+      "name": "First Name (cleaned)",
+      "id": "f_0t063qfcKw3gnzRcxxG",
+      "type": "formula",
+      "email_related": false
+    },
+    {
+      "index": 40,
+      "name": "Last Name (cleaned)",
+      "id": "f_0t063qh6gvgnYPy4av4",
+      "type": "formula",
+      "email_related": false
+    },
+    {
+      "index": 41,
+      "name": "Full Name (cleaned)",
+      "id": "f_0t063rgYs9kuKxSpxpT",
+      "type": "formula",
+      "email_related": false
+    },
+    {
+      "index": 42,
+      "name": "Find Work Email",
+      "id": "f_0t063y8WdAS99js4V3X",
+      "type": "action",
+      "email_related": true
+    },
+    {
+      "index": 43,
+      "name": "Validate LeadMagic",
+      "id": "f_0t063ycUDsHXBbK33Nr",
+      "type": "action",
+      "email_related": false
+    },
+    {
+      "index": 44,
+      "name": "Validate Findymail",
+      "id": "f_0t063ydF6TErvHCaQSx",
+      "type": "action",
+      "email_related": false
+    },
+    {
+      "index": 45,
+      "name": "Find Work Email (2)",
+      "id": "f_0t063ydQAv2nikXWKe8",
+      "type": "action",
+      "email_related": true
+    },
+    {
+      "index": 46,
+      "name": "Find Work Email (3)",
+      "id": "f_0t063yeCJVdxB2vqHRv",
+      "type": "action",
+      "email_related": true
+    },
+    {
+      "index": 47,
+      "name": "Find Work Email (5)",
+      "id": "f_0t063yeeJxCebxvYttY",
+      "type": "action",
+      "email_related": true
+    },
+    {
+      "index": 48,
+      "name": "Validate Prospeo",
+      "id": "f_0t063yeNkBx4JEKuGpD",
+      "type": "action",
+      "email_related": false
+    },
+    {
+      "index": 49,
+      "name": "Validate DropContact",
+      "id": "f_0t063yepWfJnNN5P3iq",
+      "type": "action",
+      "email_related": true
+    },
+    {
+      "index": 50,
+      "name": "Find Work Email (4)",
+      "id": "f_0t063yeZU4qBa2XDqc9",
+      "type": "action",
+      "email_related": true
+    },
+    {
+      "index": 51,
+      "name": "Find Work Email (6)",
+      "id": "f_0t063yf77PnrHghCypy",
+      "type": "action",
+      "email_related": true
+    },
+    {
+      "index": 52,
+      "name": "Validate Datagma",
+      "id": "f_0t063yfBQMgSouvCNbo",
+      "type": "action",
+      "email_related": false
+    },
+    {
+      "index": 53,
+      "name": "Find Email",
+      "id": "f_0t063yfcfk6ikT8QGtN",
+      "type": "action",
+      "email_related": true
+    },
+    {
+      "index": 54,
+      "name": "Validate Hunter",
+      "id": "f_0t063yfkNV3dPezDqxS",
+      "type": "action",
+      "email_related": false
+    },
+    {
+      "index": 55,
+      "name": "Find Work Email (7)",
+      "id": "f_0t063yfmmW2WvrTsiBu",
+      "type": "action",
+      "email_related": true
+    },
+    {
+      "index": 56,
+      "name": "Validate Wiza",
+      "id": "f_0t063yfXYQDrgzkUCWo",
+      "type": "action",
+      "email_related": false
+    },
+    {
+      "index": 57,
+      "name": "Validate Icypeas",
+      "id": "f_0t063ygjV47K5EHQsAw",
+      "type": "action",
+      "email_related": false
+    },
+    {
+      "index": 58,
+      "name": "Find Work Email (8)",
+      "id": "f_0t063ygsrNkQivc2jyT",
+      "type": "action",
+      "email_related": true
+    },
+    {
+      "index": 59,
+      "name": "Validate SMARTe",
+      "id": "f_0t063ygt2KPiRosafyj",
+      "type": "action",
+      "email_related": false
+    },
+    {
+      "index": 60,
+      "name": "Work Email",
+      "id": "f_0t063ygVDhWMs5MT4MD",
+      "type": "formula",
+      "email_related": true
+    },
+    {
+      "index": 61,
+      "name": "Company Name (casual) (2)",
+      "id": "f_0t064x2WBdBhgsZN9jM",
+      "type": "formula",
+      "email_related": false
+    },
+    {
+      "index": 62,
+      "name": "Add Lead to Campaign",
+      "id": "f_0t0663za8Q5sksMEAmc",
+      "type": "action",
+      "email_related": false
+    },
+    {
+      "index": 63,
+      "name": "Posted At",
+      "id": "f_0t1lspzEYvmbJyY6uYi",
+      "type": "formula",
+      "email_related": false
+    },
+    {
+      "index": 64,
+      "name": "C-level Status",
+      "id": "f_0t3kjp7Y4s8wM66hshX",
+      "type": "formula",
+      "email_related": false
+    },
+    {
+      "index": 65,
+      "name": "Enrich person",
+      "id": "f_0t3kpcmpY9vVvRwxm3u",
+      "type": "action",
+      "email_related": false
+    },
+    {
+      "index": 66,
+      "name": "HM Title",
+      "id": "f_0t3kpcpGGk37Aye6NUU",
+      "type": "formula",
+      "email_related": false
+    },
+    {
+      "index": 67,
+      "name": "Add row",
+      "id": "f_0t3kpqyFxjKBWG2BSM7",
+      "type": "action",
+      "email_related": false
+    },
+    {
+      "index": 68,
+      "name": "Job Description",
+      "id": "f_0t5px6qt5E3QPg5pyi4",
+      "type": "action",
+      "email_related": false
+    },
+    {
+      "index": 69,
+      "name": "Job Description Analysis",
+      "id": "f_0t5px8uSEUrkuMwGv4H",
+      "type": "action",
+      "email_related": false
+    },
+    {
+      "index": 70,
+      "name": "Years Of Experience",
+      "id": "f_0t5pxd2mPY3YXrvTuq8",
+      "type": "formula",
+      "email_related": false
+    },
+    {
+      "index": 71,
+      "name": "Specific Experience Snippet",
+      "id": "f_0t5pxddVBS8bfTitUzg",
+      "type": "formula",
+      "email_related": false
+    },
+    {
+      "index": 72,
+      "name": "Job Compensation",
+      "id": "f_0t5pxfazdnKkcDhFTQ8",
+      "type": "action",
+      "email_related": false
+    },
+    {
+      "index": 73,
+      "name": "Estimated Latam Pay Range",
+      "id": "f_0t5pxilXR2gwt7i8SC8",
+      "type": "action",
+      "email_related": false
+    },
+    {
+      "index": 74,
+      "name": "Email 2 Examples",
+      "id": "f_38wYEdAsst5y",
+      "type": "formula",
+      "email_related": true
+    },
+    {
+      "index": 75,
+      "name": "Last Name (uncleaned)",
+      "id": "f_4hy2GLZONquB",
+      "type": "text",
+      "email_related": false
+    },
+    {
+      "index": 76,
+      "name": "Email 2 draft",
+      "id": "f_7DNge2NPZWUm",
+      "type": "action",
+      "email_related": true
+    },
+    {
+      "index": 77,
+      "name": "Prospect Latest Exp Title",
+      "id": "f_AxFNz9EB4rMS",
+      "type": "text",
+      "email_related": false
+    },
+    {
+      "index": 78,
+      "name": "Prospect Headline",
+      "id": "f_C7tASvLZ5nXB",
+      "type": "text",
+      "email_related": false
+    },
+    {
+      "index": 79,
+      "name": "Created At",
+      "id": "f_created_at",
+      "type": "date",
+      "email_related": false
+    },
+    {
+      "index": 80,
+      "name": "Email One",
+      "id": "f_dWUgCoGRG2RD",
+      "type": "formula",
+      "email_related": true
+    },
+    {
+      "index": 81,
+      "name": "Email 3 draft",
+      "id": "f_gEaUqxfuTyrQ",
+      "type": "action",
+      "email_related": true
+    },
+    {
+      "index": 82,
+      "name": "remote_countries",
+      "id": "f_gks3CrwAsSrf",
+      "type": "formula",
+      "email_related": false
+    },
+    {
+      "index": 83,
+      "name": "Email 2 Strategy",
+      "id": "f_gnzyH9bcqPb6",
+      "type": "formula",
+      "email_related": true
+    },
+    {
+      "index": 84,
+      "name": "companyDomain",
+      "id": "f_gQJE6q3hNO0m",
+      "type": "formula",
+      "email_related": false
+    },
+    {
+      "index": 85,
+      "name": "Prospect Location",
+      "id": "f_H4F4mBdZanJr",
+      "type": "text",
+      "email_related": false
+    },
+    {
+      "index": 86,
+      "name": "email_three",
+      "id": "f_MWiMXxrgUCeC",
+      "type": "formula",
+      "email_related": true
+    },
+    {
+      "index": 87,
+      "name": "Email Overview",
+      "id": "f_najVDpzDZU5i",
+      "type": "formula",
+      "email_related": true
+    },
+    {
+      "index": 88,
+      "name": "Prospect Summary",
+      "id": "f_okjasOi4Od1p",
+      "type": "text",
+      "email_related": false
+    },
+    {
+      "index": 89,
+      "name": "Prospect Title",
+      "id": "f_pO9JBDaQrxpL",
+      "type": "text",
+      "email_related": false
+    },
+    {
+      "index": 90,
+      "name": "Email 2 Overview",
+      "id": "f_rQRUjFUPWCun",
+      "type": "formula",
+      "email_related": true
+    },
+    {
+      "index": 91,
+      "name": "Name Analysis",
+      "id": "f_SE9cMGYZjTrD",
+      "type": "action",
+      "email_related": false
+    },
+    {
+      "index": 92,
+      "name": "Updated At",
+      "id": "f_updated_at",
+      "type": "date",
+      "email_related": false
+    },
+    {
+      "index": 93,
+      "name": "Email Two",
+      "id": "f_v8Q9RiHtiQTY",
+      "type": "formula",
+      "email_related": true
+    },
+    {
+      "index": 94,
+      "name": "Subject Line",
+      "id": "f_VX8hfWJ28i7g",
+      "type": "formula",
+      "email_related": false
+    },
+    {
+      "index": 95,
+      "name": "Cold Email Creation",
+      "id": "f_zhSirppXa2dV",
+      "type": "action",
+      "email_related": true
+    },
+    {
+      "index": 96,
+      "name": "Dedupe Companies",
+      "id": "f_ZnfHz7JeqKsY",
+      "type": "formula",
+      "email_related": false
+    },
+    {
+      "index": 97,
+      "name": "First Name (uncleaned)",
+      "id": "f_ZPM5hJkjijhS",
+      "type": "text",
+      "email_related": false
+    }
+  ]
+}

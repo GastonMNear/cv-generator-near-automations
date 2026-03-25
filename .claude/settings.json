@@ -1,0 +1,7 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(CLAY_COOKIE=\"claysession=s%3A-8gYvHKPDL0hWhbv6IJs7P0WhBwUH_S9.ser4BJtVv88o9UbV3sx7OoyMJL875SUNSzGYCL1ewGY\":*)"
+    ]
+  }
+}

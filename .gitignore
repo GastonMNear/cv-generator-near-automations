@@ -1,0 +1,49 @@
+# Environment variables
+.env
+.env.local
+
+# Dependencies
+node_modules/
+package-lock.json
+yarn.lock
+
+# Generated CVs (if stored locally)
+generated_cvs/
+*.pdf
+*.docx
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Python (if using Python)
+__pycache__/
+*.py[cod]
+*$py.class
+venv/
+env/
+.venv/
+
+# Temporary files
+tmp/
+temp/
+.temp/
+*.tmp
+
+# Clay session files (contain personal session cookies)
+clay_cookies.txt
+.claude/settings.local.json
+
+# Windows reserved device name (artifact from previous runs)
+nul
