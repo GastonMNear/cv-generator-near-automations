@@ -59,59 +59,58 @@ BASE = "https://api.clay.com/v3"
 KNOWN_TABLES = {
     "t_0t59d2y3ZuD4396Kz5B": {  # US Open Jobs - No Hiring Manager
         "view":     "gv_TgwDWXPdg8Ci",
-        "emails":   ["f_ztbbU4PJ8rD5", "f_yMCMAWQoiYox", "f_39H5yXmFjRi5",
-                     "f_0tc2a2qEFRZthdct3Cs", "f_SUTHMU5bi2XD"],
+        "emails":   ["f_0tc2a2qEFRZthdct3Cs"],   # Work Email
         "employee": "f_0t5mtcfvJknGywASv4z",
-        "job_post": "f_QIP4GfH5XFZo",
-        "title":    "f_9XFV2vIqjwAh",   # open_role_title
-        "linkedin": None,                # personal profile URL — discover dynamically
+        "job_post": "f_QIP4GfH5XFZo",             # Written Job URL
+        "title":    "f_9XFV2vIqjwAh",             # open_role_title (call-prep only)
+        "linkedin": None,                          # personal profile URL — discover dynamically
     },
     "t_0tbt48xVeCFCi8pFzip": {  # Copy of Leads - US OJ No HM (fallback table)
         "view":     "gv_TgwDWXPdg8Ci",
-        "emails":   ["f_0tbt65uGbguMonif8dU", "f_0tbt65kNZrgzvDoEAmi"],
+        "emails":   ["f_0tbt65uGbguMonif8dU"],    # Work Email
         "employee": "f_0t5mtcfvJknGywASv4z",
-        "job_post": "f_QIP4GfH5XFZo",
+        "job_post": "f_QIP4GfH5XFZo",             # Written Job URL
         "title":    None,
         "linkedin": None,
     },
     "t_0t5pvx3g4o5WfysopqA": {  # US Open Jobs - Hiring Managers
         "view":     "gv_TgwDWXPdg8Ci",
-        "emails":   ["f_0t063ygVDhWMs5MT4MD"],
+        "emails":   ["f_0t063ygVDhWMs5MT4MD"],    # Work Email
         "employee": "f_0t062fr5fKsUy27nJhf",
-        "job_post": "f_0t06147KZtafpAaiDTz",
-        "title":    "f_0t060rsDJXy6EbBFdCD",  # Imported Job Title
+        "job_post": "f_0t06147KZtafpAaiDTz",      # Job LinkedIn URL
+        "title":    "f_0t060rsDJXy6EbBFdCD",      # Imported Job Title (call-prep only)
         "linkedin": None,
     },
     "t_aNvk4jWMNeG7": {  # LatAm Open Jobs - No HMs
         "view":     "gv_TgwDWXPdg8Ci",
-        "emails":   ["f_SUTHMU5bi2XD"],
+        "emails":   ["f_SUTHMU5bi2XD"],           # Validated Email
         "employee": "f_0t6acqvuQxjjQNTWhbK",
-        "job_post": "f_QIP4GfH5XFZo",
+        "job_post": "f_QIP4GfH5XFZo",             # Written Job URL
         "title":    None,
         "linkedin": None,
     },
-    "t_0t6ghvgCsvvvqAus4bp": {  # LatAm Open Jobs - Hiring Managers (assumed same schema as US HMs)
+    "t_0t6ghvgCsvvvqAus4bp": {  # LatAm Open Jobs - Hiring Managers
         "view":     "gv_TgwDWXPdg8Ci",
-        "emails":   ["f_0t063ygVDhWMs5MT4MD"],
+        "emails":   ["f_0t063ygVDhWMs5MT4MD"],    # Work Email
         "employee": "f_0t062fr5fKsUy27nJhf",
-        "job_post": "f_0t06147KZtafpAaiDTz",
-        "title":    "f_0t060rsDJXy6EbBFdCD",
+        "job_post": "f_0t06147KZtafpAaiDTz",      # Job LinkedIn URL
+        "title":    "f_0t060rsDJXy6EbBFdCD",      # Imported Job Title (call-prep only)
         "linkedin": None,
     },
     "t_0taasak5KAa5zbTmTJd": {  # Canada Open Jobs - No HM
         "view":     "gv_3cMh8vzuFqm4",
-        "emails":   ["f_0taaxyjNBGfFWKYUnxK", "f_0taaxydYnGTxbpHQFnp"],
-        "employee": "f_0taay8jKxJZYCy4AoV6",
-        "job_post": "f_0taawsuMjxnV74YtCZ8",
-        "title":    "f_0taaxpwuXVMYbRoGAA7",  # Lead Title
+        "emails":   ["f_0taaxyjNBGfFWKYUnxK"],    # Work Email
+        "employee": "f_0taayd3VvuPn9po6cYQ",
+        "job_post": "f_0taawsuMjxnV74YtCZ8",      # Job LinkedIn Url
+        "title":    "f_0taaxpwuXVMYbRoGAA7",      # Lead Title (call-prep only)
         "linkedin": None,
     },
     "t_0t746txPqz5sjFMtut2": {  # Canada Open Jobs - HMs
         "view":     "gv_TgwDWXPdg8Ci",
-        "emails":   ["f_0t063ygVDhWMs5MT4MD"],
+        "emails":   ["f_0t063ygVDhWMs5MT4MD"],    # Work Email
         "employee": "f_0t062fr5fKsUy27nJhf",
-        "job_post": "f_0t06147KZtafpAaiDTz",
-        "title":    "f_0t060rsDJXy6EbBFdCD",
+        "job_post": "f_0t06147KZtafpAaiDTz",      # Job LinkedIn URL
+        "title":    "f_0t060rsDJXy6EbBFdCD",      # Imported Job Title (call-prep only)
         "linkedin": None,
     },
 }
