@@ -3,7 +3,7 @@ name: email-replies-workflow
 description: >
   Orchestrates the complete CV generation workflow from Clay lead data. Always use this
   skill when given a lead email address and a Clay table name (or campaign name that maps
-  to a table) — it automatically fetches lead data via temp/fetch_lead.py, extracts LinkedIn
+  to a table) — it automatically fetches lead data via scripts/fetch_lead.py, extracts LinkedIn
   job details, and generates a tailored LATAM CV as a Google Doc. Trigger this skill any time
   someone says "generate CV for [email]", "process lead [email]", or provides an email with
   a Clay table context, even if they don't explicitly ask for "the workflow".
@@ -15,7 +15,7 @@ description: >
 
 This skill provides end-to-end orchestration of the CV generation workflow for leads in Clay tables. When given a lead's email address and the Clay table name, the skill automatically:
 
-1. Runs `temp/fetch_lead.py --email EMAIL --table ALIAS` → returns name, linkedin_url, employee_count (all 6 tables pre-cached, no metadata API calls needed)
+1. Runs `scripts/fetch_lead.py --email EMAIL --table ALIAS` → returns name, linkedin_url, employee_count (all 6 tables pre-cached, no metadata API calls needed)
 2. Invokes the linkedin-job-extractor skill to get company name, job title, and full job description
 3. Invokes the latam-cv-generator skill to create a tailored LATAM CV as a Google Doc
 4. Returns the Google Doc URL and company employee count
@@ -110,7 +110,7 @@ Extract the email and table name from natural language input.
 
 **Command:**
 ```bash
-PYTHONUTF8=1 python temp/fetch_lead.py --email {lead_email} --table "{table_alias}"
+PYTHONUTF8=1 python scripts/fetch_lead.py --email {lead_email} --table "{table_alias}"
 ```
 
 **Output (JSON printed to stdout):**
@@ -426,7 +426,7 @@ Canada Open Jobs - HMs
 
 **Step 1 command:**
 ```bash
-PYTHONUTF8=1 python temp/fetch_lead.py --email craig.t@blackretebuilders.com --table "canada hms"
+PYTHONUTF8=1 python scripts/fetch_lead.py --email craig.t@blackretebuilders.com --table "canada hms"
 ```
 **Step 1 output:**
 ```json
@@ -445,7 +445,7 @@ Process lead john.doe@techcorp.com from US Open Jobs - No Hiring Manager
 
 **Step 1 command:**
 ```bash
-PYTHONUTF8=1 python temp/fetch_lead.py --email john.doe@techcorp.com --table "us no hm"
+PYTHONUTF8=1 python scripts/fetch_lead.py --email john.doe@techcorp.com --table "us no hm"
 ```
 
 ### Example 3: LatAm HMs
@@ -457,7 +457,7 @@ Generate CV for maria.garcia@startup.io from LatAm OJ - HMs
 
 **Step 1 command:**
 ```bash
-PYTHONUTF8=1 python temp/fetch_lead.py --email maria.garcia@startup.io --table "latam hms"
+PYTHONUTF8=1 python scripts/fetch_lead.py --email maria.garcia@startup.io --table "latam hms"
 ```
 Note: LatAm HMs field IDs are assumed from US/Canada HMs schema — verify on first run and update known-tables.md if wrong.
 

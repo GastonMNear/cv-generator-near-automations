@@ -12,7 +12,7 @@ description: >
 
 # Lead Data Extractor
 
-> **Workflow note:** This skill is for the **call-prep workflow** (lead email + campaign → call prep doc). The CV generation workflow (`email-replies-workflow`) uses `temp/fetch_lead.py` instead, which has all 6 table field IDs pre-cached and returns `name`, `linkedin_url` (job URL), and `employee_count`. Use this skill for call prep; use `fetch_lead.py` for CV generation.
+> **Workflow note:** This skill is for the **call-prep workflow** (lead email + campaign → call prep doc). The CV generation workflow (`email-replies-workflow`) uses `scripts/fetch_lead.py` instead, which has all 6 table field IDs pre-cached and returns `name`, `linkedin_url` (job URL), and `employee_count`. Use this skill for call prep; use `fetch_lead.py` for CV generation.
 
 Extracts 4 fields from a Clay table record for a given lead email:
 - **job_title** — the lead's current job title (personal title, not the open role)
