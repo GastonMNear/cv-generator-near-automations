@@ -79,11 +79,13 @@ If a table is NOT listed here, fall back to the search workflow in SKILL.md.
 
 | Clay Field Name | Field ID |
 |----------------|----------|
-| Validated Email | `f_SUTHMU5bi2XD` |
+| Work Email | `f_0tckabyNnK9wNBNNUWm` |
 | Written Job URL | `f_QIP4GfH5XFZo` |
 | First Name (cleaned) | `f_hiEPcKlj0lTB` |
 | Last Name (cleaned) | `f_fvs0rK0ntN1H` |
 | Employee Count | `f_0t6acqvuQxjjQNTWhbK` |
+
+**Note:** "Validated Email" (`f_SUTHMU5bi2XD`) was removed from this table. "Work Email" is the new consolidated formula field (verified 2026-03-27). Table grew from 63 → 85 fields (full email enrichment pipeline added).
 
 ---
 
