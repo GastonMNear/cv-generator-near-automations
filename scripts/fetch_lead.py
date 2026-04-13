@@ -149,7 +149,7 @@ def api_get(path):
 def api_post(path, data):
     r = urllib.request.Request(f"{BASE}{path}", data=json.dumps(data).encode(),
         headers={"Cookie": session, "Content-Type": "application/json"}, method="POST")
-    return json.loads(urllib.request.urlopen(r, context=ctx, timeout=90).read())
+    return json.loads(urllib.request.urlopen(r, context=ctx, timeout=120).read())
 
 # ── Fetch & search ──────────────────────────────────────────────────────────
 VIEW_ID   = table_cfg["view"]
@@ -159,7 +159,7 @@ ids_resp   = api_get(f"/tables/{table_id}/views/{VIEW_ID}/records/ids")
 record_ids = ids_resp.get("results", [])
 print(f"Total records: {len(record_ids)}")
 
-BATCH_SIZE = 10_000
+BATCH_SIZE = 500
 found = None
 for i in range(0, len(record_ids), BATCH_SIZE):
     batch = record_ids[i:i+BATCH_SIZE]
