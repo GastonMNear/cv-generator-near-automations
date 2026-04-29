@@ -64,13 +64,14 @@ This skill orchestrates three existing skills:
 
 ### Clay Workspace
 
-The workflow assumes access to **HireWithNear workspace** (ID: 447061) with the following known tables:
-- US Open Jobs - No Hiring Manager (`t_0t59d2y3ZuD4396Kz5B`)
-- US Open Jobs - Hiring Managers (`t_0t5pvx3g4o5WfysopqA`)
-- LatAm Open Jobs - No HMs (`t_aNvk4jWMNeG7`)
-- LatAm Open Jobs - Hiring Managers (`t_0t6ghvgCsvvvqAus4bp`)
-- Canada Open Jobs - No HM (`t_0taasak5KAa5zbTmTJd`)
-- Canada Open Jobs - HMs (`t_0t746txPqz5sjFMtut2`)
+The workflow assumes access to **HireWithNear workspace** (ID: 447061). Tables with multiple IDs are searched in order — script stops at the first match:
+
+- US Open Jobs - No Hiring Manager: `t_0tdyro7QesUNY3WJrt2` → `t_0t59d2y3ZuD4396Kz5B` → `t_0tbt48xVeCFCi8pFzip`
+- US Open Jobs - Hiring Managers: `t_0t5pvx3g4o5WfysopqA`
+- LatAm Open Jobs - No HMs: `t_0te5kjxke6yWVRzedb7` → `t_aNvk4jWMNeG7`
+- LatAm Open Jobs - Hiring Managers: `t_0t6ghvgCsvvvqAus4bp`
+- Canada Open Jobs - No HM: `t_0te5lh6AoWkxd39ktT8` → `t_0taasak5KAa5zbTmTJd`
+- Canada Open Jobs - HMs: `t_0t746txPqz5sjFMtut2`
 
 ## User Input Requirements
 

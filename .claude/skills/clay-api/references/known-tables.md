@@ -13,12 +13,33 @@ If a table is NOT listed here, fall back to the search workflow in SKILL.md.
 
 ---
 
-## 1. US Open Jobs — No Hiring Manager
+## 1. US Open Jobs — No Hiring Manager (new primary)
+
+> **Lookup order:** 1a → 1b → 1c. Script tries each in sequence; stops at first match.
+
+### 1a. US Open Jobs - No HM (new primary)
+
+| Property | Value |
+|----------|-------|
+| **Table ID** | `t_0tdyro7QesUNY3WJrt2` |
+| **Aliases** | US OJ - No HM, US OJ - No hiring managers |
+| **Default View ID** | `gv_TgwDWXPdg8Ci` (assumed — verify on first run) |
+
+| Clay Field Name | Field ID |
+|----------------|----------|
+| Work Email | `f_0tc2a2qEFRZthdct3Cs` *(assumed — update if wrong)* |
+| Written Job URL | `f_QIP4GfH5XFZo` *(assumed)* |
+| First Name (cleaned) | `f_hiEPcKlj0lTB` *(assumed)* |
+| Last Name (cleaned) | `f_fvs0rK0ntN1H` *(assumed)* |
+| Employee Count | `f_0t5mtcfvJknGywASv4z` *(assumed)* |
+
+**Note:** Field IDs copied from table 1b as starting assumption. Update after first successful run.
+
+### 1b. US Open Jobs — No Hiring Manager
 
 | Property | Value |
 |----------|-------|
 | **Table ID** | `t_0t59d2y3ZuD4396Kz5B` |
-| **Aliases** | US OJ - No HM, US OJ - No hiring managers |
 | **Default View ID** | `gv_TgwDWXPdg8Ci` (15,740 records) |
 
 | Clay Field Name | Field ID |
@@ -29,16 +50,11 @@ If a table is NOT listed here, fall back to the search workflow in SKILL.md.
 | Last Name (cleaned) | `f_fvs0rK0ntN1H` |
 | Employee Count | `f_0t5mtcfvJknGywASv4z` |
 
-**Fallback:** If lead not found here, search table 1b below.
-
----
-
-## 1b. Copy of Leads — US OJ No Hiring Manager (fallback)
+### 1c. Copy of Leads — US OJ No Hiring Manager (last fallback)
 
 | Property | Value |
 |----------|-------|
 | **Table ID** | `t_0tbt48xVeCFCi8pFzip` |
-| **Aliases** | Same as table 1 — use as fallback only |
 | **Default View ID** | `gv_TgwDWXPdg8Ci` (509 records) |
 
 | Clay Field Name | Field ID |
@@ -71,10 +87,31 @@ If a table is NOT listed here, fall back to the search workflow in SKILL.md.
 
 ## 3. LatAm Open Jobs — No HMs
 
+> **Lookup order:** 3a → 3b. Script tries each in sequence; stops at first match.
+
+### 3a. LatAm Open Jobs - No HMs (new primary)
+
+| Property | Value |
+|----------|-------|
+| **Table ID** | `t_0te5kjxke6yWVRzedb7` |
+| **Aliases** | LatAm Open Jobs - No HMs, LatAm OJ - No HMs |
+| **Default View ID** | `gv_TgwDWXPdg8Ci` (assumed — verify on first run) |
+
+| Clay Field Name | Field ID |
+|----------------|----------|
+| Work Email | `f_0tckabyNnK9wNBNNUWm` *(assumed — update if wrong)* |
+| Written Job URL | `f_QIP4GfH5XFZo` *(assumed)* |
+| First Name (cleaned) | `f_hiEPcKlj0lTB` *(assumed)* |
+| Last Name (cleaned) | `f_fvs0rK0ntN1H` *(assumed)* |
+| Employee Count | `f_0t6acqvuQxjjQNTWhbK` *(assumed)* |
+
+**Note:** Field IDs copied from table 3b as starting assumption. Update after first successful run.
+
+### 3b. LatAm Open Jobs — No HMs
+
 | Property | Value |
 |----------|-------|
 | **Table ID** | `t_aNvk4jWMNeG7` |
-| **Aliases** | LatAm Open Jobs - No HMs, LatAm OJ - No HMs |
 | **Default View ID** | `gv_TgwDWXPdg8Ci` (3,314 records) |
 
 | Clay Field Name | Field ID |
@@ -109,10 +146,31 @@ If a table is NOT listed here, fall back to the search workflow in SKILL.md.
 
 ## 5. Canada Open Jobs — No HM
 
+> **Lookup order:** 5a → 5b. Script tries each in sequence; stops at first match.
+
+### 5a. Canada Open Jobs - No HM (new primary)
+
+| Property | Value |
+|----------|-------|
+| **Table ID** | `t_0te5lh6AoWkxd39ktT8` |
+| **Aliases** | Canada Open Jobs - No Hiring Managers, Canada Open Jobs - No HM, Canada OJ - No HMs |
+| **Default View ID** | `gv_3cMh8vzuFqm4` (assumed — verify on first run) |
+
+| Clay Field Name | Field ID |
+|----------------|----------|
+| Work Email | `f_0taaxyjNBGfFWKYUnxK` *(assumed — update if wrong)* |
+| Job LinkedIn Url | `f_0taawsuMjxnV74YtCZ8` *(assumed)* |
+| First Name (clean) | `f_0taaxkd4HWteakU9qwZ` *(assumed)* |
+| Last Name (clean) | `f_0taaxkl9BQmnF5u9PVG` *(assumed)* |
+| Employee Count | `f_0taayd3VvuPn9po6cYQ` *(assumed)* |
+
+**Note:** Field IDs copied from table 5b as starting assumption. Update after first successful run.
+
+### 5b. Canada Open Jobs — No HM
+
 | Property | Value |
 |----------|-------|
 | **Table ID** | `t_0taasak5KAa5zbTmTJd` |
-| **Aliases** | Canada Open Jobs - No Hiring Managers, Canada Open Jobs - No HM, Canada OJ - No HMs |
 | **Default View ID** | `gv_3cMh8vzuFqm4` (6,004 records) |
 
 | Clay Field Name | Field ID |

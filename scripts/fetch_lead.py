@@ -1,14 +1,14 @@
 #!/usr/bin/env python3
 """
-Universal lead fetcher — works for all 6 known Clay tables.
-Usage: python temp/fetch_lead.py --email EMAIL --table TABLE_ALIAS
+Universal lead fetcher — works for all known Clay tables.
+Usage: python scripts/fetch_lead.py --email EMAIL --table TABLE_ALIAS
 
 Table aliases (case-insensitive partial match):
-  us no hm        → US Open Jobs - No Hiring Manager
+  us no hm        → US Open Jobs - No HM (searches 3 tables in order)
   us hm / us hms  → US Open Jobs - Hiring Managers
-  latam no hm     → LatAm Open Jobs - No HMs
+  latam no hm     → LatAm Open Jobs - No HMs (searches 2 tables in order)
   latam hm        → LatAm Open Jobs - Hiring Managers
-  canada no hm    → Canada Open Jobs - No HM
+  canada no hm    → Canada Open Jobs - No HM (searches 2 tables in order)
   canada hm       → Canada Open Jobs - HMs
 """
 import urllib.request, json, ssl, sys, io, argparse, os
@@ -30,29 +30,44 @@ if not CLAY_USERNAME or not CLAY_PASSWORD:
 BASE = "https://api.clay.com/v3"
 ctx  = ssl.create_default_context()
 
-# ── Table configs — fields match known-tables.md exactly (updated 2026-03-27) ──────────────
+# ── Table configs — fields match known-tables.md exactly ────────────────────
+# "fallbacks": ordered list of table IDs to try if lead not found in this table
 TABLES = {
+    # ── US Open Jobs - No HM (primary — search first) ──
+    "t_0tdyro7QesUNY3WJrt2": {
+        "name":       "US Open Jobs - No HM (new primary)",
+        "aliases":    ["us no hm", "us oj no hm", "us open jobs no hm", "us open jobs - no hiring manager"],
+        "view":       "gv_TgwDWXPdg8Ci",          # Assumed — verify on first run
+        "email":      "f_0tc2a2qEFRZthdct3Cs",    # Assumed same as t_0t59d... — update known-tables.md if wrong
+        "linkedin":   "f_QIP4GfH5XFZo",
+        "first_name": "f_hiEPcKlj0lTB",
+        "last_name":  "f_fvs0rK0ntN1H",
+        "ec":         "f_0t5mtcfvJknGywASv4z",
+        "fallbacks":  ["t_0t59d2y3ZuD4396Kz5B", "t_0tbt48xVeCFCi8pFzip"],
+    },
     "t_0t59d2y3ZuD4396Kz5B": {
         "name":       "US Open Jobs - No Hiring Manager",
-        "aliases":    ["us no hm", "us oj no hm", "us open jobs no hm", "us open jobs - no hiring manager"],
+        "aliases":    [],  # Aliases moved to new primary above
         "view":       "gv_TgwDWXPdg8Ci",
-        "email":      "f_0tc2a2qEFRZthdct3Cs",   # Work Email
+        "email":      "f_0tc2a2qEFRZthdct3Cs",    # Work Email
         "linkedin":   "f_QIP4GfH5XFZo",           # Written Job URL
         "first_name": "f_hiEPcKlj0lTB",           # First Name (cleaned)
         "last_name":  "f_fvs0rK0ntN1H",           # Last Name (cleaned)
         "ec":         "f_0t5mtcfvJknGywASv4z",    # Employee Count
-        "fallback":   "t_0tbt48xVeCFCi8pFzip",
+        "fallbacks":  ["t_0tbt48xVeCFCi8pFzip"],
     },
     "t_0tbt48xVeCFCi8pFzip": {
         "name":       "Copy of Leads - US OJ No Hiring Manager (fallback)",
-        "aliases":    [],  # No direct aliases — reached only as fallback from t_0t59d2y3ZuD4396Kz5B
+        "aliases":    [],  # Reached only via fallback chain
         "view":       "gv_TgwDWXPdg8Ci",
         "email":      "f_0tbt65uGbguMonif8dU",    # Work Email
         "linkedin":   "f_QIP4GfH5XFZo",           # Written Job URL
         "first_name": "f_hiEPcKlj0lTB",           # First Name (cleaned)
         "last_name":  "f_fvs0rK0ntN1H",           # Last Name (cleaned)
         "ec":         "f_0t5mtcfvJknGywASv4z",    # Employee Count
+        "fallbacks":  [],
     },
+    # ── US Open Jobs - Hiring Managers ──
     "t_0t5pvx3g4o5WfysopqA": {
         "name":       "US Open Jobs - Hiring Managers",
         "aliases":    ["us hm", "us hms", "us oj hm", "us oj hms", "us open jobs hm", "us open jobs - hiring managers"],
@@ -62,17 +77,32 @@ TABLES = {
         "first_name": "f_0t063qfcKw3gnzRcxxG",    # First Name (cleaned)
         "last_name":  "f_0t063qh6gvgnYPy4av4",    # Last Name (cleaned)
         "ec":         "f_0t062fr5fKsUy27nJhf",    # Employee Count
+        "fallbacks":  [],
+    },
+    # ── LatAm Open Jobs - No HMs (primary — search first) ──
+    "t_0te5kjxke6yWVRzedb7": {
+        "name":       "LatAm Open Jobs - No HMs (new primary)",
+        "aliases":    ["latam no hm", "latam no hms", "latam oj no hm", "latam open jobs no hm", "latam open jobs - no hms"],
+        "view":       "gv_TgwDWXPdg8Ci",          # Assumed — verify on first run
+        "email":      "f_0tckabyNnK9wNBNNUWm",    # Assumed same as t_aNvk4... — update known-tables.md if wrong
+        "linkedin":   "f_QIP4GfH5XFZo",
+        "first_name": "f_hiEPcKlj0lTB",
+        "last_name":  "f_fvs0rK0ntN1H",
+        "ec":         "f_0t6acqvuQxjjQNTWhbK",
+        "fallbacks":  ["t_aNvk4jWMNeG7"],
     },
     "t_aNvk4jWMNeG7": {
         "name":       "LatAm Open Jobs - No HMs",
-        "aliases":    ["latam no hm", "latam no hms", "latam oj no hm", "latam open jobs no hm", "latam open jobs - no hms"],
+        "aliases":    [],  # Aliases moved to new primary above
         "view":       "gv_TgwDWXPdg8Ci",
         "email":      "f_0tckabyNnK9wNBNNUWm",    # Work Email
         "linkedin":   "f_QIP4GfH5XFZo",           # Written Job URL
         "first_name": "f_hiEPcKlj0lTB",           # First Name (cleaned)
         "last_name":  "f_fvs0rK0ntN1H",           # Last Name (cleaned)
         "ec":         "f_0t6acqvuQxjjQNTWhbK",    # Employee Count
+        "fallbacks":  [],
     },
+    # ── LatAm Open Jobs - Hiring Managers ──
     "t_0t6ghvgCsvvvqAus4bp": {
         "name":       "LatAm Open Jobs - Hiring Managers",
         "aliases":    ["latam hm", "latam hms", "latam oj hm", "latam oj hms", "latam open jobs hm", "latam open jobs - hiring managers"],
@@ -82,17 +112,32 @@ TABLES = {
         "first_name": "f_0t063qfcKw3gnzRcxxG",    # First Name (cleaned)
         "last_name":  "f_0t063qh6gvgnYPy4av4",    # Last Name (cleaned)
         "ec":         "f_0t062fr5fKsUy27nJhf",    # Employee Count
+        "fallbacks":  [],
+    },
+    # ── Canada Open Jobs - No HM (primary — search first) ──
+    "t_0te5lh6AoWkxd39ktT8": {
+        "name":       "Canada Open Jobs - No HM (new primary)",
+        "aliases":    ["canada no hm", "canada no hms", "canada oj no hm", "canada open jobs no hm", "canada open jobs - no hm"],
+        "view":       "gv_3cMh8vzuFqm4",          # Assumed same view as t_0taasak... — verify on first run
+        "email":      "f_0taaxyjNBGfFWKYUnxK",    # Assumed same as t_0taasak... — update known-tables.md if wrong
+        "linkedin":   "f_0taawsuMjxnV74YtCZ8",
+        "first_name": "f_0taaxkd4HWteakU9qwZ",
+        "last_name":  "f_0taaxkl9BQmnF5u9PVG",
+        "ec":         "f_0taayd3VvuPn9po6cYQ",
+        "fallbacks":  ["t_0taasak5KAa5zbTmTJd"],
     },
     "t_0taasak5KAa5zbTmTJd": {
         "name":       "Canada Open Jobs - No HM",
-        "aliases":    ["canada no hm", "canada no hms", "canada oj no hm", "canada open jobs no hm", "canada open jobs - no hm"],
+        "aliases":    [],  # Aliases moved to new primary above
         "view":       "gv_3cMh8vzuFqm4",
         "email":      "f_0taaxyjNBGfFWKYUnxK",    # Work Email
         "linkedin":   "f_0taawsuMjxnV74YtCZ8",    # Job LinkedIn Url
         "first_name": "f_0taaxkd4HWteakU9qwZ",    # First Name (clean)
         "last_name":  "f_0taaxkl9BQmnF5u9PVG",    # Last Name (clean)
         "ec":         "f_0taayd3VvuPn9po6cYQ",    # Employee Count
+        "fallbacks":  [],
     },
+    # ── Canada Open Jobs - Hiring Managers ──
     "t_0t746txPqz5sjFMtut2": {
         "name":       "Canada Open Jobs - HMs",
         "aliases":    ["canada hm", "canada hms", "canada oj hm", "canada oj hms", "canada open jobs hm", "canada open jobs - hms"],
@@ -102,6 +147,7 @@ TABLES = {
         "first_name": "f_0t063qfcKw3gnzRcxxG",    # First Name (cleaned)
         "last_name":  "f_0t063qh6gvgnYPy4av4",    # Last Name (cleaned)
         "ec":         "f_0t062fr5fKsUy27nJhf",    # Employee Count
+        "fallbacks":  [],
     },
 }
 
@@ -149,60 +195,53 @@ def api_get(path):
 def api_post(path, data):
     r = urllib.request.Request(f"{BASE}{path}", data=json.dumps(data).encode(),
         headers={"Cookie": session, "Content-Type": "application/json"}, method="POST")
-    return json.loads(urllib.request.urlopen(r, context=ctx, timeout=120).read())
+    return json.loads(urllib.request.urlopen(r, context=ctx, timeout=90).read())
 
-# ── Fetch & search ──────────────────────────────────────────────────────────
-VIEW_ID   = table_cfg["view"]
-EMAIL_FID = table_cfg["email"]
-
-ids_resp   = api_get(f"/tables/{table_id}/views/{VIEW_ID}/records/ids")
-record_ids = ids_resp.get("results", [])
-print(f"Total records: {len(record_ids)}")
-
-BATCH_SIZE = 500
-found = None
-for i in range(0, len(record_ids), BATCH_SIZE):
-    batch = record_ids[i:i+BATCH_SIZE]
-    print(f"Searching {i+1}-{min(i+BATCH_SIZE, len(record_ids))}...")
-    resp_data = api_post(f"/tables/{table_id}/bulk-fetch-records", {"recordIds": batch})
-    for rec in resp_data.get("results", []):
-        cell = rec.get("cells", {}).get(EMAIL_FID, {})
-        val  = cell.get("value", "") if isinstance(cell, dict) else str(cell)
-        val  = val.replace("✅ ", "").strip() if isinstance(val, str) else ""
-        if LEAD_EMAIL in val.lower():
-            found = rec
-            break
-    if found:
-        break
-
-if not found and table_cfg.get("fallback"):
-    fallback_id  = table_cfg["fallback"]
-    fallback_cfg = TABLES[fallback_id]
-    print(f"Not found in primary table. Trying fallback: {fallback_cfg['name']} ({fallback_id})")
-    fb_view      = fallback_cfg["view"]
-    fb_email_fid = fallback_cfg["email"]
-    fb_ids       = api_get(f"/tables/{fallback_id}/views/{fb_view}/records/ids").get("results", [])
-    print(f"Fallback records: {len(fb_ids)}")
-    for i in range(0, len(fb_ids), BATCH_SIZE):
-        batch = fb_ids[i:i+BATCH_SIZE]
-        print(f"Searching {i+1}-{min(i+BATCH_SIZE, len(fb_ids))}...")
-        resp_data = api_post(f"/tables/{fallback_id}/bulk-fetch-records", {"recordIds": batch})
+def search_in_table(tid, cfg, email):
+    """Search for email in a single table. Returns record dict or None."""
+    ids_resp = api_get(f"/tables/{tid}/views/{cfg['view']}/records/ids")
+    record_ids = ids_resp.get("results", [])
+    print(f"  Records: {len(record_ids)}")
+    for i in range(0, len(record_ids), BATCH_SIZE):
+        batch = record_ids[i:i+BATCH_SIZE]
+        print(f"  Searching {i+1}-{min(i+BATCH_SIZE, len(record_ids))}...")
+        resp_data = api_post(f"/tables/{tid}/bulk-fetch-records", {"recordIds": batch})
         for rec in resp_data.get("results", []):
-            cell = rec.get("cells", {}).get(fb_email_fid, {})
+            cell = rec.get("cells", {}).get(cfg["email"], {})
             val  = cell.get("value", "") if isinstance(cell, dict) else str(cell)
             val  = val.replace("✅ ", "").strip() if isinstance(val, str) else ""
-            if LEAD_EMAIL in val.lower():
-                found = rec
-                break
-        if found:
-            break
+            if email in val.lower():
+                return rec
+    return None
+
+# ── Build ordered search chain: primary table + its fallbacks ───────────────
+BATCH_SIZE = 10_000
+chain = [(table_id, table_cfg)]
+for fb_id in table_cfg.get("fallbacks", []):
+    if fb_id in TABLES:
+        chain.append((fb_id, TABLES[fb_id]))
+
+# ── Search each table in order ───────────────────────────────────────────────
+found = None
+found_table_id  = None
+found_table_cfg = None
+
+for tid, cfg in chain:
+    print(f"\nSearching: {cfg['name']} ({tid})")
+    found = search_in_table(tid, cfg, LEAD_EMAIL)
     if found:
-        table_id  = fallback_id
-        table_cfg = fallback_cfg
+        found_table_id  = tid
+        found_table_cfg = cfg
+        break
+    print(f"  Not found.")
 
 if not found:
-    print(f"ERROR: '{LEAD_EMAIL}' not found in table.")
+    checked = ", ".join(cfg["name"] for _, cfg in chain)
+    print(f"ERROR: '{LEAD_EMAIL}' not found. Checked: {checked}")
     sys.exit(1)
+
+table_id  = found_table_id
+table_cfg = found_table_cfg
 
 print(f"Found! Record ID: {found['id']}")
 cells = found.get("cells", {})

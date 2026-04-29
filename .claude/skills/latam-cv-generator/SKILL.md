@@ -91,7 +91,7 @@ After generation, verify the CV meets all requirements:
 - [ ] No connection to target company or subsidiaries
 - [ ] Career history spans multiple industries — maximum 2 roles in the target industry
 - [ ] Professional summary is generic and broad — NOT targeted at this specific job opening
-- [ ] Candidate is 8/10 fit: strong but has 1-2 minor gaps in skills or experience
+- [ ] Candidate is 9/10 fit: very strong, only 1 minor gap for common skills; niche/rare JD requirements must be gaps (do not fabricate hard-to-find experience)
 - [ ] Name and surname are varied (not repetitive from previous generations)
 - [ ] CV does NOT include: employee counts, industry descriptions, remote/timezone mentions, comments about first job context, US citizenship/work authorization, or the words "bilingual", "native English", or "native speaker"
 - [ ] Role durations are natural and varied — no round numbers, no tenures that exactly match JD experience requirements
