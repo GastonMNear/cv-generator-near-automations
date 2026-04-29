@@ -11,7 +11,7 @@ Table aliases (case-insensitive partial match):
   canada no hm    → Canada Open Jobs - No HM (searches 2 tables in order)
   canada hm       → Canada Open Jobs - HMs
 """
-import urllib.request, json, ssl, sys, io, argparse, os
+import urllib.request, json, ssl, sys, io, argparse, os, time
 if sys.platform == "win32":
     sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8', errors='replace')
     sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding='utf-8', errors='replace')
@@ -192,10 +192,19 @@ def api_get(path):
     r = urllib.request.Request(f"{BASE}{path}", headers={"Cookie": session})
     return json.loads(urllib.request.urlopen(r, context=ctx, timeout=30).read())
 
-def api_post(path, data):
-    r = urllib.request.Request(f"{BASE}{path}", data=json.dumps(data).encode(),
-        headers={"Cookie": session, "Content-Type": "application/json"}, method="POST")
-    return json.loads(urllib.request.urlopen(r, context=ctx, timeout=90).read())
+def api_post(path, data, retries=3, timeout=180):
+    for attempt in range(retries):
+        try:
+            r = urllib.request.Request(f"{BASE}{path}", data=json.dumps(data).encode(),
+                headers={"Cookie": session, "Content-Type": "application/json"}, method="POST")
+            return json.loads(urllib.request.urlopen(r, context=ctx, timeout=timeout).read())
+        except (TimeoutError, Exception) as e:
+            if attempt < retries - 1:
+                wait = 5 * (attempt + 1)
+                print(f"  Retry {attempt+1}/{retries-1} after {wait}s ({e})")
+                time.sleep(wait)
+            else:
+                raise
 
 def search_in_table(tid, cfg, email):
     """Search for email in a single table. Returns record dict or None."""
@@ -215,7 +224,7 @@ def search_in_table(tid, cfg, email):
     return None
 
 # ── Build ordered search chain: primary table + its fallbacks ───────────────
-BATCH_SIZE = 10_000
+BATCH_SIZE = 300
 chain = [(table_id, table_cfg)]
 for fb_id in table_cfg.get("fallbacks", []):
     if fb_id in TABLES:
