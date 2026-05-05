@@ -83,12 +83,12 @@ TABLES = {
     "t_0te5kjxke6yWVRzedb7": {
         "name":       "LatAm Open Jobs - No HMs (new primary)",
         "aliases":    ["latam no hm", "latam no hms", "latam oj no hm", "latam open jobs no hm", "latam open jobs - no hms"],
-        "view":       "gv_TgwDWXPdg8Ci",          # Assumed — verify on first run
-        "email":      "f_0tckabyNnK9wNBNNUWm",    # Assumed same as t_aNvk4... — update known-tables.md if wrong
-        "linkedin":   "f_QIP4GfH5XFZo",
-        "first_name": "f_hiEPcKlj0lTB",
-        "last_name":  "f_fvs0rK0ntN1H",
-        "ec":         "f_0t6acqvuQxjjQNTWhbK",
+        "view":       "gv_TgwDWXPdg8Ci",
+        "email":      "f_0tc2a2qEFRZthdct3Cs",    # Work Email — verified 2026-04-30
+        "linkedin":   "f_QIP4GfH5XFZo",           # Written Job URL — verified 2026-04-30
+        "first_name": "f_hiEPcKlj0lTB",           # First Name — verified 2026-04-30
+        "last_name":  "f_fvs0rK0ntN1H",           # Last Name — verified 2026-04-30
+        "ec":         "f_0t5mtcfvJknGywASv4z",    # Employee Count — verified 2026-04-30
         "fallbacks":  ["t_aNvk4jWMNeG7"],
     },
     "t_aNvk4jWMNeG7": {
@@ -118,12 +118,12 @@ TABLES = {
     "t_0te5lh6AoWkxd39ktT8": {
         "name":       "Canada Open Jobs - No HM (new primary)",
         "aliases":    ["canada no hm", "canada no hms", "canada oj no hm", "canada open jobs no hm", "canada open jobs - no hm"],
-        "view":       "gv_3cMh8vzuFqm4",          # Assumed same view as t_0taasak... — verify on first run
-        "email":      "f_0taaxyjNBGfFWKYUnxK",    # Assumed same as t_0taasak... — update known-tables.md if wrong
+        "view":       "gv_3cMh8vzuFqm4",
+        "email":      "f_0tc2a2qEFRZthdct3Cs",    # Work Email — verified 2026-04-30
         "linkedin":   "f_0taawsuMjxnV74YtCZ8",
         "first_name": "f_0taaxkd4HWteakU9qwZ",
         "last_name":  "f_0taaxkl9BQmnF5u9PVG",
-        "ec":         "f_0taayd3VvuPn9po6cYQ",
+        "ec":         "f_0t5mtcfvJknGywASv4z",    # Employee Count — verified 2026-04-30
         "fallbacks":  ["t_0taasak5KAa5zbTmTJd"],
     },
     "t_0taasak5KAa5zbTmTJd": {

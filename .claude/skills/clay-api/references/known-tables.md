@@ -95,17 +95,17 @@ If a table is NOT listed here, fall back to the search workflow in SKILL.md.
 |----------|-------|
 | **Table ID** | `t_0te5kjxke6yWVRzedb7` |
 | **Aliases** | LatAm Open Jobs - No HMs, LatAm OJ - No HMs |
-| **Default View ID** | `gv_TgwDWXPdg8Ci` (assumed — verify on first run) |
+| **Default View ID** | `gv_TgwDWXPdg8Ci` (verified 2026-04-30 — 1,409 records) |
 
 | Clay Field Name | Field ID |
 |----------------|----------|
-| Work Email | `f_0tckabyNnK9wNBNNUWm` *(assumed — update if wrong)* |
-| Written Job URL | `f_QIP4GfH5XFZo` *(assumed)* |
-| First Name (cleaned) | `f_hiEPcKlj0lTB` *(assumed)* |
-| Last Name (cleaned) | `f_fvs0rK0ntN1H` *(assumed)* |
-| Employee Count | `f_0t6acqvuQxjjQNTWhbK` *(assumed)* |
+| Work Email | `f_0tc2a2qEFRZthdct3Cs` *(verified 2026-04-30)* |
+| Written Job URL | `f_QIP4GfH5XFZo` *(verified 2026-04-30)* |
+| First Name (cleaned) | `f_hiEPcKlj0lTB` *(verified 2026-04-30)* |
+| Last Name (cleaned) | `f_fvs0rK0ntN1H` *(verified 2026-04-30)* |
+| Employee Count | `f_0t5mtcfvJknGywASv4z` *(verified 2026-04-30)* |
 
-**Note:** Field IDs copied from table 3b as starting assumption. Update after first successful run.
+**Note:** Work Email field ID is `f_0tc2a2qEFRZthdct3Cs` — same as US No HM tables, NOT the same as table 3b (`f_0tckabyNnK9wNBNNUWm`). Employee Count also differs from 3b. Verified on first successful run 2026-04-30.
 
 ### 3b. LatAm Open Jobs — No HMs
 
@@ -154,17 +154,17 @@ If a table is NOT listed here, fall back to the search workflow in SKILL.md.
 |----------|-------|
 | **Table ID** | `t_0te5lh6AoWkxd39ktT8` |
 | **Aliases** | Canada Open Jobs - No Hiring Managers, Canada Open Jobs - No HM, Canada OJ - No HMs |
-| **Default View ID** | `gv_3cMh8vzuFqm4` (assumed — verify on first run) |
+| **Default View ID** | `gv_3cMh8vzuFqm4` (verified 2026-04-30 — 700 records) |
 
 | Clay Field Name | Field ID |
 |----------------|----------|
-| Work Email | `f_0taaxyjNBGfFWKYUnxK` *(assumed — update if wrong)* |
-| Job LinkedIn Url | `f_0taawsuMjxnV74YtCZ8` *(assumed)* |
-| First Name (clean) | `f_0taaxkd4HWteakU9qwZ` *(assumed)* |
-| Last Name (clean) | `f_0taaxkl9BQmnF5u9PVG` *(assumed)* |
-| Employee Count | `f_0taayd3VvuPn9po6cYQ` *(assumed)* |
+| Work Email | `f_0tc2a2qEFRZthdct3Cs` *(verified 2026-04-30)* |
+| Job LinkedIn Url | `f_0taawsuMjxnV74YtCZ8` *(assumed — not yet verified)* |
+| First Name (clean) | `f_0taaxkd4HWteakU9qwZ` *(assumed — not yet verified)* |
+| Last Name (clean) | `f_0taaxkl9BQmnF5u9PVG` *(assumed — not yet verified)* |
+| Employee Count | `f_0t5mtcfvJknGywASv4z` *(verified 2026-04-30)* |
 
-**Note:** Field IDs copied from table 5b as starting assumption. Update after first successful run.
+**Note:** Work Email and Employee Count share the same field IDs as the US and LatAm new primary tables — NOT the same as table 5b. Pattern: all "new primary" tables use `f_0tc2a2qEFRZthdct3Cs` for Work Email and `f_0t5mtcfvJknGywASv4z` for Employee Count. Verified 2026-04-30.
 
 ### 5b. Canada Open Jobs — No HM
 
