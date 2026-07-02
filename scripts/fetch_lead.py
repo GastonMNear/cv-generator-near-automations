@@ -4,8 +4,10 @@ Universal lead fetcher — works for all known Clay tables.
 Usage: python scripts/fetch_lead.py --email EMAIL --table TABLE_ALIAS
 
 Table aliases (case-insensitive partial match):
-  us no hm        → US Open Jobs - No HM (searches 3 tables in order)
+  us no hm        → US Open Jobs - No HM (searches 5 tables in order)
   us hm / us hms  → US Open Jobs - Hiring Managers
+  asia hm         → Asia Open Jobs - Hiring Managers (searches 2 tables in order)
+  asia no hm      → Asia Open Jobs - No Hiring Managers (searches 2 tables in order)
   latam no hm     → LatAm Open Jobs - No HMs (searches 2 tables in order)
   latam hm        → LatAm Open Jobs - Hiring Managers
   canada no hm    → Canada Open Jobs - No HM (searches 2 tables in order)
@@ -34,27 +36,49 @@ ctx  = ssl.create_default_context()
 # "fallbacks": ordered list of table IDs to try if lead not found in this table
 TABLES = {
     # ── US Open Jobs - No HM (primary — search first) ──
-    "t_0tdyro7QesUNY3WJrt2": {
-        "name":       "US Open Jobs - No HM (new primary)",
+    "t_0thes7nxCFpHX8XY2gT": {
+        "name":       "Leads [Baseline] - US OJ No HMs | Candidate-led CTA (new primary)",
         "aliases":    ["us no hm", "us oj no hm", "us open jobs no hm", "us open jobs - no hiring manager"],
-        "view":       "gv_TgwDWXPdg8Ci",          # Assumed — verify on first run
-        "email":      "f_0tc2a2qEFRZthdct3Cs",    # Assumed same as t_0t59d... — update known-tables.md if wrong
+        "view":       "gv_TgwDWXPdg8Ci",          # Verified 2026-07-02 — 5,792 records
+        "email":      "f_0tc2a2qEFRZthdct3Cs",    # Verified 2026-07-02
         "linkedin":   "f_QIP4GfH5XFZo",
         "first_name": "f_hiEPcKlj0lTB",
         "last_name":  "f_fvs0rK0ntN1H",
         "ec":         "f_0t5mtcfvJknGywASv4z",
-        "fallbacks":  ["t_0t59d2y3ZuD4396Kz5B", "t_0tbt48xVeCFCi8pFzip"],
+        "fallbacks":  ["t_0thg92hZWdvUw75QNRx", "t_0tdyro7QesUNY3WJrt2", "t_0t59d2y3ZuD4396Kz5B", "t_0tbt48xVeCFCi8pFzip"],
+    },
+    "t_0thg92hZWdvUw75QNRx": {
+        "name":       "Leads [Challenger] - US OJ No HMs | Routing CTA (new primary)",
+        "aliases":    [],  # A/B pair with table above — reached via fallback chain, not direct alias match
+        "view":       "gv_TgwDWXPdg8Ci",          # Verified 2026-07-02 — 5,379 records
+        "email":      "f_0tc2a2qEFRZthdct3Cs",
+        "linkedin":   "f_QIP4GfH5XFZo",
+        "first_name": "f_hiEPcKlj0lTB",
+        "last_name":  "f_fvs0rK0ntN1H",
+        "ec":         "f_0t5mtcfvJknGywASv4z",
+        "fallbacks":  [],
+    },
+    "t_0tdyro7QesUNY3WJrt2": {
+        "name":       "US Open Jobs - No HM (fallback)",
+        "aliases":    [],
+        "view":       "gv_TgwDWXPdg8Ci",
+        "email":      "f_0tc2a2qEFRZthdct3Cs",
+        "linkedin":   "f_QIP4GfH5XFZo",
+        "first_name": "f_hiEPcKlj0lTB",
+        "last_name":  "f_fvs0rK0ntN1H",
+        "ec":         "f_0t5mtcfvJknGywASv4z",
+        "fallbacks":  [],
     },
     "t_0t59d2y3ZuD4396Kz5B": {
-        "name":       "US Open Jobs - No Hiring Manager",
-        "aliases":    [],  # Aliases moved to new primary above
+        "name":       "US Open Jobs - No Hiring Manager (fallback)",
+        "aliases":    [],
         "view":       "gv_TgwDWXPdg8Ci",
         "email":      "f_0tc2a2qEFRZthdct3Cs",    # Work Email
         "linkedin":   "f_QIP4GfH5XFZo",           # Written Job URL
         "first_name": "f_hiEPcKlj0lTB",           # First Name (cleaned)
         "last_name":  "f_fvs0rK0ntN1H",           # Last Name (cleaned)
         "ec":         "f_0t5mtcfvJknGywASv4z",    # Employee Count
-        "fallbacks":  ["t_0tbt48xVeCFCi8pFzip"],
+        "fallbacks":  [],
     },
     "t_0tbt48xVeCFCi8pFzip": {
         "name":       "Copy of Leads - US OJ No Hiring Manager (fallback)",
@@ -77,6 +101,52 @@ TABLES = {
         "first_name": "f_0t063qfcKw3gnzRcxxG",    # First Name (cleaned)
         "last_name":  "f_0t063qh6gvgnYPy4av4",    # Last Name (cleaned)
         "ec":         "f_0t062fr5fKsUy27nJhf",    # Employee Count
+        "fallbacks":  [],
+    },
+    # ── Asia Open Jobs - Hiring Managers (no older fallback exists — new workflow) ──
+    "t_0tfca9kUUpNpysMebYP": {
+        "name":       "ASIA | Under 50 emp. Leads (HMs)",
+        "aliases":    ["asia hm", "asia hms", "asia oj hm", "asia oj hms", "asia open jobs hm", "asia open jobs - hiring managers"],
+        "view":       "gv_0tfca9kP8mpqjWyXaQC",   # Verified 2026-07-02 — 178 records
+        "email":      "f_0tfcagrbcgwPoNj5Bw9",    # Work Email
+        "linkedin":   "f_0tfcagnvCZcGMfpuHCq",    # Job LinkedIn URL
+        "first_name": "f_0tfcagqpQD5639msG25",    # First Name (cleaned)
+        "last_name":  "f_0tfcagrnuA4eCac4qjw",    # Last Name (cleaned)
+        "ec":         "f_0tfcagpR5MQpQ4jSXXj",    # Employee Count
+        "fallbacks":  ["t_0tfe0wuWVAJQcbyENqB"],
+    },
+    "t_0tfe0wuWVAJQcbyENqB": {
+        "name":       "ASIA | +50 emp. Leads (HMs)",
+        "aliases":    [],  # Employee-count-segmented split of table above — reached via fallback chain
+        "view":       "gv_0tfca9kP8mpqjWyXaQC",   # Verified 2026-07-02 — 234 records
+        "email":      "f_0tfcagrbcgwPoNj5Bw9",
+        "linkedin":   "f_0tfcagnvCZcGMfpuHCq",
+        "first_name": "f_0tfcagqpQD5639msG25",
+        "last_name":  "f_0tfcagrnuA4eCac4qjw",
+        "ec":         "f_0tfcagpR5MQpQ4jSXXj",
+        "fallbacks":  [],
+    },
+    # ── Asia Open Jobs - No Hiring Managers (no older fallback exists — new workflow) ──
+    "t_0tfe657PnDUhThtbaj5": {
+        "name":       "ASIA | Under 50 emp. Leads (No HMs)",
+        "aliases":    ["asia no hm", "asia no hms", "asia oj no hm", "asia open jobs no hm", "asia open jobs - no hiring managers"],
+        "view":       "gv_0tfca9kP8mpqjWyXaQC",   # Verified 2026-07-02 — 1,247 records
+        "email":      "f_0tfe835CUft9fp4UY9k",    # Work Email
+        "linkedin":   "f_0tfe6id8cNEySpUT55j",    # Job LinkedIn Url
+        "first_name": "f_0tfe7zarivxCppNH38R",    # First Name (cleaned)
+        "last_name":  "f_0tfe7zfeUn4vVrfDEQu",    # Last Name (cleaned)
+        "ec":         "f_0tfe6ihoVtWsNggyTCo",    # Employee Count (merge) — verified 2026-07-02, matches plain "Employee Count" for this table
+        "fallbacks":  ["t_0tfe8z2ukw66TNuPgpp"],
+    },
+    "t_0tfe8z2ukw66TNuPgpp": {
+        "name":       "ASIA | +50 emp. Leads (No HMs)",
+        "aliases":    [],  # Employee-count-segmented split of table above — reached via fallback chain
+        "view":       "gv_0tfca9kP8mpqjWyXaQC",   # Verified 2026-07-02 — 4,555 records
+        "email":      "f_0tfe835CUft9fp4UY9k",
+        "linkedin":   "f_0tfe6id8cNEySpUT55j",
+        "first_name": "f_0tfe7zarivxCppNH38R",
+        "last_name":  "f_0tfe7zfeUn4vVrfDEQu",
+        "ec":         "f_0tfe6ihoVtWsNggyTCo",    # Employee Count (merge) — plain "Employee Count" field is empty for every record in THIS table, verified 2026-07-02 (20/20 sample)
         "fallbacks":  [],
     },
     # ── LatAm Open Jobs - No HMs (primary — search first) ──

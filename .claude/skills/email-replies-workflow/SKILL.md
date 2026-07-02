@@ -15,7 +15,7 @@ description: >
 
 This skill provides end-to-end orchestration of the CV generation workflow for leads in Clay tables. When given a lead's email address and the Clay table name, the skill automatically:
 
-1. Runs `scripts/fetch_lead.py --email EMAIL --table ALIAS` → returns name, linkedin_url, employee_count (all 6 tables pre-cached, no metadata API calls needed)
+1. Runs `scripts/fetch_lead.py --email EMAIL --table ALIAS` → returns name, linkedin_url, employee_count (all 8 campaign categories pre-cached, no metadata API calls needed)
 2. Invokes the linkedin-job-extractor skill to get company name, job title, and full job description
 3. Invokes the latam-cv-generator skill to create a tailored LATAM CV as a Google Doc
 4. Returns the Google Doc URL and company employee count
@@ -64,10 +64,12 @@ This skill orchestrates three existing skills:
 
 ### Clay Workspace
 
-The workflow assumes access to **HireWithNear workspace** (ID: 447061). Tables with multiple IDs are searched in order — script stops at the first match:
+The workflow assumes access to **HireWithNear workspace** (ID: 447061). Tables with multiple IDs are searched in order — script stops at the first match. Newer workflow versions are searched first, with older tables kept as fallbacks in case a lead isn't found in the current version:
 
-- US Open Jobs - No Hiring Manager: `t_0tdyro7QesUNY3WJrt2` → `t_0t59d2y3ZuD4396Kz5B` → `t_0tbt48xVeCFCi8pFzip`
+- US Open Jobs - No Hiring Manager: `t_0thes7nxCFpHX8XY2gT` → `t_0thg92hZWdvUw75QNRx` → `t_0tdyro7QesUNY3WJrt2` → `t_0t59d2y3ZuD4396Kz5B` → `t_0tbt48xVeCFCi8pFzip`
 - US Open Jobs - Hiring Managers: `t_0t5pvx3g4o5WfysopqA`
+- Asia Open Jobs - Hiring Managers: `t_0tfca9kUUpNpysMebYP` → `t_0tfe0wuWVAJQcbyENqB` *(no older fallback — new workflow)*
+- Asia Open Jobs - No Hiring Managers: `t_0tfe657PnDUhThtbaj5` → `t_0tfe8z2ukw66TNuPgpp` *(no older fallback — new workflow)*
 - LatAm Open Jobs - No HMs: `t_0te5kjxke6yWVRzedb7` → `t_aNvk4jWMNeG7`
 - LatAm Open Jobs - Hiring Managers: `t_0t6ghvgCsvvvqAus4bp`
 - Canada Open Jobs - No HM: `t_0te5lh6AoWkxd39ktT8` → `t_0taasak5KAa5zbTmTJd`
@@ -86,7 +88,7 @@ The user must provide:
 
 Extract the email and table name from natural language input.
 
-**If inputs are missing:** Ask for them in plain text only — do NOT use AskUserQuestion (the 6-table list exceeds the 4-option maximum and will throw a validation error).
+**If inputs are missing:** Ask for them in plain text only — do NOT use AskUserQuestion (the 8-table list exceeds the 4-option maximum and will throw a validation error).
 
 ## Workflow Steps
 
@@ -96,7 +98,7 @@ Extract the email and table name from natural language input.
 
 **Objective:** Resolve the table, authenticate, search for the lead, and extract linkedin_url + employee_count — all in one command.
 
-**⚡ Use the universal fetch script** — do NOT write inline auth/search code. The script has all 6 tables' field IDs pre-cached.
+**⚡ Use the universal fetch script** — do NOT write inline auth/search code. The script has all campaign categories' field IDs pre-cached.
 
 **Table aliases** (case-insensitive partial match):
 
@@ -104,6 +106,8 @@ Extract the email and table name from natural language input.
 |-----------|---------------|
 | US Open Jobs - No HM | `us no hm` |
 | US Open Jobs - HMs | `us hms` |
+| Asia Open Jobs - HMs | `asia hms` |
+| Asia Open Jobs - No HMs | `asia no hm` |
 | LatAm Open Jobs - No HMs | `latam no hm` |
 | LatAm Open Jobs - HMs | `latam hms` |
 | Canada Open Jobs - No HM | `canada no hm` |
