@@ -9,38 +9,68 @@ If a table is NOT listed here, fall back to the search workflow in SKILL.md.
 
 **Matching rules:** Match the user's table reference against the name AND all aliases below (case-insensitive). Partial matches count.
 
-**Last updated:** 2026-03-26
+**Last updated:** 2026-07-02
 
 ---
 
-## 1. US Open Jobs — No Hiring Manager (new primary)
+## 1. US Open Jobs — No Hiring Manager
 
-> **Lookup order:** 1a → 1b → 1c. Script tries each in sequence; stops at first match.
+> **Lookup order:** 1a → 1b → 1c → 1d → 1e. Script tries each in sequence; stops at first match.
 
-### 1a. US Open Jobs - No HM (new primary)
+### 1a. Leads [Baseline] - US OJ No HMs | Candidate-led CTA (new primary)
+
+| Property | Value |
+|----------|-------|
+| **Table ID** | `t_0thes7nxCFpHX8XY2gT` |
+| **Aliases** | US OJ - No HM, US OJ - No hiring managers |
+| **Default View ID** | `gv_TgwDWXPdg8Ci` (verified 2026-07-02 — 5,792 records) |
+
+| Clay Field Name | Field ID |
+|----------------|----------|
+| Work Email | `f_0tc2a2qEFRZthdct3Cs` *(verified 2026-07-02)* |
+| Written Job URL | `f_QIP4GfH5XFZo` *(verified 2026-07-02)* |
+| First Name (cleaned) | `f_hiEPcKlj0lTB` *(verified 2026-07-02)* |
+| Last Name (cleaned) | `f_fvs0rK0ntN1H` *(verified 2026-07-02)* |
+| Employee Count | `f_0t5mtcfvJknGywASv4z` *(verified 2026-07-02)* |
+
+### 1b. Leads [Challenger] - US OJ No HMs | Routing CTA (new primary)
+
+| Property | Value |
+|----------|-------|
+| **Table ID** | `t_0thg92hZWdvUw75QNRx` |
+| **Default View ID** | `gv_TgwDWXPdg8Ci` (verified 2026-07-02 — 5,379 records) |
+
+| Clay Field Name | Field ID |
+|----------------|----------|
+| Work Email | `f_0tc2a2qEFRZthdct3Cs` *(verified 2026-07-02)* |
+| Written Job URL | `f_QIP4GfH5XFZo` *(verified 2026-07-02)* |
+| First Name (cleaned) | `f_hiEPcKlj0lTB` *(verified 2026-07-02)* |
+| Last Name (cleaned) | `f_fvs0rK0ntN1H` *(verified 2026-07-02)* |
+| Employee Count | `f_0t5mtcfvJknGywASv4z` *(verified 2026-07-02)* |
+
+**Note:** 1a and 1b are an A/B test pair (Baseline candidate-led CTA vs. Challenger routing CTA) with identical schema/field IDs — both are searched before falling back to the older tables below.
+
+### 1c. US Open Jobs - No HM (fallback)
 
 | Property | Value |
 |----------|-------|
 | **Table ID** | `t_0tdyro7QesUNY3WJrt2` |
-| **Aliases** | US OJ - No HM, US OJ - No hiring managers |
-| **Default View ID** | `gv_TgwDWXPdg8Ci` (assumed — verify on first run) |
+| **Default View ID** | `gv_TgwDWXPdg8Ci` |
 
 | Clay Field Name | Field ID |
 |----------------|----------|
-| Work Email | `f_0tc2a2qEFRZthdct3Cs` *(assumed — update if wrong)* |
+| Work Email | `f_0tc2a2qEFRZthdct3Cs` *(assumed)* |
 | Written Job URL | `f_QIP4GfH5XFZo` *(assumed)* |
 | First Name (cleaned) | `f_hiEPcKlj0lTB` *(assumed)* |
 | Last Name (cleaned) | `f_fvs0rK0ntN1H` *(assumed)* |
 | Employee Count | `f_0t5mtcfvJknGywASv4z` *(assumed)* |
 
-**Note:** Field IDs copied from table 1b as starting assumption. Update after first successful run.
-
-### 1b. US Open Jobs — No Hiring Manager
+### 1d. US Open Jobs — No Hiring Manager (fallback)
 
 | Property | Value |
 |----------|-------|
 | **Table ID** | `t_0t59d2y3ZuD4396Kz5B` |
-| **Default View ID** | `gv_TgwDWXPdg8Ci` (15,740 records) |
+| **Default View ID** | `gv_TgwDWXPdg8Ci` |
 
 | Clay Field Name | Field ID |
 |----------------|----------|
@@ -50,12 +80,12 @@ If a table is NOT listed here, fall back to the search workflow in SKILL.md.
 | Last Name (cleaned) | `f_fvs0rK0ntN1H` |
 | Employee Count | `f_0t5mtcfvJknGywASv4z` |
 
-### 1c. Copy of Leads — US OJ No Hiring Manager (last fallback)
+### 1e. Copy of Leads - US OJ No Hiring Manager (fallback)
 
 | Property | Value |
 |----------|-------|
 | **Table ID** | `t_0tbt48xVeCFCi8pFzip` |
-| **Default View ID** | `gv_TgwDWXPdg8Ci` (509 records) |
+| **Default View ID** | `gv_TgwDWXPdg8Ci` |
 
 | Clay Field Name | Field ID |
 |----------------|----------|
@@ -85,7 +115,85 @@ If a table is NOT listed here, fall back to the search workflow in SKILL.md.
 
 ---
 
-## 3. LatAm Open Jobs — No HMs
+## 3. Asia Open Jobs — Hiring Managers
+
+> **Lookup order:** 3a → 3b. Script tries each in sequence; stops at first match.
+
+### 3a. ASIA | Under 50 emp. Leads (HMs)
+
+| Property | Value |
+|----------|-------|
+| **Table ID** | `t_0tfca9kUUpNpysMebYP` |
+| **Aliases** | Asia OJ HMs, Asia Open Jobs HMs, Asia Open Jobs - Hiring Managers, Asia OJ - Hiring Managers |
+| **Default View ID** | `gv_0tfca9kP8mpqjWyXaQC` (verified 2026-07-02 — 178 records) |
+
+| Clay Field Name | Field ID |
+|----------------|----------|
+| Work Email | `f_0tfcagrbcgwPoNj5Bw9` *(verified 2026-07-02)* |
+| Job LinkedIn URL | `f_0tfcagnvCZcGMfpuHCq` *(verified 2026-07-02)* |
+| First Name (cleaned) | `f_0tfcagqpQD5639msG25` *(verified 2026-07-02)* |
+| Last Name (cleaned) | `f_0tfcagrnuA4eCac4qjw` *(verified 2026-07-02)* |
+| Employee Count | `f_0tfcagpR5MQpQ4jSXXj` *(verified 2026-07-02)* |
+
+### 3b. ASIA | +50 emp. Leads (HMs)
+
+| Property | Value |
+|----------|-------|
+| **Table ID** | `t_0tfe0wuWVAJQcbyENqB` |
+| **Default View ID** | `gv_0tfca9kP8mpqjWyXaQC` (verified 2026-07-02 — 234 records) |
+
+| Clay Field Name | Field ID |
+|----------------|----------|
+| Work Email | `f_0tfcagrbcgwPoNj5Bw9` *(verified 2026-07-02)* |
+| Job LinkedIn URL | `f_0tfcagnvCZcGMfpuHCq` *(verified 2026-07-02)* |
+| First Name (cleaned) | `f_0tfcagqpQD5639msG25` *(verified 2026-07-02)* |
+| Last Name (cleaned) | `f_0tfcagrnuA4eCac4qjw` *(verified 2026-07-02)* |
+| Employee Count | `f_0tfcagpR5MQpQ4jSXXj` *(verified 2026-07-02)* |
+
+**Note:** 3a (under 50 employees) and 3b (50+ employees) are employee-count-segmented splits of the same Asia HMs source with identical schema/field IDs. No older fallback table exists for Asia — these are brand new workflows.
+
+---
+
+## 4. Asia Open Jobs — No Hiring Managers
+
+> **Lookup order:** 4a → 4b. Script tries each in sequence; stops at first match.
+
+### 4a. ASIA | Under 50 emp. Leads (No HMs)
+
+| Property | Value |
+|----------|-------|
+| **Table ID** | `t_0tfe657PnDUhThtbaj5` |
+| **Aliases** | Asia OJ No HMs, Asia Open Jobs No HMs, Asia Open Jobs - No Hiring Managers, Asia OJ - No Hiring Managers |
+| **Default View ID** | `gv_0tfca9kP8mpqjWyXaQC` (verified 2026-07-02 — 1,247 records) |
+
+| Clay Field Name | Field ID |
+|----------------|----------|
+| Work Email | `f_0tfe835CUft9fp4UY9k` *(verified 2026-07-02)* |
+| Job LinkedIn Url | `f_0tfe6id8cNEySpUT55j` *(verified 2026-07-02)* |
+| First Name (cleaned) | `f_0tfe7zarivxCppNH38R` *(verified 2026-07-02)* |
+| Last Name (cleaned) | `f_0tfe7zfeUn4vVrfDEQu` *(verified 2026-07-02)* |
+| Employee Count (merge) | `f_0tfe6ihoVtWsNggyTCo` *(verified 2026-07-02)* |
+
+### 4b. ASIA | +50 emp. Leads (No HMs)
+
+| Property | Value |
+|----------|-------|
+| **Table ID** | `t_0tfe8z2ukw66TNuPgpp` |
+| **Default View ID** | `gv_0tfca9kP8mpqjWyXaQC` (verified 2026-07-02 — 4,555 records) |
+
+| Clay Field Name | Field ID |
+|----------------|----------|
+| Work Email | `f_0tfe835CUft9fp4UY9k` *(verified 2026-07-02)* |
+| Job LinkedIn Url | `f_0tfe6id8cNEySpUT55j` *(verified 2026-07-02)* |
+| First Name (cleaned) | `f_0tfe7zarivxCppNH38R` *(verified 2026-07-02)* |
+| Last Name (cleaned) | `f_0tfe7zfeUn4vVrfDEQu` *(verified 2026-07-02)* |
+| Employee Count (merge) | `f_0tfe6ihoVtWsNggyTCo` *(verified 2026-07-02)* |
+
+**Note:** 4a and 4b are employee-count-segmented splits with identical schema/field IDs. Use "Employee Count (merge)" (`f_0tfe6ihoVtWsNggyTCo`), NOT the plain "Employee Count" field (`f_0tfe96sGWcxbnKhgV4u`) — the plain field is empty for every record in table 4b (verified 2026-07-02, 20/20 sample), while the merge field is reliably populated in both 4a and 4b. No older fallback table exists for Asia — these are brand new workflows.
+
+---
+
+## 5. LatAm Open Jobs — No HMs
 
 > **Lookup order:** 3a → 3b. Script tries each in sequence; stops at first match.
 
@@ -126,7 +234,7 @@ If a table is NOT listed here, fall back to the search workflow in SKILL.md.
 
 ---
 
-## 4. LatAm Open Jobs — Hiring Managers
+## 6. LatAm Open Jobs — Hiring Managers
 
 | Property | Value |
 |----------|-------|
@@ -144,7 +252,7 @@ If a table is NOT listed here, fall back to the search workflow in SKILL.md.
 
 ---
 
-## 5. Canada Open Jobs — No HM
+## 7. Canada Open Jobs — No HM
 
 > **Lookup order:** 5a → 5b. Script tries each in sequence; stops at first match.
 
@@ -183,7 +291,7 @@ If a table is NOT listed here, fall back to the search workflow in SKILL.md.
 
 ---
 
-## 6. Canada Open Jobs — Hiring Managers
+## 8. Canada Open Jobs — Hiring Managers
 
 | Property | Value |
 |----------|-------|
