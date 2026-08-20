@@ -141,7 +141,7 @@ undone exactly.
 | `SMARTLEAD_API_KEY` | already in repo `.env` |
 | `HUBSPOT_ACCESS_TOKEN` | already in repo `.env` — private-app token (`pat-na1-…`). **Verified 2026-08-20:** meetings/contacts/companies reads, the booking search, and v4 associations all return 200. (`HUBSPOT_PRIVATE_APP_TOKEN` also accepted as a fallback name.) |
 | `SLACK_BOT_TOKEN` | already in `.env` — bot `email_kpi_bot`. Has `chat:write` but **not** `channels:read`, so it cannot list channels; test by posting. |
-| `PAUSE_SLACK_CHANNEL_ID` | `C0BRJAFNUG5` — this skill's own channel. **Not** `SLACK_CHANNEL_ID`, which is the reply-time KPI channel. The bot must be invited to the channel or `chat.postMessage` returns `not_in_channel`. |
+| `PAUSE_SLACK_CHANNEL_ID` | *optional* — defaults to `C0BRJAFNUG5` in `post_to_slack.py` (a channel ID isn't a secret, so cloud routines need no extra config). **Not** `SLACK_CHANNEL_ID`, which is the reply-time KPI channel. The bot must be invited to the channel or `chat.postMessage` returns `not_in_channel`. |
 
 ## HubSpot quirks
 

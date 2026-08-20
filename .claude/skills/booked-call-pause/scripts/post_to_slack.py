@@ -20,8 +20,13 @@ import subprocess
 import sys
 
 TOKEN = os.environ.get("SLACK_BOT_TOKEN")
+# A channel ID is an identifier, not a secret, so it's defaulted here — that way a
+# cloud routine only needs the real secrets in its environment. Override with
+# PAUSE_SLACK_CHANNEL_ID if the channel ever changes.
+DEFAULT_CHANNEL = "C0BRJAFNUG5"   # #outbound auto-pause reports
 CHANNEL = (os.environ.get("PAUSE_SLACK_CHANNEL_ID")
-           or os.environ.get("BOOKED_PAUSE_SLACK_CHANNEL_ID"))
+           or os.environ.get("BOOKED_PAUSE_SLACK_CHANNEL_ID")
+           or DEFAULT_CHANNEL)
 
 
 def api(method, payload):
