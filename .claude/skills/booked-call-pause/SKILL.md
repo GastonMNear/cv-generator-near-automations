@@ -204,6 +204,20 @@ https://claude.ai/code/routines once the secret is in place.
 
 `PAUSE_SLACK_CHANNEL_ID` is not needed — the channel is defaulted in `post_to_slack.py`.
 
+**Environment network allowlist** must include all three hosts this skill calls:
+
+```
+server.smartlead.ai     # lead crawl, /leads/{id}/campaigns, pause
+api.hubapi.com          # meetings search + contact associations  <- added for this skill
+slack.com               # chat.postMessage
+```
+
+The environment already had the Smartlead and Slack hosts from the KPI routines;
+`api.hubapi.com` had to be added. A missing host fails as a blocked-domain error, which reads
+differently from an auth error — check the allowlist before suspecting the token. (The token is
+`pat-na1-…` = NA1 region, served by plain `api.hubapi.com`; use `*.hubapi.com` if a regional
+host ever appears.)
+
 ## Never do
 
 - Never call `POST /campaigns/{id}/status` — that pauses an **entire campaign**. This skill
