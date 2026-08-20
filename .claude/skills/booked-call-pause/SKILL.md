@@ -218,6 +218,25 @@ differently from an auth error — check the allowlist before suspecting the tok
 `pat-na1-…` = NA1 region, served by plain `api.hubapi.com`; use `*.hubapi.com` if a regional
 host ever appears.)
 
+## Overlapping windows and re-pausing (by design)
+
+The two runs use **fixed lookback windows** (20h and 6h), not a "since last run" watermark, so
+they deliberately re-process the same bookings. There is no persisted cursor — routine runs get
+a fresh checkout, so any watermark would silently reset, and the failure mode of a reset
+watermark is *missing* a booking, which is the thing this skill exists to prevent. Redundant
+coverage is the safer way to be wrong.
+
+**Re-pausing is a no-op — verified live 2026-08-20.** Calling pause on an already-`PAUSED` lead
+returns `{"ok":true,"data":"success"}` and leaves the status `PAUSED`. Three consecutive pauses
+produced the same state as one. Nothing is duplicated in Smartlead; the only cost is that the
+Slack report lists the same lead again.
+
+**The one case where the overlap does something unwanted:** if a lead is deliberately *resumed*
+between the two runs (e.g. a colleague at a booked company should keep receiving a different
+sequence), the next run will pause them again — the script cannot distinguish "never paused"
+from "paused, then intentionally resumed". Rare, and not fixable without durable state, so it
+is accepted. If it ever becomes a problem, the fix is an exclusion list, not a watermark.
+
 ## Never do
 
 - Never call `POST /campaigns/{id}/status` — that pauses an **entire campaign**. This skill
