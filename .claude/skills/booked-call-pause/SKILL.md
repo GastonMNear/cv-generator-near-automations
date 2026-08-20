@@ -191,7 +191,7 @@ environment `env_01DVzad9AipkSb49SRKPteVL` ("Slack Bot + SL + Drive"):
 
 | Routine | Cron (UTC) | Local | Window | ID |
 |---|---|---|---|---|
-| morning | `3 13 * * 1-5` | 09:03 ET | `--hours 20` | `trig_013MdhuD9nA5PrF7hJP5T11q` |
+| morning | `3 13 * * 1-5` | 09:03 ET | `--since-last-weekday-run 13:03` | `trig_013MdhuD9nA5PrF7hJP5T11q` |
 | afternoon | `27 17 * * 1-5` | 13:27 ET | `--hours 6` | `trig_01UXrVZNP9GcChnc8sPM8kVh` |
 
 Both run `--live`. Windows overlap deliberately so a booking can't fall between runs.
@@ -217,6 +217,28 @@ The environment already had the Smartlead and Slack hosts from the KPI routines;
 differently from an auth error — check the allowlist before suspecting the token. (The token is
 `pat-na1-…` = NA1 region, served by plain `api.hubapi.com`; use `*.hubapi.com` if a regional
 host ever appears.)
+
+## Coverage — how every booking gets seen
+
+The two runs tile the timeline with a deliberate overlap:
+
+```
+Tue 09:03 run   covers Mon 13:03 -> Tue 09:03     (--since-last-weekday-run 13:03)
+Tue 13:27 run   covers Tue 07:27 -> Tue 13:27     (--hours 6)
+Wed 09:03 run   covers Tue 13:03 -> Wed 09:03
+```
+
+The morning window ends 24 min *before* the previous afternoon run's end, so consecutive days
+join with no gap.
+
+**The Monday hole (fixed 2026-08-20).** The routines only fire Mon–Fri. With the morning run on
+a fixed `--hours 20`, Monday reached back only to Sun 13:03 — so everything booked from
+**Fri 13:27 through Sun 13:03 was never processed** (~48h, plausibly 30+ bookings a week,
+including Friday afternoon). Those leads kept getting email from Monday 09:00.
+
+Fix: the morning run uses `--since-last-weekday-run 13:03`, which anchors to the previous
+**weekday** rather than a fixed offset. Monday automatically reaches back to Friday 13:03 ET;
+Tue–Fri reach back to the previous day. It also self-corrects if a run is skipped for a holiday.
 
 ## Overlapping windows and re-pausing (by design)
 

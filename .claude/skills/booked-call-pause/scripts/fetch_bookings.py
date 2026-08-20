@@ -27,6 +27,7 @@ import re
 import subprocess
 import sys
 from datetime import datetime, timedelta, timezone
+from zoneinfo import ZoneInfo
 
 # Repo .env names this HUBSPOT_ACCESS_TOKEN (a pat-na1-… private-app token).
 TOKEN = (os.environ.get("HUBSPOT_ACCESS_TOKEN")
@@ -155,11 +156,34 @@ def to_booking(meeting, with_contact=True):
     }
 
 
+def _prev_weekday_boundary(hhmm):
+    """UTC timestamp for `hhmm` local-ET on the most recent previous weekday.
+
+    Why this exists: the routines only run Mon-Fri, so a fixed lookback leaves
+    Monday blind to everything booked after Friday's last run (Fri afternoon +
+    the whole weekend — roughly a 48h hole, ~30 bookings). Anchoring to the
+    previous weekday makes Monday reach back to Friday automatically, and stays
+    correct if a run is skipped for a holiday.
+    """
+    hh, mm = (int(x) for x in hhmm.split(":"))
+    now_et = datetime.now(ZoneInfo("America/New_York"))
+    d = now_et.date() - timedelta(days=1)
+    while d.weekday() > 4:            # rewind over Sat(5)/Sun(6)
+        d -= timedelta(days=1)
+    boundary = datetime(d.year, d.month, d.day, hh, mm,
+                        tzinfo=ZoneInfo("America/New_York"))
+    return boundary.astimezone(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--since", help="ISO8601 UTC lower bound on hs_createdate")
     ap.add_argument("--hours", type=float, default=12,
                     help="look back this many hours (default 12)")
+    ap.add_argument("--since-last-weekday-run", metavar="HH:MM",
+                    help="look back to this local time on the previous WEEKDAY, so a "
+                         "Monday run spans the whole weekend instead of a fixed window. "
+                         "Overrides --hours. Example: 13:03")
     ap.add_argument("--out", help="write bookings JSON here")
     ap.add_argument("--no-contacts", action="store_true",
                     help="skip the association lookups (faster, less accurate)")
@@ -170,9 +194,13 @@ def main():
                  "token with crm.objects.meetings.read, "
                  "crm.objects.contacts.read, crm.objects.companies.read")
 
-    since = a.since or (
-        datetime.now(timezone.utc) - timedelta(hours=a.hours)
-    ).strftime("%Y-%m-%dT%H:%M:%SZ")
+    if a.since:
+        since = a.since
+    elif a.since_last_weekday_run:
+        since = _prev_weekday_boundary(a.since_last_weekday_run)
+    else:
+        since = (datetime.now(timezone.utc)
+                 - timedelta(hours=a.hours)).strftime("%Y-%m-%dT%H:%M:%SZ")
 
     meetings = fetch(since)
     bookings = [to_booking(m, with_contact=not a.no_contacts) for m in meetings]

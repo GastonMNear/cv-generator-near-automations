@@ -5,6 +5,8 @@
 #   ./run.sh                 # dry run, look back 12h
 #   ./run.sh --live          # live
 #   ./run.sh --hours 24      # wider window (use after a missed run)
+#   ./run.sh --since-last-weekday-run 13:03   # back to 13:03 on the previous
+#                                             # WEEKDAY (Monday spans the weekend)
 #
 # Env (from repo .env or the routine's secrets):
 #   SMARTLEAD_API_KEY  HUBSPOT_ACCESS_TOKEN  SLACK_BOT_TOKEN  PAUSE_SLACK_CHANNEL_ID
@@ -23,13 +25,23 @@ fi
 
 LIVE=""
 HOURS="12"
+SINCE_WEEKDAY=""
 while [ $# -gt 0 ]; do
   case "$1" in
     --live)  LIVE="--live"; shift ;;
     --hours) HOURS="$2"; shift 2 ;;
+    # Anchor the window to a time on the previous WEEKDAY instead of a fixed
+    # lookback, so the Monday run spans the weekend. See SKILL.md "Coverage".
+    --since-last-weekday-run) SINCE_WEEKDAY="$2"; shift 2 ;;
     *) echo "unknown arg: $1" >&2; exit 64 ;;
   esac
 done
+
+if [ -n "$SINCE_WEEKDAY" ]; then
+  WINDOW_ARGS="--since-last-weekday-run $SINCE_WEEKDAY"
+else
+  WINDOW_ARGS="--hours $HOURS"
+fi
 
 STAMP="$(date -u +%Y%m%dT%H%M%SZ)"
 WORK="${TMPDIR:-/tmp}/booked-pause-$STAMP"
@@ -40,11 +52,11 @@ RESULT="$WORK/result.json"
 echo "== booked-call-pause $STAMP ${LIVE:-(dry run)} =="
 
 # 1. HubSpot: what booked in the window?
-python3 "$HERE/fetch_bookings.py" --hours "$HOURS" --out "$BOOKINGS" || exit 1
+python3 "$HERE/fetch_bookings.py" $WINDOW_ARGS --out "$BOOKINGS" || exit 1
 
 COUNT="$(python3 -c "import json;print(len(json.load(open('$BOOKINGS'))))")"
 if [ "$COUNT" = "0" ]; then
-  echo "no bookings in the last ${HOURS}h — skipping the Smartlead crawl"
+  echo "no bookings in the window — skipping the Smartlead crawl"
   exit 0
 fi
 echo "$COUNT booking(s) to process"
