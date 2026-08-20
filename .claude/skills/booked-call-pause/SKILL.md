@@ -184,6 +184,26 @@ Full chained dry run over 22 real bookings from a 30h window:
 - Because each routine run is a **fresh checkout**, this skill and its scripts must stay
   **committed** to the repo, and no run may depend on local state.
 
+## Cloud routines (live)
+
+Two routines, both cloning `GastonMNear/cv-generator-near-automations` (main) into
+environment `env_01DVzad9AipkSb49SRKPteVL` ("Slack Bot + SL + Drive"):
+
+| Routine | Cron (UTC) | Local | Window | ID |
+|---|---|---|---|---|
+| morning | `3 13 * * 1-5` | 09:03 ET | `--hours 20` | `trig_013MdhuD9nA5PrF7hJP5T11q` |
+| afternoon | `27 17 * * 1-5` | 13:27 ET | `--hours 6` | `trig_01UXrVZNP9GcChnc8sPM8kVh` |
+
+Both run `--live`. Windows overlap deliberately so a booking can't fall between runs.
+Off-the-hour minutes avoid the :00/:30 scheduling crush.
+
+**`HUBSPOT_ACCESS_TOKEN` must be present in that environment** — it is the one secret the
+environment did not already have. Until it is added the routines fail at step 1 with
+"HUBSPOT_ACCESS_TOKEN not set"; they were therefore created **disabled**. Enable both at
+https://claude.ai/code/routines once the secret is in place.
+
+`PAUSE_SLACK_CHANNEL_ID` is not needed — the channel is defaulted in `post_to_slack.py`.
+
 ## Never do
 
 - Never call `POST /campaigns/{id}/status` — that pauses an **entire campaign**. This skill
