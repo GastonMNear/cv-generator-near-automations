@@ -190,6 +190,29 @@ is genuinely absent from Smartlead, not a matching failure.
 `.env` contains a value with an unescaped `$3`, so any shell wrapper must **not** use
 `set -u` when sourcing it or it aborts.
 
+## Cloud routine (live)
+
+| | |
+|---|---|
+| Name | Booked-Call Attribution (weekly, Mon 10:34 ET) |
+| ID | `trig_01SvtFNc2CUF47VFGwPsUy7T` |
+| Cron | `34 14 * * 1` (UTC) = **Mon 10:34 ET** |
+| Environment | `env_01DVzad9AipkSb49SRKPteVL` — "Slack Bot + SL + Drive + HS" |
+| Repo | `GastonMNear/cv-generator-near-automations` (main) |
+| Model | `claude-sonnet-5` |
+| Tools | `Bash`, `Read`, `Grep`, `Glob` |
+
+https://claude.ai/code/routines/trig_01SvtFNc2CUF47VFGwPsUy7T
+
+The prompt runs `run.sh` with **no date argument** — that targets the previous full
+Mon–Sun week, which is what a Monday run wants. It also tells the run to let the
+~8-minute Smartlead scan finish rather than retry it, and to report rather than work
+around the "week already in the sheet" guard.
+
+Note the Response-Time KPI routines run from a **different repo**
+(`GastonMNear/smartlead-weekly-response-kpi`), which is why that skill is not tracked
+here. This skill and the auto-pause skill both live in this repo.
+
 ## Running it as a routine
 
 Weekly, **Monday morning ET**. Point the routine at this skill with a minimal prompt
