@@ -9,7 +9,7 @@ If a table is NOT listed here, fall back to the search workflow in SKILL.md.
 
 **Matching rules:** Match the user's table reference against the name AND all aliases below (case-insensitive). Partial matches count.
 
-**Last updated:** 2026-07-02
+**Last updated:** 2026-09-08
 
 ---
 
@@ -97,12 +97,147 @@ If a table is NOT listed here, fall back to the search workflow in SKILL.md.
 
 ---
 
-## 2. US Open Jobs — Hiring Managers
+## 1f. EXP006 — US OJ HMs (Baseline / Challengers) — **PRIMARY for US OJ HMs**
+
+> **This is now the primary table for `us hms`.** Table 2 below is kept as the last fallback —
+> it was not replaced, just demoted in the lookup order.
+>
+> Smartlead campaign `[EXP006] US Open Jobs - HMs - Baseline` maps here.
+> The campaign name says "HMs" but the Clay lead tables are named "No HMs" — the workbook is
+> `[EXP 006] US OJ HMs` (`wb_0ti9p6bDTqxPMASMtdV`) and its companies table is
+> `Companies Table [EXP 006] US OJ HMs` (`t_0ti9szjXjjFNzTjw7o2`). Naming is inconsistent in
+> the workspace; trust the EXP number and workbook, not the HM/No-HM suffix. Re-verified 2026-09-08.
+>
+> **Lookup order:** Baseline → Challenger 1 → Challenger 2 → older US OJ HMs table (section 2).
+
+| Table | Table ID | Records |
+|-------|----------|---------|
+| Leads [Baseline] - US OJ No HMs | `t_0tia0aux4TRkj9eBYU7` | 1,707 *(verified 2026-09-08 — was 694 on 2026-08-14)* |
+| Leads [Challenger 1] - US OJ No HMs - Guess Opener | `t_0tia5n9zXw8tKpoP4kY` | — |
+| Leads [Challenger 2] - US OJ No HMs - Need Confirmation | `t_0tiaad4jKBjM5XRtR6E` | — |
+| *(fallback)* US Open Jobs - Hiring Managers | `t_0t5pvx3g4o5WfysopqA` | 26,644 — see section 2 |
+
+| Property | Value |
+|----------|-------|
+| **Aliases** | us hm, us hms, us oj hm, us oj hms, US Open Jobs - HMs, US Open Jobs - Hiring Managers, exp006, exp 006 |
+| **Default View ID** | `gv_TgwDWXPdg8Ci` |
+
+| Clay Field Name | Field ID |
+|----------------|----------|
+| Work Email | `f_0tia0fjpvejxPCJgVRF` *(verified 2026-09-08 — table-specific, NOT the shared `f_0tc2a2q…`)* |
+| Written Job URL | `f_QIP4GfH5XFZo` *(verified 2026-09-08)* |
+| First Name (cleaned) | `f_hiEPcKlj0lTB` *(verified 2026-09-08)* |
+| Last Name (cleaned) | `f_fvs0rK0ntN1H` *(verified 2026-09-08)* |
+| Employee Count | `f_0t5mtcfvJknGywASv4z` *(verified 2026-09-08)* |
+| Company Name | `f_0tdysmvaFsDXQPs4Ubi` |
+| open_role_title | `f_9XFV2vIqjwAh` |
+
+**Note:** The `Work Email` field ID is unique to the EXP006 workbook — the "new primary" shared ID
+`f_0tc2a2qEFRZthdct3Cs` does NOT exist here. Challenger 1/2 field IDs are assumed identical to
+Baseline (same workbook, cloned schema) but are not yet verified against a real record.
+
+**Verified end-to-end 2026-09-08:** `fetch_lead.py --table "US Open Jobs - HMs"` resolved to this
+table and returned `wade@euro-wall.com` → Wade Mammon, a `linkedin.com/jobs/view/` URL, 46 employees.
+
+**Related experiment workbooks** (same naming pattern, field IDs not yet discovered):
+`EXP 008` — Baseline `t_0tiokhaWFjR2oD6UDAH`, Challenger 1 `t_0tiokhaGvd7HA2TzT6e`,
+Challenger 2 `t_0tiokhatyXjh9pDBxkp`, Challenger 3 `t_0tj7qk6oPa9teQZxRZp`.
+`EXP 009` — Baseline `t_0tjmiv7mvocWaH8J7TJ`, Challenger `t_0tjnuu1MkwhU8vavuaP`.
+
+---
+
+## 1g. EXP012 — US OJ No HM, Priority Segments (Engineering / Marketing / Sales-GTM)
+
+> Smartlead campaigns: `[EXP012] US OJ No HM Priority Segments | Engineering | Marketing | Sales/GTM`.
+> Also referred to as "US OJ Sales Segment", "US OJ Engineering Segment", etc.
+>
+> These are **additional** No-HM workflows targeting priority segments — the original generic
+> US No-HM chain (1a–1e) still exists and is still the default when no segment is specified.
+> Each segment lives in its own workbook but all three share the standard US No-HM schema.
+
+> ⚠️ **All three leads tables are literally named `Leads - US OJ No HMs | Engineering`.**
+> Marketing and Sales were cloned from the Engineering workbook and the table name was never
+> updated. Identify a segment by its **table ID**, or by the sibling `<Segment> | Companies Table`
+> in the same workbook — never by the leads table's own name. Verified 2026-09-08.
+
+| Segment | Table ID | Workbook | Records |
+|---------|----------|----------|---------|
+| Engineering | `t_0tkqxf9m5kjbQBaj8ze` | `wb_0tkqxf9qc3Sa3s9YgF8` | 1,604 *(verified 2026-09-08)* |
+| Marketing | `t_0tkr47cbUzbtpatohRK` | `wb_0tkr47cow6cvXmDF8Av` | 599 *(verified 2026-09-08)* |
+| Sales/GTM | `t_0tkr5r1mvuvV42xHHWW` | `wb_0tkr5r1GJomAauCgsTA` | 1,608 *(verified 2026-09-08)* |
+
+| Property | Value |
+|----------|-------|
+| **Aliases** | us eng, us engineering, us marketing, us mktg, us sales, us gtm, sales/gtm, exp012, US OJ \<segment\> Segment |
+| **Default View ID** | `gv_TgwDWXPdg8Ci` (all three) |
+
+All three tables share these field IDs — identical to the standard US No-HM schema:
+
+| Clay Field Name | Field ID |
+|----------------|----------|
+| Work Email | `f_0tc2a2qEFRZthdct3Cs` *(verified 2026-09-08)* |
+| Written Job URL | `f_QIP4GfH5XFZo` *(verified 2026-09-08 — real `linkedin.com/jobs/view/` links)* |
+| First Name (cleaned) | `f_hiEPcKlj0lTB` *(verified 2026-09-08)* |
+| Last Name (cleaned) | `f_fvs0rK0ntN1H` *(verified 2026-09-08)* |
+| Employee Count | `f_0t5mtcfvJknGywASv4z` *(verified 2026-09-08)* |
+
+**Routing:** an unqualified `us no hm` searches the generic chain (1a–1e) first and then falls
+through Engineering → Marketing → Sales, so a lead is still found wherever it lives. Naming a
+segment jumps straight to that one table. Note that some records have an empty Work Email (the
+enrichment has not resolved one yet) — those rows cannot be matched by email.
+
+---
+
+## 1h. EXP010 — Apollo Open Jobs (No HM)
+
+> Smartlead campaigns: `[EXP010] Apollo Open Jobs No HM` and `[EXP010] Apollo Open Jobs HMs`.
+> Workbook `wb_0tjm5v6Nzoik7YWmQj9`.
+
+> ⚠️ **There is no Apollo "HMs" leads table.** The workbook contains exactly one leads table
+> (the No-HM one below) plus two source tables:
+> `Jobs Openings - Apollo Companies` (`t_0tjz56uf9koPtBq78Qe`, type `spreadsheet`) and
+> `Apollo companies w/ open jobs` (`t_0tjm5vdaEgTWqjufW5A`).
+> The jobs table is keyed by job opening — it has `HM First Name (Cleaned)` and `HM Linkedin URL`
+> columns but **no per-lead work email**, so `fetch_lead.py` cannot search it by email.
+> If someone asks for "Apollo HMs", route them to the leads table below. Verified 2026-09-08.
+
+| Property | Value |
+|----------|-------|
+| **Table ID** | `t_0tjzgf1Wv5zQS8vmWxM` |
+| **Table Name** | No HM Leads [Baseline] - Apollo US OJ No HMs |
+| **Aliases** | apollo, apollo open jobs, apollo no hm, apollo hms, exp010, apollo us oj, apollo baseline |
+| **Default View ID** | `gv_TgwDWXPdg8Ci` (verified 2026-09-08 — 7,084 records) |
+
+| Clay Field Name | Field ID |
+|----------------|----------|
+| Work Email | `f_0tc2a2qEFRZthdct3Cs` *(verified 2026-09-08)* |
+| Written Job URL | `f_QIP4GfH5XFZo` *(verified 2026-09-08)* |
+| First Name (cleaned) | `f_hiEPcKlj0lTB` *(verified 2026-09-08)* |
+| Last Name (cleaned) | `f_fvs0rK0ntN1H` *(verified 2026-09-08)* |
+| Employee Count | `f_0t5mtcfvJknGywASv4z` *(verified 2026-09-08)* |
+
+**Note:** Because leads are Apollo-sourced rather than LinkedIn-sourced, `Written Job URL` is
+frequently an ATS link (Greenhouse, Lever, Kula.ai, a company careers page) rather than a
+`linkedin.com/jobs/view/` URL. The linkedin-job-extractor step must handle non-LinkedIn URLs
+for this campaign — don't treat a Greenhouse link as a validation failure. Observed ATS hosts
+so far: `careers.kula.ai` (plain WebFetch extracts the full JD with no auth wall — verified
+2026-09-08 on `scott@joinautopilot.com`, record `r_0tkp6la96tRyhw3bS3d`).
+
+**Scan cost:** the full 7,084-record scan runs 300 records per batch; a hit around record ~5,000
+takes ~17 batches. Allow a 3–5 minute timeout for this table rather than the default.
+
+---
+
+## 2. US Open Jobs — Hiring Managers *(fallback — see 1f for the primary)*
+
+> **No longer the primary for `us hms`.** As of 2026-09-08 the EXP006 baseline table (section 1f)
+> is searched first; this table is the last link in that chain. It is still fully wired up — leads
+> that live only here are still found, just after the three EXP006 tables are checked.
 
 | Property | Value |
 |----------|-------|
 | **Table ID** | `t_0t5pvx3g4o5WfysopqA` |
-| **Aliases** | US OJ - HMs, US OJ - Hiring Managers |
+| **Aliases** | *(none — reached via the 1f fallback chain)* |
 | **Default View ID** | `gv_TgwDWXPdg8Ci` (26,644 records) |
 
 | Clay Field Name | Field ID |
@@ -240,7 +375,7 @@ If a table is NOT listed here, fall back to the search workflow in SKILL.md.
 |----------|-------|
 | **Table ID** | `t_0t6ghvgCsvvvqAus4bp` |
 | **Aliases** | LatAm Open Jobs - Hiring Managers, LatAm OJ - HMs |
-| **Default View ID** | `gv_TgwDWXPdg8Ci` (**45,127 records** — large table, scan takes ~85s) |
+| **Default View ID** | `gv_TgwDWXPdg8Ci` (**17,428 records** as of 2026-09-08 — large table, scan takes ~2.5 min; allow a generous timeout) |
 
 | Clay Field Name | Field ID |
 |----------------|----------|
@@ -249,6 +384,8 @@ If a table is NOT listed here, fall back to the search workflow in SKILL.md.
 | First Name (cleaned) | `f_0t063qfcKw3gnzRcxxG` |
 | Last Name (cleaned) | `f_0t063qh6gvgnYPy4av4` |
 | Employee Count | `f_0t062fr5fKsUy27nJhf` |
+
+All five field IDs re-verified 2026-09-08 on lead `margarita.fernandez@22-tech.com` (record `r_0tkuhqj3pZVpvR3xzn9`, found ~row 13,500 — expect a full-length scan for recent additions).
 
 ---
 
@@ -306,3 +443,17 @@ If a table is NOT listed here, fall back to the search workflow in SKILL.md.
 | First Name (cleaned) | `f_0t063qfcKw3gnzRcxxG` |
 | Last Name (cleaned) | `f_0t063qh6gvgnYPy4av4` |
 | Employee Count | `f_0t062fr5fKsUy27nJhf` |
+
+## Gotchas for ad-hoc Clay scripts (verified 2026-09-08)
+
+When writing a one-off Clay script rather than using `scripts/fetch_lead.py`:
+
+1. **`/auth/login` needs all of these or it returns HTTP 400:**
+   - body `{"email", "password", "source": "web"}` — omitting `"source"` fails
+   - headers `Origin: https://app.clay.com` and `Referer: https://app.clay.com/` — omitting them fails
+2. **`load_dotenv()` with no argument raises `AssertionError`** when the script is piped in via
+   stdin (`python3 - <<EOF`), because it walks the call stack to find the .env. Always pass the
+   path explicitly: `load_dotenv("/abs/path/.env")`. Symptom: credentials silently empty → 400.
+3. **`timeout` is not available on macOS** — don't wrap long scans in it; pass a Bash tool timeout.
+4. Reuse `scripts/find_by_domain.py` instead of rewriting a scanner; it already handles auth,
+   the table registry, fallback chains and batching.

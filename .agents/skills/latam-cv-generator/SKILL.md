@@ -63,7 +63,7 @@ Before generating, analyze the job posting to determine:
 
 ### Step 5: Generate the CV Using AI
 
-Use an AI model (Claude Opus 4.6 or GPT-4) with the complete prompt from `references/prompt-template.md` as the system instructions. Provide the job title and job description as input.
+Use an AI model (Codex Opus 4.6 or GPT-4) with the complete prompt from `references/prompt-template.md` as the system instructions. Provide the job title and job description as input.
 
 The prompt template includes all necessary constraints:
 - LATAM country selection (Argentina, Colombia, Mexico, Brazil)
@@ -112,7 +112,7 @@ from pathlib import Path
 import sys
 
 # Add script directory to path
-script_dir = Path(".claude/skills/latam-cv-generator/scripts")
+script_dir = Path(".Codex/skills/latam-cv-generator/scripts")
 sys.path.insert(0, str(script_dir))
 
 from review_cv import review_cv_with_expert
@@ -134,19 +134,6 @@ else:
 
 # Use the reviewed CV (either original or edited)
 final_cv_markdown = review_result['final_cv']
-
-# Constraint enforcement is automatic — review_cv_with_expert() reverts any section
-# where the reviewer introduced banned language or changed a year, before returning.
-# You do NOT need to diff dates or grep for banned phrases by hand.
-# Just log what the validator caught:
-if review_result.get('violations'):
-    print("Constraint violations auto-handled by validator:")
-    for v in review_result['violations']:
-        print(f"  ! {v}")
-    # A violation mentioning "GENERATED CV" means the banned phrase originated in
-    # generation, not review — regenerate the CV rather than blaming the reviewer.
-if review_result.get('reverted_sections'):
-    print(f"Reverted to original: {', '.join(review_result['reverted_sections'])}")
 ```
 
 **What the Review Checks:**
@@ -184,7 +171,7 @@ import sys
 import re
 
 # Add script directory to path
-script_dir = Path(".claude/skills/latam-cv-generator/scripts")
+script_dir = Path(".Codex/skills/latam-cv-generator/scripts")
 sys.path.insert(0, str(script_dir))
 
 from create_google_doc import create_cv_google_doc
@@ -412,30 +399,6 @@ When invoked programmatically, pass:
 
 **Issue:** Review changes too much of the CV
 **Solution:** The reviewer is instructed to make minimal changes only. If it's overly aggressive, this indicates the original CV had significant AI-generated patterns that needed fixing.
-
-**Issue:** Review "corrects" a current-year metric backward to an earlier year
-**Solution:** **The GPT-4o reviewer does not know today's date.** It treats any year later than its own assumed present as a typo and rewrites it to the role's start year. Observed 2026-09-08: a bullet reading "Closed 62 new premium memberships in 2025" was flagged as a typo and changed to 2023 (the role's start year), which would have put a full-year sales figure inside the candidate's first ten months in the job.
-
-This is systematic, not a one-off — every current role with a last-full-year metric is exposed to it. **Always diff the reviewed CV against the original for date changes and revert them unless the original was genuinely wrong.** Keep every other reviewer edit; only dates need this scrutiny.
-
-**Issue:** Reviewer rewrites the professional summary and injects banned AI language
-**Solution:** **Now enforced automatically in code — no manual grep needed.** `review_cv.py` runs `enforce_cv_constraints()` on every review before returning.
-
-Root cause is a conflicting instruction, not missing information: the reviewer *does* have the banned list (system prompt section 5), but it is also told to rewrite template-sounding summaries to "sound like a real LinkedIn About". Asked to add warmth while banned from warmth's stock vocabulary, it follows the active editing instruction and drops the passive constraint. Observed 2026-09-08: a plain human summary came back containing both "I thrive on" and "I am passionate about".
-
-Three-layer fix:
-1. The summary instruction now states that warmth comes from concrete specifics, never sentiment, and that leaving the summary unchanged beats a warmer rule-breaking rewrite.
-2. A MANDATORY FINAL SELF-CHECK section tells the reviewer to re-scan its own `final_cv`, and warns that a downstream validator will discard the offending section.
-3. `enforce_cv_constraints()` splits both CVs on markdown headings and reverts only sections where the reviewer *introduced* a banned phrase or changed a year, keeping clean edits elsewhere. Violations print to stderr and are returned in `result["violations"]`.
-
-Deliberately section-level, not whole-document: the reviewer's punctuation, spelling and added-metric edits are genuine improvements and should survive one bad sentence.
-
-**Issue:** Reviewer output silently trusted by callers
-**Solution:** Don't hand-roll validation in the calling code. `review_cv_with_expert()` enforces constraints internally, so `result["final_cv"]` is always safe to send to Google Docs. Two extra keys are returned:
-- `result["violations"]` — list of constraint breaches found (empty is good)
-- `result["reverted_sections"]` — headings restored to the original
-
-Log `violations` when non-empty. A violation naming `GENERATED CV` means the banned phrase came from **generation**, not the review — fix the generation prompt in that case, since the reviewer is not obliged to catch it.
 
 **Issue:** Review always says "no changes needed"
 **Solution:** This is actually good! It means your CVs are already passing the human realism test.

@@ -1,39 +1,48 @@
 ---
 name: email-replies-workflow
 description: >
-  Orchestrates the complete CV generation workflow from Clay lead data. Always use this
-  skill when given a lead email address and a Clay table name (or campaign name that maps
-  to a table) — it automatically fetches lead data via scripts/fetch_lead.py, extracts LinkedIn
-  job details, and generates a tailored LATAM CV as a Google Doc. Trigger this skill any time
-  someone says "generate CV for [email]", "process lead [email]", or provides an email with
-  a Clay table context, even if they don't explicitly ask for "the workflow".
+  Orchestrates the complete CV generation workflow for a lead. Always use this skill when
+  given a lead email address and asked to generate a CV, process a lead, or send a sample
+  profile — it fetches the lead from Smartlead via scripts/fetch_lead_smartlead.py (one call,
+  no table name needed), extracts the job post details, and generates a tailored LATAM CV as
+  a Google Doc. Trigger this skill any time someone says "generate CV for [email]", "process
+  lead [email]", or pastes a lead email, even if they don't explicitly ask for "the workflow"
+  and even if they don't name a campaign or Clay table. Falls back to Clay only when the lead
+  is absent from Smartlead.
 ---
 
 # Email Replies Workflow
 
 ## Overview
 
-This skill provides end-to-end orchestration of the CV generation workflow for leads in Clay tables. When given a lead's email address and the Clay table name, the skill automatically:
+End-to-end orchestration of the CV generation workflow for a lead who replied to a campaign.
+**All you need is the lead's email address** — Smartlead is queried by email directly, so no
+campaign or table name is required:
 
-1. Runs `scripts/fetch_lead.py --email EMAIL --table ALIAS` → returns name, linkedin_url, employee_count (all 8 campaign categories pre-cached, no metadata API calls needed)
-2. Invokes the linkedin-job-extractor skill to get company name, job title, and full job description
+1. Runs `scripts/fetch_lead_smartlead.py --email EMAIL` → name, company, job URL,
+   employee count, and the campaign the lead belongs to, in a single API call
+2. Invokes the linkedin-job-extractor skill to get company name, job title, and full description
 3. Invokes the latam-cv-generator skill to create a tailored LATAM CV as a Google Doc
 4. Returns the Google Doc URL and company employee count
 
-This workflow eliminates manual data gathering and coordinates three specialized skills (clay-api, linkedin-job-extractor, latam-cv-generator) into a seamless automation.
+Smartlead is the source of truth because it is the system that actually sent the campaign — the
+lead is keyed by email, so there is nothing to resolve. This replaced a Clay-based Step 1 that
+had to guess the right table from a campaign name and then linearly scan up to ~33k records.
+Clay remains available as a fallback for the rare lead Smartlead does not have, and for filling
+in a missing employee count (see Step 1b).
 
 ## When to Use This Skill
 
 Use this skill when:
 - Processing email replies from Smartlead campaigns
-- User provides a lead email address and Clay table name
-- Need to generate a CV for a specific lead in a Clay table
-- Want to automate the complete workflow from Clay data to Google Doc
+- The user provides a lead email address and wants a CV / sample profile
+- The user names a campaign or Clay table alongside the email — that context is no longer
+  needed for the lookup, but it does not change how the workflow runs
 
 **Example triggers:**
-- "Process lead john@example.com from US Open Jobs - No Hiring Manager"
-- "Generate CV for jane.doe@company.com from LatAm OJ - HMs"
-- "Create CV for the lead bob@test.com in Canada Open Jobs"
+- "Generate CV for john@example.com"
+- "Process lead jane.doe@company.com"
+- "Create CV for the lead bob@test.com in Canada Open Jobs" *(table name simply ignored)*
 
 ## Prerequisites
 
@@ -41,7 +50,10 @@ Use this skill when:
 
 The workflow requires the following environment variables in `.env`:
 
-**Clay API:**
+**Smartlead API (primary lead source):**
+- `SMARTLEAD_API_KEY` - Smartlead API key
+
+**Clay API (fallback only):**
 - `CLAY_USERNAME` - Clay account email
 - `CLAY_PASSWORD` - Clay account password
 
@@ -57,88 +69,153 @@ The workflow requires the following environment variables in `.env`:
 
 ### Skill Dependencies
 
-This skill orchestrates three existing skills:
-- **clay-api** - For Clay table data access
-- **linkedin-job-extractor** - For LinkedIn job post extraction
+This skill orchestrates:
+- **linkedin-job-extractor** - For job post extraction
 - **latam-cv-generator** - For CV generation and Google Doc creation
+- **clay-api** - Fallback lead lookup only, when Smartlead has no record
 
-### Clay Workspace
+### Clay Fallback Tables
 
-The workflow assumes access to **HireWithNear workspace** (ID: 447061). Tables with multiple IDs are searched in order — script stops at the first match. Newer workflow versions are searched first, with older tables kept as fallbacks in case a lead isn't found in the current version:
-
-- US Open Jobs - No Hiring Manager: `t_0thes7nxCFpHX8XY2gT` → `t_0thg92hZWdvUw75QNRx` → `t_0tdyro7QesUNY3WJrt2` → `t_0t59d2y3ZuD4396Kz5B` → `t_0tbt48xVeCFCi8pFzip`
-- US Open Jobs - Hiring Managers: `t_0t5pvx3g4o5WfysopqA`
-- Asia Open Jobs - Hiring Managers: `t_0tfca9kUUpNpysMebYP` → `t_0tfe0wuWVAJQcbyENqB` *(no older fallback — new workflow)*
-- Asia Open Jobs - No Hiring Managers: `t_0tfe657PnDUhThtbaj5` → `t_0tfe8z2ukw66TNuPgpp` *(no older fallback — new workflow)*
-- LatAm Open Jobs - No HMs: `t_0te5kjxke6yWVRzedb7` → `t_aNvk4jWMNeG7`
-- LatAm Open Jobs - Hiring Managers: `t_0t6ghvgCsvvvqAus4bp`
-- Canada Open Jobs - No HM: `t_0te5lh6AoWkxd39ktT8` → `t_0taasak5KAa5zbTmTJd`
-- Canada Open Jobs - HMs: `t_0t746txPqz5sjFMtut2`
+Only relevant if Smartlead has no record for the lead. The workspace is **HireWithNear**
+(ID 447061); `scripts/fetch_lead.py` has every table ID and field ID pre-cached and walks
+ordered fallback chains itself, so pass it an alias and let it do the resolution. Run
+`python3 scripts/fetch_lead.py --help` to see the current alias list rather than duplicating
+it here — it drifts as campaigns are added.
 
 ## User Input Requirements
 
-The user must provide:
-1. **Lead Email Address** - The email address of the lead to process
-2. **Clay Table Name** - The name or ID of the Clay table containing the lead
+The user must provide **one thing: the lead's email address.**
 
-**Input Format Examples:**
-- "Process lead john@example.com from US Open Jobs - No Hiring Manager"
-- "john.doe@company.com in LatAm OJ - HMs"
-- "email: jane@test.com, table: Canada Open Jobs"
+Smartlead is queried by email, so a campaign or table name is not needed. If the user supplies
+one anyway ("john@acme.com from US Open Jobs - No HM"), just note it as context and proceed —
+do not try to translate it into a table alias unless you end up in the Clay fallback.
 
-Extract the email and table name from natural language input.
-
-**If inputs are missing:** Ask for them in plain text only — do NOT use AskUserQuestion (the 8-table list exceeds the 4-option maximum and will throw a validation error).
+**If the email is missing:** ask for it in plain text.
 
 ## Workflow Steps
 
 **IMPORTANT — Run all steps end-to-end without stopping.** This is a fully automated pipeline. Do not output intermediate results (LinkedIn job details, lead info) to the user mid-workflow. Each step feeds directly into the next. Only output to the user once Step 4 (final summary) is reached. If you find yourself about to present job details or lead data before the Google Doc is created, stop and proceed to the next step instead.
 
-### Step 1: Fetch Lead Data from Clay
+### Step 1: Fetch Lead Data from Smartlead
 
-**Objective:** Resolve the table, authenticate, search for the lead, and extract linkedin_url + employee_count — all in one command.
-
-**⚡ Use the universal fetch script** — do NOT write inline auth/search code. The script has all campaign categories' field IDs pre-cached.
-
-**Table aliases** (case-insensitive partial match):
-
-| User says | Alias to pass |
-|-----------|---------------|
-| US Open Jobs - No HM | `us no hm` |
-| US Open Jobs - HMs | `us hms` |
-| Asia Open Jobs - HMs | `asia hms` |
-| Asia Open Jobs - No HMs | `asia no hm` |
-| LatAm Open Jobs - No HMs | `latam no hm` |
-| LatAm Open Jobs - HMs | `latam hms` |
-| Canada Open Jobs - No HM | `canada no hm` |
-| Canada Open Jobs - HMs | `canada hms` |
+**Objective:** Get the lead's name, company, job post URL, and employee count in one call.
 
 **Command:**
 ```bash
-PYTHONUTF8=1 python scripts/fetch_lead.py --email {lead_email} --table "{table_alias}"
+PYTHONUTF8=1 python3 scripts/fetch_lead_smartlead.py --email {lead_email}
 ```
 
-**Output (JSON printed to stdout):**
+**Output (JSON on stdout):**
 ```json
 {
-  "email": "craig.t@blackretebuilders.com",
-  "name": "Craig Thomas",
-  "linkedin_url": "https://www.linkedin.com/jobs/view/estimator-at-blackrete-builders-inc-4064769752",
-  "employee_count": 34
+  "source": "smartlead",
+  "email": "awollmann@horvath-partners.com",
+  "name": "Anna Wollmann",
+  "company_name": "Horváth USA",
+  "company_name_raw": "Horváth USA",
+  "company_name_normalized": "Horváth",
+  "job_title_hint": "(Senior) Consulting Manager (f/m/d) Finance Transformation",
+  "linkedin_url": "https://www.linkedin.com/jobs/view/4462903121/",
+  "employee_count": 9,
+  "prospect_linkedin": "https://de.linkedin.com/in/anna-wollmann-4681a5189",
+  "campaigns": ["[EXP010] Apollo Open Jobs HMs | B inboxes"]
 }
 ```
 
-Parse `name`, `linkedin_url`, `employee_count` from this JSON output.
+Parse `name`, `linkedin_url`, `employee_count` — these feed the rest of the pipeline. The
+`campaigns` array tells you which campaign the lead replied to, which is useful for the final
+summary and removes any need to ask the user.
 
-**Error: lead not found** → script exits with code 1. Check email spelling and confirm correct table.
+**Reading the fields with the right amount of trust:**
 
-**Error: table not recognised** → script prints known table list. Adjust alias.
+- `linkedin_url` — the job post; the field the pipeline depends on. Sourced from Smartlead's
+  **`job_url`**, which is the canonical field. A minority of leads still carry the URL only in the
+  legacy `job_linkedin_url` (verified: `awollmann@horvath-partners.com`, `michael.hsu@curogram.com`),
+  so the script falls through to that when `job_url` is null. The two are never both populated, so
+  a null in either one is not a miss.
+- `employee_count` — `null` on many older leads; newer leads carry it. This is normal, not a
+  failure: report it as unavailable in the final output and carry on (see below).
+- `company_name` — already resolved for you. Smartlead stores two company names,
+  `company_name` and `normalized_company_name`; at least one is always populated but either can
+  be empty on its own, so the script takes whichever exists and prefers the **longer** of the two
+  when both do. `normalized_company_name` is shortened for email copy and drops meaningful words
+  ("Mach33" for "Mach33 Media", "Entry" for "Entry Capital"), so the longer form is nearly always
+  the better one. Both raw values are returned as `company_name_raw` and
+  `company_name_normalized` if you need to see what was stored.
+  Even so, treat the result as provisional: Step 2 reads the company name off the job posting,
+  which is the public, correct name — **prefer Step 2's value** for the Google Doc title and fall
+  back to `company_name` only when the posting yields nothing.
+- `job_title_hint` — written for email copy, so often lowercase or abbreviated ("estimators",
+  "founding AE"). Use it to sanity-check that the job URL points at the role the campaign was
+  about; do **not** pass it to the CV generator as the target title. Step 2's extracted title is
+  the real one.
+- `prospect_linkedin` — the lead's own profile. Never a job post; it exists only as context.
 
-**LinkedIn URL validation** — after extracting, verify:
-- Must contain `linkedin.com/jobs/view/` — if it contains `linkedin.com/in/` instead, that's a prospect profile URL (wrong field); report and stop.
-- LinkedIn job URLs may be slug format (e.g., `.../jobs/view/estimator-at-company-4064769752`) — this is valid, WebFetch handles it fine.
+**Exit codes and what to do:**
 
-**Output:** `lead_name`, `linkedin_url`, `company_employee_count`
+| Code | Meaning | Action |
+|------|---------|--------|
+| 0 | Lead found | Proceed to Step 2 |
+| 1 | Not in Smartlead | Go to **Step 1b** (Clay fallback) |
+| 2 | Key rejected (401) or blocked (403) | Report it — the script explains which; do not retry blindly |
+| 3 | Transient failure after retries | Retry once, then fall back to Step 1b |
+
+**A note on 403s:** Smartlead sits behind Cloudflare, which blocks Python's default urllib
+User-Agent with `403 Forbidden / error code: 1010`. This masquerades as rate limiting but is
+permanent — backoff never clears it, while the same URL via curl works. The script already sends
+a real User-Agent. If you ever write a fresh Smartlead request inline, set that header too;
+otherwise you will waste minutes retrying a block that will never lift. Genuine throttling shows
+up as 429 with `x-ratelimit-*` headers (limit is 200 per window).
+
+**Full field reference:** `references/smartlead-lead-api.md` documents every custom field, its
+reliability across campaign families, the failure modes above, and the verified company-name
+clipping table. Read it if a field is missing or a value looks wrong.
+
+### Step 1b: Clay Fallback (only if Smartlead returned exit code 1)
+
+Smartlead holds every lead that was actually mailed, so a miss usually means the address is a
+variant rather than that the lead is absent. Try, in order:
+
+1. **Re-query Smartlead with likely variants.** Clay-vs-Smartlead mismatches are usually
+   `firstname@` vs `firstname.lastname@`. One extra lookup is far cheaper than a Clay scan.
+2. **Fall back to Clay** with the campaign the user mentioned, if any:
+   ```bash
+   PYTHONUTF8=1 python3 scripts/fetch_lead.py --email {lead_email} --table "{table_alias}"
+   ```
+   Prefer pasting the campaign name verbatim over hand-translating it to an alias — the resolver
+   keys on the distinguishing word and routes full campaign names correctly.
+3. **Scan Clay by domain** if that also misses:
+   ```bash
+   PYTHONUTF8=1 python3 scripts/find_by_domain.py --needle {domain_word} --table "{table_alias}"
+   ```
+   If exactly one person at that domain matches on first name, treat it as the same lead, re-run
+   with the corrected address, and tell the user which email was actually used. If several
+   distinct people come back, ask which one they meant.
+
+If the user named no campaign and Smartlead has nothing, say so and ask which campaign the lead
+came from rather than scanning every Clay table.
+
+**Missing employee count is expected, not an error.** Older leads often lack it; newer ones have
+it. When it is null, say so plainly in the Step 4 output alongside the CV and finish the workflow
+normally. Do not fall back to Clay for it, re-run the lookup, or hold up the CV — the count is
+supplementary context, and a clear "not available" is more useful to the reader than a delay.
+
+**Job URL validation** — before Step 2, check the URL:
+- A `linkedin.com/in/` URL is a *profile*, not a job post — the wrong field was read. Report and stop.
+- LinkedIn slug URLs (`.../jobs/view/estimator-at-blackrete-builders-inc-4064769752`) are valid;
+  WebFetch handles them.
+- Non-LinkedIn job URLs (Greenhouse, Lever, Ashby, a careers page) are **valid, not errors** —
+  the norm for Apollo/EXP010 leads. Pass them to Step 2 like any other posting. Only
+  `linkedin.com/in/` and an empty value are failures.
+- **Stale LinkedIn job posts:** a closed posting does not 404 — LinkedIn silently serves a generic
+  jobs *search-results* page, so WebFetch "succeeds" while returning nothing usable. When Step 2
+  reports a search-results page instead of a posting, go straight to the guest API
+  (`https://www.linkedin.com/jobs-guest/jobs/api/jobPosting/{job_id}`), which still returns the
+  archived posting. Verified: `zainab@clickstalentagency.com` (job `4458701353`) served an
+  unrelated search page twice; the guest API returned the full posting. Do not treat this as an
+  extraction failure or ask the user to paste the JD.
+
+**Output:** `lead_name`, `linkedin_url`, `company_employee_count`, `campaign_name`
 
 ### Step 2: Extract Job Details from LinkedIn
 
@@ -173,6 +250,12 @@ Capture the output in structured format:
 
 **Output:** `company_name`, `job_title`, `job_description`
 
+These three values are **authoritative over anything Smartlead returned.** The posting carries
+the company's real public name and the role's actual title, whereas Smartlead's copies were
+written for email personalization and are often clipped or informal. If the extracted title and
+Smartlead's `job_title_hint` describe clearly different roles, the URL may point at the wrong
+posting — worth a sentence to the user in the final summary, but not a reason to stop.
+
 > **Do not present these results to the user.** This is an internal step. Once you have `company_name`, `job_title`, and `job_description`, immediately proceed to Step 3.
 
 ### Step 3: Generate LATAM CV and Create Google Doc
@@ -201,7 +284,9 @@ Capture the output which includes:
 - Candidate information (name, location)
 ```
 
-**Important:** `company_name` comes from the `linkedin-job-extractor` output in Step 2. It must be passed here so the Google Doc is named correctly.
+**Important:** `company_name` and `job_title` come from the Step 2 extraction, not from
+Smartlead — Smartlead's versions are clipped/informal and would produce a badly named Google Doc
+and a CV aimed at a vague title. Fall back to Smartlead's values only if Step 2 produced none.
 
 **Important:**
 - The skill ALWAYS returns a Google Doc URL, not markdown text
@@ -218,7 +303,7 @@ Capture the output which includes:
 
 **Implementation:**
 
-Format the final output with all relevant information. The output must always include the Google Doc URL (not the CV content) and end with the company's LinkedIn employee count from Clay:
+Format the final output with all relevant information. The output must always include the Google Doc URL (not the CV content) and end with the company's LinkedIn employee count from Smartlead:
 
 ```
 ✅ CV Generation Workflow Complete!
@@ -229,7 +314,8 @@ Format the final output with all relevant information. The output must always in
 
 Email: {lead_email}
 Name: {candidate_name or "Not specified"}
-Source Table: {table_name}
+Campaign: {campaign_name or "Not specified"}
+Source: {"Smartlead" or "Clay (fallback)"}
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
@@ -258,8 +344,8 @@ Location: {generated_candidate_location}
 
 ✅ WORKFLOW SUMMARY
 
-✓ Lead found in Clay table
-✓ LinkedIn job details extracted
+✓ Lead found in Smartlead
+✓ Job post details extracted
 ✓ LATAM CV generated and reviewed
 ✓ Google Doc created successfully
 
@@ -267,16 +353,44 @@ The CV is ready to send to {lead_email}!
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-👥 # Employees (LinkedIn): {company_employee_count or "Not available"}
+👥 # Employees (LinkedIn): {company_employee_count or "Not available (not stored for this lead)"}
 ```
 
-**Important:** The employee count comes from the Clay table record fetched in Step 1. Always display it at the end of the output even if the value is "Not available". Do not skip this field.
+**Important:** The employee count comes from Smartlead's `employee_count` in Step 1, which is
+null for many older leads. Always display the line — when the value is missing, state that
+explicitly rather than omitting the field. The reader looks for this number, so a visible "not
+available" answers the question, whereas a missing line reads as an oversight and prompts a
+follow-up. A null count never blocks or delays delivering the CV.
 
 **Output:** Formatted results string for user
 
 ## Error Handling
 
-### Table Resolution Errors
+### Lead Lookup Errors
+
+**Error:** Smartlead returns 401 Invalid API Key
+```
+Recovery:
+1. SMARTLEAD_API_KEY in .env has been rotated — ask the user for a current key
+2. Do not fall back to Clay silently; the user should know the key is stale
+```
+
+**Error:** Smartlead returns 403 (Cloudflare error 1010)
+```
+Recovery:
+1. This is a blocked User-Agent, NOT rate limiting — retrying will never clear it
+2. Ensure the request sends a real User-Agent header (the bundled script does)
+3. Verify with: curl -s "https://server.smartlead.ai/api/v1/leads/?email=...&api_key=..."
+   curl works where bare urllib fails, which confirms the diagnosis
+```
+
+**Error:** Smartlead has no record for the email
+```
+Recovery: see Step 1b — try address variants first, then the Clay fallback chain,
+then the Clay domain scan. Ask which campaign the lead came from if nothing is known.
+```
+
+### Table Resolution Errors (Clay fallback only)
 
 **Error:** Table name not found
 ```
@@ -294,7 +408,7 @@ Recovery:
 2. Ask user to confirm table ID
 ```
 
-### Authentication Errors
+### Clay Authentication Errors (fallback path only)
 
 **Error:** Clay login fails (401)
 ```
@@ -345,11 +459,8 @@ Recovery:
 ```
 Recovery:
 1. Report total records searched
-2. Suggest:
-   - Check email spelling
-   - Verify lead is in correct table
-   - Try searching by partial email (domain only)
-3. Ask user to confirm email and table
+2. Run scripts/find_by_domain.py to reveal the stored address variant
+3. Ask user to confirm email and campaign
 ```
 
 **Error:** Multiple records with same email
@@ -421,54 +532,59 @@ Recovery:
 
 ## Example Usage
 
-### Example 1: Canada HMs (verified working 2026-03-16)
+All examples below were verified against the live Smartlead API on 2026-09-09.
+
+### Example 1: The only input needed is an email
 
 **User Input:**
 ```
-craig.t@blackretebuilders.com
-Canada Open Jobs - HMs
+Generate CV for awollmann@horvath-partners.com
 ```
 
 **Step 1 command:**
 ```bash
-PYTHONUTF8=1 python scripts/fetch_lead.py --email craig.t@blackretebuilders.com --table "canada hms"
+PYTHONUTF8=1 python3 scripts/fetch_lead_smartlead.py --email awollmann@horvath-partners.com
 ```
-**Step 1 output:**
+**Step 1 output (abridged):**
 ```json
-{"email": "craig.t@blackretebuilders.com", "name": "Craig Thomas",
- "linkedin_url": "https://www.linkedin.com/jobs/view/estimator-at-blackrete-builders-inc-4064769752",
- "employee_count": 34}
+{"name": "Anna Wollmann", "company_name": "Horváth USA",
+ "job_title_hint": "(Senior) Consulting Manager (f/m/d) Finance Transformation",
+ "linkedin_url": "https://www.linkedin.com/jobs/view/4462903121/",
+ "employee_count": 9,
+ "campaigns": ["[EXP010] Apollo Open Jobs HMs | B inboxes"]}
 ```
-Steps 2–4 → Google Doc created, CV delivered.
+Note the campaign came back *from* the lead — the user never had to name it. Steps 2–4 proceed
+normally.
 
-### Example 2: US Campaign, No Hiring Manager
+### Example 2: Employee count is null
 
-**User Input:**
-```
-Process lead john.doe@techcorp.com from US Open Jobs - No Hiring Manager
-```
-
-**Step 1 command:**
 ```bash
-PYTHONUTF8=1 python scripts/fetch_lead.py --email john.doe@techcorp.com --table "us no hm"
+PYTHONUTF8=1 python3 scripts/fetch_lead_smartlead.py --email michael.hsu@curogram.com
 ```
+Returns Michael Hsu / Curogram with a valid job URL but `employee_count: null` and
+`job_title_hint: null`. Both are optional — the workflow continues and reports the count as
+"Not available". Worth noting that this lead previously required a Clay domain scan to find at
+all; Smartlead resolves it directly by email.
 
-### Example 3: LatAm HMs
+### Example 3: Clipped company name — trust the job post
 
-**User Input:**
-```
-Generate CV for maria.garcia@startup.io from LatAm OJ - HMs
-```
-
-**Step 1 command:**
 ```bash
-PYTHONUTF8=1 python scripts/fetch_lead.py --email maria.garcia@startup.io --table "latam hms"
+PYTHONUTF8=1 python3 scripts/fetch_lead_smartlead.py --email craig.t@blackretebuilders.com
 ```
-Note: LatAm HMs field IDs are assumed from US/Canada HMs schema — verify on first run and update known-tables.md if wrong.
+Smartlead reports `company_name: "Blackrete"`, but the job URL slug reads
+`estimator-at-blackrete-builders-inc-4064769752`. Step 2 extracts "Blackrete Builders Inc",
+which is what the Google Doc should be named. Same pattern for `benjamin@covenantgolfsociety.com`
+("Covenant Golf" → "The Covenant Golf Society") and `dante@entrycapital.com.br`
+("Entry" → "Entry Capital").
 
 ## Performance Notes
 
-- **Total execution time:** 30-60 seconds (depends on table size and API response times)
-- **Clay API rate limits:** Respect rate limits, retry with backoff if rate limited
-- **Batch size:** 10,000 records per batch (tested maximum — reduces scan from 100+ calls to 1-3 calls)
-- **Session reuse:** Always authenticate fresh — session cookies expire quickly
+- **Step 1 is now a single sub-second API call** — no auth handshake, no table resolution, no
+  record scanning. The Clay path it replaced took 2–3 minutes on large tables (LatAm HMs is
+  ~33k records).
+- **Total execution time** is dominated by job extraction and CV generation, not lead lookup.
+- **Rate limits:** 200 requests per window, reported in `x-ratelimit-limit` /
+  `x-ratelimit-remaining` / `x-ratelimit-reset`. Normal workflow use is nowhere near this.
+- **403 ≠ rate limit.** See the Cloudflare User-Agent note in Step 1 before adding any backoff.
+- **Clay fallback** retains its old characteristics: fresh auth per run, 10,000-record batches,
+  ordered fallback chains.

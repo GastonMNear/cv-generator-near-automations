@@ -4,8 +4,12 @@ Universal lead fetcher — works for all known Clay tables.
 Usage: python scripts/fetch_lead.py --email EMAIL --table TABLE_ALIAS
 
 Table aliases (case-insensitive partial match):
-  us no hm        → US Open Jobs - No HM (searches 5 tables in order)
-  us hm / us hms  → US Open Jobs - Hiring Managers
+  us no hm        → US Open Jobs - No HM (searches 5 legacy tables, then the 3 EXP012 segments)
+  us eng          → EXP012 US OJ No HM | Engineering
+  us marketing    → EXP012 US OJ No HM | Marketing
+  us sales        → EXP012 US OJ No HM | Sales/GTM
+  apollo          → Apollo Open Jobs No HM (EXP010) — no separate HMs leads table exists
+  us hm / us hms  → US OJ HMs: EXP006 baseline → 2 challengers → older US HMs table
   asia hm         → Asia Open Jobs - Hiring Managers (searches 2 tables in order)
   asia no hm      → Asia Open Jobs - No Hiring Managers (searches 2 tables in order)
   latam no hm     → LatAm Open Jobs - No HMs (searches 2 tables in order)
@@ -45,7 +49,10 @@ TABLES = {
         "first_name": "f_hiEPcKlj0lTB",
         "last_name":  "f_fvs0rK0ntN1H",
         "ec":         "f_0t5mtcfvJknGywASv4z",
-        "fallbacks":  ["t_0thg92hZWdvUw75QNRx", "t_0tdyro7QesUNY3WJrt2", "t_0t59d2y3ZuD4396Kz5B", "t_0tbt48xVeCFCi8pFzip"],
+        # After the legacy US No-HM chain, fall through to the EXP012 priority-segment tables:
+        # an unqualified "us no hm" should still find a lead that now lives in a segment table.
+        "fallbacks":  ["t_0thg92hZWdvUw75QNRx", "t_0tdyro7QesUNY3WJrt2", "t_0t59d2y3ZuD4396Kz5B", "t_0tbt48xVeCFCi8pFzip",
+                       "t_0tkqxf9m5kjbQBaj8ze", "t_0tkr47cbUzbtpatohRK", "t_0tkr5r1mvuvV42xHHWW"],
     },
     "t_0thg92hZWdvUw75QNRx": {
         "name":       "Leads [Challenger] - US OJ No HMs | Routing CTA (new primary)",
@@ -91,10 +98,120 @@ TABLES = {
         "ec":         "f_0t5mtcfvJknGywASv4z",    # Employee Count
         "fallbacks":  [],
     },
+    # ── EXP006 workbook (Smartlead campaign "[EXP006] US Open Jobs - HMs - Baseline") ──
+    # Campaign says "HMs" but the Clay lead tables are named "No HMs" — trust the EXP number.
+    # Work Email field ID is unique to this workbook. Verified 2026-08-14.
+    # PRIMARY for "us hms". The table is named "...No HMs" but its workbook is
+    # "[EXP 006] US OJ HMs" (companies table t_0ti9szjXjjFNzTjw7o2) — the No-HM suffix is a
+    # clone artifact. Trust the workbook/EXP number, not the table name. Verified 2026-09-08.
+    "t_0tia0aux4TRkj9eBYU7": {
+        "name":       "EXP006 - Leads [Baseline] - US OJ HMs (new primary)",
+        "aliases":    ["us hm", "us hms", "us oj hm", "us oj hms", "us open jobs hm",
+                       "us open jobs - hiring managers",
+                       "exp006", "exp 006", "exp006 us open jobs - hms - baseline"],
+        "view":       "gv_TgwDWXPdg8Ci",          # Verified 2026-09-08 — 1,707 records (was 694 on 2026-08-14)
+        "email":      "f_0tia0fjpvejxPCJgVRF",    # Work Email — table-specific, verified 2026-09-08
+        "linkedin":   "f_QIP4GfH5XFZo",           # Written Job URL — verified 2026-09-08
+        "first_name": "f_hiEPcKlj0lTB",           # verified 2026-09-08
+        "last_name":  "f_fvs0rK0ntN1H",           # verified 2026-09-08
+        "ec":         "f_0t5mtcfvJknGywASv4z",    # verified 2026-09-08
+        # Challengers first (same workbook), then the older standalone US HMs table.
+        "fallbacks":  ["t_0tia5n9zXw8tKpoP4kY", "t_0tiaad4jKBjM5XRtR6E", "t_0t5pvx3g4o5WfysopqA"],
+    },
+    "t_0tia5n9zXw8tKpoP4kY": {
+        "name":       "EXP006 - Leads [Challenger 1] - Guess Opener",
+        "aliases":    [],  # Reached via fallback chain
+        "view":       "gv_TgwDWXPdg8Ci",
+        "email":      "f_0tia0fjpvejxPCJgVRF",    # Assumed — cloned schema, not yet verified
+        "linkedin":   "f_QIP4GfH5XFZo",
+        "first_name": "f_hiEPcKlj0lTB",
+        "last_name":  "f_fvs0rK0ntN1H",
+        "ec":         "f_0t5mtcfvJknGywASv4z",
+        "fallbacks":  [],
+    },
+    "t_0tiaad4jKBjM5XRtR6E": {
+        "name":       "EXP006 - Leads [Challenger 2] - Need Confirmation",
+        "aliases":    [],  # Reached via fallback chain
+        "view":       "gv_TgwDWXPdg8Ci",
+        "email":      "f_0tia0fjpvejxPCJgVRF",    # Assumed — cloned schema, not yet verified
+        "linkedin":   "f_QIP4GfH5XFZo",
+        "first_name": "f_hiEPcKlj0lTB",
+        "last_name":  "f_fvs0rK0ntN1H",
+        "ec":         "f_0t5mtcfvJknGywASv4z",
+        "fallbacks":  [],
+    },
+    # ── Apollo Open Jobs — No HMs (workbook wb_0tjm5v6Nzoik7YWmQj9) ──
+    # Smartlead campaign: "[EXP010] Apollo Open Jobs No HM".
+    # Field IDs identical to the standard US No-HM schema. Verified 2026-09-08 (7,084 records).
+    # NOTE: aliases deliberately avoid containing "us no hm" — the resolver does substring
+    # matching in both directions, so that string would hijack the existing US No-HM primary.
+    #
+    # There is NO Apollo HMs leads table. The workbook holds only this leads table plus two
+    # source tables ("Jobs Openings - Apollo Companies" t_0tjz56uf9koPtBq78Qe, a spreadsheet of
+    # job openings keyed by HM name/LinkedIn but with no per-lead work email, and "Apollo
+    # companies w/ open jobs"). If someone asks for "Apollo HMs", they mean this campaign —
+    # route them here rather than to the jobs table, which fetch_lead.py cannot search.
+    "t_0tjzgf1Wv5zQS8vmWxM": {
+        "name":       "No HM Leads [Baseline] - Apollo US OJ No HMs",
+        "aliases":    ["apollo us oj", "apollo no hm", "apollo baseline", "apollo open jobs",
+                       "apollo hm", "apollo hms", "exp010", "exp 010", "apollo"],
+        "view":       "gv_TgwDWXPdg8Ci",          # Verified 2026-09-08 — 7,084 records
+        "email":      "f_0tc2a2qEFRZthdct3Cs",    # Work Email — verified 2026-09-08
+        "linkedin":   "f_QIP4GfH5XFZo",           # Written Job URL — often a non-LinkedIn ATS link
+        "first_name": "f_hiEPcKlj0lTB",           # First Name (cleaned) — verified 2026-09-08
+        "last_name":  "f_fvs0rK0ntN1H",           # Last Name (cleaned) — verified 2026-09-08
+        "ec":         "f_0t5mtcfvJknGywASv4z",    # Employee Count — verified 2026-09-08
+        "fallbacks":  [],
+    },
+    # ── EXP012: US OJ No HM — Priority Segments (Engineering / Marketing / Sales-GTM) ──
+    # Smartlead campaigns: "[EXP012] US OJ No HM Priority Segments | Engineering | Marketing |
+    # Sales/GTM". Each segment lives in its own workbook but they share the standard US No-HM
+    # schema (verified 2026-09-08 against real records in all three tables).
+    #
+    # CAUTION: all three leads tables are literally named "Leads - US OJ No HMs | Engineering" —
+    # Marketing and Sales were cloned from Engineering and the name was never changed. Identify
+    # the segment by TABLE ID (or by the sibling "<Segment> | Companies Table" in the same
+    # workbook), never by the table's own name.
+    "t_0tkqxf9m5kjbQBaj8ze": {
+        "name":       "EXP012 - Leads - US OJ No HMs | Engineering",
+        "aliases":    ["us eng", "us engineering", "us oj engineering", "engineering segment",
+                       "eng segment", "exp012 engineering"],
+        "view":       "gv_TgwDWXPdg8Ci",          # Verified 2026-09-08 — 1,604 records
+        "email":      "f_0tc2a2qEFRZthdct3Cs",    # Work Email — verified 2026-09-08
+        "linkedin":   "f_QIP4GfH5XFZo",           # Written Job URL — verified 2026-09-08
+        "first_name": "f_hiEPcKlj0lTB",
+        "last_name":  "f_fvs0rK0ntN1H",
+        "ec":         "f_0t5mtcfvJknGywASv4z",
+        "fallbacks":  [],
+    },
+    "t_0tkr47cbUzbtpatohRK": {
+        "name":       "EXP012 - Leads - US OJ No HMs | Marketing",
+        "aliases":    ["us mktg", "us marketing", "us oj marketing", "marketing segment",
+                       "mktg segment", "exp012 marketing"],
+        "view":       "gv_TgwDWXPdg8Ci",          # Verified 2026-09-08 — 599 records
+        "email":      "f_0tc2a2qEFRZthdct3Cs",    # Work Email — verified 2026-09-08
+        "linkedin":   "f_QIP4GfH5XFZo",           # Written Job URL — verified 2026-09-08
+        "first_name": "f_hiEPcKlj0lTB",
+        "last_name":  "f_fvs0rK0ntN1H",
+        "ec":         "f_0t5mtcfvJknGywASv4z",
+        "fallbacks":  [],
+    },
+    "t_0tkr5r1mvuvV42xHHWW": {
+        "name":       "EXP012 - Leads - US OJ No HMs | Sales/GTM",
+        "aliases":    ["us sales", "us gtm", "us oj sales", "sales segment", "gtm segment",
+                       "sales/gtm", "exp012 sales"],
+        "view":       "gv_TgwDWXPdg8Ci",          # Verified 2026-09-08 — 1,608 records
+        "email":      "f_0tc2a2qEFRZthdct3Cs",    # Work Email — verified 2026-09-08
+        "linkedin":   "f_QIP4GfH5XFZo",           # Written Job URL — verified 2026-09-08
+        "first_name": "f_hiEPcKlj0lTB",
+        "last_name":  "f_fvs0rK0ntN1H",
+        "ec":         "f_0t5mtcfvJknGywASv4z",
+        "fallbacks":  [],
+    },
     # ── US Open Jobs - Hiring Managers ──
     "t_0t5pvx3g4o5WfysopqA": {
-        "name":       "US Open Jobs - Hiring Managers",
-        "aliases":    ["us hm", "us hms", "us oj hm", "us oj hms", "us open jobs hm", "us open jobs - hiring managers"],
+        "name":       "US Open Jobs - Hiring Managers (fallback)",
+        "aliases":    [],  # Aliases moved to the EXP006 new primary — reached via fallback chain
         "view":       "gv_TgwDWXPdg8Ci",
         "email":      "f_0t063ygVDhWMs5MT4MD",    # Work Email
         "linkedin":   "f_0t06147KZtafpAaiDTz",    # Job LinkedIn URL
@@ -231,16 +348,41 @@ LEAD_EMAIL   = args.email.strip().lower()
 TABLE_QUERY  = args.table.strip().lower()
 
 # ── Resolve table ───────────────────────────────────────────────────────────
+# Alias matching is substring-based in both directions, so generic aliases overlap specific
+# ones: "[EXP012] US OJ No HM Priority Segments | Sales/GTM" contains the generic "us oj no hm"
+# AND belongs to the Sales segment. Picking the first (or merely the longest) alias sends such
+# leads to the generic chain, which scans ~20k irrelevant records first.
+#
+# So resolve in two passes: a distinguishing keyword in the query wins outright, and only if
+# none is present do we fall back to plain alias matching. Keep this list in sync with the
+# segment/campaign tables above when new experiments land.
+DISCRIMINATORS = [
+    # (keywords that must appear in the query, table id)
+    (("engineering", "eng segment", "us eng"),            "t_0tkqxf9m5kjbQBaj8ze"),
+    (("marketing", "mktg"),                               "t_0tkr47cbUzbtpatohRK"),
+    (("sales", "gtm"),                                    "t_0tkr5r1mvuvV42xHHWW"),
+    (("apollo", "exp010", "exp 010"),                     "t_0tjzgf1Wv5zQS8vmWxM"),
+    (("exp006", "exp 006"),                               "t_0tia0aux4TRkj9eBYU7"),
+]
+
 table_id = None
 table_cfg = None
-for tid, cfg in TABLES.items():
-    for alias in cfg["aliases"]:
-        if TABLE_QUERY in alias or alias in TABLE_QUERY:
-            table_id  = tid
-            table_cfg = cfg
-            break
-    if table_id:
+
+for keywords, tid in DISCRIMINATORS:
+    if any(k in TABLE_QUERY for k in keywords) and tid in TABLES:
+        table_id, table_cfg = tid, TABLES[tid]
         break
+
+if not table_id:
+    # No distinguishing keyword — fall back to longest matching alias.
+    matches = []
+    for tid, cfg in TABLES.items():
+        for alias in cfg["aliases"]:
+            if TABLE_QUERY in alias or alias in TABLE_QUERY:
+                matches.append((len(alias), tid, cfg))
+    if matches:
+        matches.sort(key=lambda m: m[0], reverse=True)
+        _, table_id, table_cfg = matches[0]
 
 if not table_id:
     names = [f"  {cfg['name']}" for cfg in TABLES.values()]

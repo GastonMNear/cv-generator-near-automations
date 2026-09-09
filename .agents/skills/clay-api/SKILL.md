@@ -1,29 +1,18 @@
 ---
 name: clay-api
 description: >
-  Guidance for interacting with the Clay API (api.clay.com). Use this skill whenever you need
-  to read from Clay tables, authenticate with Clay, look up workspace resources, find table or
-  field IDs, or build any automation that touches Clay data. Covers the undocumented internal
-  api.clay.com/v3 endpoints, session-cookie auth (curl-based login), the 3-step data fetching
-  workflow (authenticate → get record IDs → bulk-fetch records), and endpoint reference.
+  Guidance for interacting with the Clay API (api.clay.com). Always use this skill whenever
+  you need to read from Clay tables, authenticate with Clay, look up workspace resources, find
+  table or field IDs, or build any automation that touches Clay data. Covers the undocumented
+  internal api.clay.com/v3 endpoints, session-cookie auth (curl-based login), the 3-step data
+  fetching workflow (authenticate → get record IDs → bulk-fetch records), and endpoint reference.
   Trigger this skill on Clay 401 errors, rate-limit issues, field resolution questions, or any
-  time you need to resolve a table name or field ID — it has pre-cached table and field IDs
-  that eliminate API lookup round-trips. Note: for CV-pipeline lead lookups by email, Smartlead
-  is now the primary source (see the email-replies-workflow skill); Clay is the fallback.
+  time you need to resolve a table name or field ID. When in doubt about Clay data access,
+  always consult this skill first — it has pre-cached table and field IDs that eliminate API
+  lookup round-trips.
 ---
 
 # Clay API Skill
-
-## Role in the CV pipeline
-
-For the CV-generation workflow, **Smartlead is the primary lead source** — it is queried by
-email in one call (`scripts/fetch_lead_smartlead.py`) and needs no table resolution. Clay is the
-**fallback**, used when Smartlead has no record for an address, or when a field Smartlead does
-not carry is needed. Everything below remains fully valid for that fallback path and for any
-other Clay work (enrichment tables, job-opening sources, ad-hoc queries).
-
-Why the change: Clay required guessing a table from a campaign name and then linearly scanning
-up to ~33k records, whereas Smartlead is keyed by the email that was actually mailed.
 
 ## Overview
 
@@ -55,7 +44,7 @@ Clay is a data enrichment and outbound sales platform. The HireWithNear workspac
 
 ### Key Integrations Available via Actions
 
-HubSpot, Salesforce, Apollo.io, LinkedIn, Google Sheets, Airtable, Smartlead AI, PhantomBuster, Anthropic Claude, OpenAI GPT, Slack, and 100+ more enrichment providers.
+HubSpot, Salesforce, Apollo.io, LinkedIn, Google Sheets, Airtable, Smartlead AI, PhantomBuster, Anthropic Codex, OpenAI GPT, Slack, and 100+ more enrichment providers.
 
 ## Authentication
 

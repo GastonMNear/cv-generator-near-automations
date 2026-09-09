@@ -55,36 +55,11 @@ JD_END
 
 ### Step 2: Handle Fetch Failures
 
-**Country-subdomain redirects (common):** LinkedIn 301-redirects job URLs to a country subdomain based on where the job is posted — e.g. Brazilian postings go `www.linkedin.com/jobs/view/...` → `br.linkedin.com/jobs/view/...`. WebFetch does NOT follow cross-host redirects; it returns a "REDIRECT DETECTED" message with the target URL. Simply call WebFetch again with the redirect URL and the same prompt. This is expected, not an error. Verified 2026-09-08 on a `.com.br` lead.
-
 If WebFetch returns an error, incomplete content, or a login wall:
 
 1. **Try appending `?trk=public_jobs_topcard-title` to the URL** — this sometimes forces the public view.
 2. **Try the guest job view URL pattern**: replace `www.linkedin.com/jobs/view/{id}` with `www.linkedin.com/jobs/view/{id}/` (ensure trailing slash).
-3. **Use the guest jobPosting API endpoint (most reliable fallback):**
-
-   ```
-   https://www.linkedin.com/jobs-guest/jobs/api/jobPosting/{job_id}
-   ```
-
-   This returns the raw job-post HTML fragment with no login wall, and it carries the
-   **full** description — company, title, and every section. Extract the numeric `{job_id}`
-   from the original URL (the trailing digits, e.g. `4458701353`).
-
-   **Silent-failure mode this fixes (verified 2026-09-08):** when a posting is expired,
-   closed, or region-restricted, `linkedin.com/jobs/view/{id}` does *not* return an error —
-   it **silently serves a generic jobs search-results page** for some unrelated keyword.
-   WebFetch succeeds, so nothing looks broken, but the extraction reports "this is a search
-   results page, not a job posting." Both step 1 and step 2 above return the *same* useless
-   page, so they are not real retries. On lead `zainab@clickstalentagency.com`
-   (job `4458701353`), `www.linkedin.com/jobs/view/4458701353/` served an "Acting Coach"
-   search page on both attempts, while the guest API returned the complete posting
-   (Clicks Talent — Influencer & Talent Agent).
-
-   **Therefore: if the fetch comes back as a search-results page, skip straight to this
-   endpoint.** Do not waste calls on steps 1–2 — a search page is the signature of the
-   redirect, not of a transient failure.
-4. If all attempts fail, report to the user that the job post could not be accessed and suggest they paste the job description text directly.
+3. If all attempts fail, report to the user that the job post could not be accessed and suggest they paste the job description text directly.
 
 ### Step 3: Format the Output
 

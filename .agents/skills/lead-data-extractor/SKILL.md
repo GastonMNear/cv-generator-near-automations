@@ -29,7 +29,7 @@ Extracts 4 fields from a Clay table record for a given lead email:
 
 ### Step 1 — Resolve the Clay Table
 
-Match `campaign_name` against the known table list in `.claude/skills/clay-api/references/known-tables.md` (case-insensitive substring match against name and all aliases).
+Match `campaign_name` against the known table list in `.Codex/skills/clay-api/references/known-tables.md` (case-insensitive substring match against name and all aliases).
 
 If no match, call the Clay API to list all tables:
 ```
@@ -43,7 +43,7 @@ If ambiguous (multiple close matches), list the candidates and ask the user to c
 
 Once the table ID is resolved, run:
 ```bash
-PYTHONUTF8=1 python3 .claude/skills/lead-data-extractor/scripts/extract_lead_data.py <lead_email> <table_id>
+PYTHONUTF8=1 python .Codex/skills/lead-data-extractor/scripts/extract_lead_data.py <lead_email> <table_id>
 ```
 
 The script outputs JSON like:
@@ -77,7 +77,7 @@ The script uses **priority-based pattern matching** to identify Clay field IDs �
 | Employee Count | `employee count`, `# employees`, `num employees`, `headcount`, `company size`, `employees` |
 | Job Post URL | `job post url`, `job post linkedin`, `linkedin job`, `opening url`, `posting url`, `job url`, `job link` — must NOT match `prospect`, `person`, `profile`, `company linkedin` |
 
-**Known-tables optimization**: For tables in `.claude/skills/clay-api/references/known-tables.md`, the correct field IDs are pre-cached. The script will still auto-discover them via pattern matching, but if a field fails to resolve, cross-reference with known-tables.md to confirm the correct field name.
+**Known-tables optimization**: For tables in `.Codex/skills/clay-api/references/known-tables.md`, the correct field IDs are pre-cached. The script will still auto-discover them via pattern matching, but if a field fails to resolve, cross-reference with known-tables.md to confirm the correct field name.
 
 **View ID selection**: The script prefers a view named "Default View" when available. Some tables have "Errored Rows" as the first view (e.g., US HMs, Canada HMs) — these only contain ~100-400 records. "Default View" contains the full dataset.
 
