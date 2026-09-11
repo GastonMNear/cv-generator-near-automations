@@ -88,3 +88,36 @@ where `last_reply_at` would have said SAME (`8/21`, not 8/27), and USAD's six-we
 nurture (`7/15`). Four rows resolved to a different address than HubSpot recorded —
 Artic Grey (booked from a `…zendesk.com` helpdesk address), USAD, Dance With Me, and
 HypeProxies (booked by Awan Ali, measured on colleague Gunnar Catlett).
+
+## Returning-lead check (added 2026-09-11)
+
+Repeat bookings were being counted as new pipeline because the `Email Outreach` tag
+is sticky and the routine counts by booking date. Backtested over ten weeks
+2026-07-06 → 2026-09-07 by replaying `returning_lead()` against live HubSpot:
+
+| Week | Before | After | Row demoted |
+|---|---|---|---|
+| 2026-07-06 | 10 | 10 | — |
+| 2026-07-13 | 5 | 5 | — |
+| 2026-07-20 | 12 | 12 | — |
+| 2026-07-27 | 11 | 11 | — |
+| 2026-08-03 | 6 | 6 | — |
+| 2026-08-10 | 8 | 8 | — (Cash Margin is a reschedule, not a return) |
+| 2026-08-17 | 11 | 11 | — |
+| **2026-08-24** | **12** | **12** | — (baseline anchor, unchanged) |
+| 2026-08-31 | 13 | **12** | GrowthScribe — prior booking 2026-06-05 |
+| 2026-09-07 | 8 | **7** | Whitehorse Partners — prior booking 2026-08-18 |
+
+Two false positives were found and fixed during the backtest; both are permanent
+regression cases for any future change to this check:
+
+* **Cash Margin Partners** — booked 07-28 for 08-24 17:30 (`RESCHEDULED`), rebooked
+  08-14 for 08-24 **19:00**. Different start timestamp, same calendar day. A
+  full-timestamp comparison flags this wrongly. Must stay **counted**.
+* **Whitehorse Partners (08-18)** — two objects written three minutes apart for the
+  identical 08-25 14:30 slot. Must stay **counted**; its later 09-08 booking for the
+  separate 09-09 call is a genuine return and **is** flagged.
+
+GrowthScribe's first Smartlead reply is 2026-06-01 23:48 ET, so before this fix it
+was counted as `PREV` — it inflated the backlog half of the split, not the same-week
+half.

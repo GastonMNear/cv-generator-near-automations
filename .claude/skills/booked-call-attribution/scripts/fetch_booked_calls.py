@@ -155,25 +155,89 @@ def to_row(meeting, contact, contact_id):
     }
 
 
-def earlier_booking(contact_id, before_iso):
-    """Did this contact already book a Chili Piper call before the window?
+def prior_bookings(contact_id, before_iso):
+    """Every Chili Piper booking this contact made BEFORE the window, oldest first.
 
-    This is what separates a genuine missed booking from a re-engagement sync.
-    Cactus Audio's 2026-08-24 "sync: Near & Cactus" is not a new call — the account
-    first booked 2025-12-12. Same shape for Astrozon (booked 07-22, then two
-    candidate interviews) and Greenwich Metals (booked 04-16, then a kickoff).
+    Two different questions lean on this and they want different answers, so it
+    returns the rows rather than a single date:
+
+      * Is a flagged non-booking meeting really a re-engagement sync? Cactus Audio's
+        2026-08-24 "sync: Near & Cactus" is not a new call — the account first booked
+        2025-12-12. Same shape for Astrozon and Greenwich Metals.
+      * Is a *counted* booking actually a RETURNING lead re-booking? That is the
+        GrowthScribe case, and it needs the gap and the prior outcome to judge.
+
+    `hs_meeting_start_time` and `hs_meeting_outcome` matter as much as the booked
+    date, because a reschedule looks identical to a return from the booked date
+    alone — see `_reschedule_of`.
     """
     res = hubspot(f"/crm/v4/objects/contacts/{contact_id}/associations/meetings")
     ids = [str(r["toObjectId"]) for r in (res.get("results") or [])][:50]
     if not ids:
-        return None
+        return []
     out = hubspot("/crm/v3/objects/meetings/batch/read", "POST",
-                  {"properties": ["hs_createdate", "hs_activity_type"],
+                  {"properties": ["hs_createdate", "hs_activity_type",
+                                  "hs_meeting_start_time", "hs_meeting_outcome"],
                    "inputs": [{"id": i} for i in ids]})
-    prior = [r["properties"]["hs_createdate"] for r in (out.get("results") or [])
+    prior = [r["properties"] for r in (out.get("results") or [])
              if (r.get("properties") or {}).get("hs_activity_type")
              and r["properties"].get("hs_createdate", "") < before_iso]
-    return min(prior) if prior else None
+    return sorted(prior, key=lambda p: p.get("hs_createdate", ""))
+
+
+def earlier_booking(contact_id, before_iso):
+    """Oldest prior Chili Piper booking date, or None. Thin wrapper kept because the
+    flagged-row path only needs the one date."""
+    prior = prior_bookings(contact_id, before_iso)
+    return prior[0]["hs_createdate"] if prior else None
+
+
+# A RESCHEDULE is not a return — it is the same call, moved. Two shapes occur and
+# both must survive the returning-lead check:
+#
+#   Whitehorse Partners  books 08-18 21:37 and 08-18 21:40, both for 08-25 14:30
+#                        -> identical start time, one booking recorded twice
+#   Cash Margin Partners books 07-28 for 08-24 17:30 (outcome RESCHEDULED), then
+#                        08-14 for 08-24 19:00
+#                        -> different start TIME, same calendar DAY, and the prior
+#                           booking is explicitly marked RESCHEDULED
+#
+# So a prior booking is discounted when it points at the same calendar day as the
+# new one, or when HubSpot already labelled it RESCHEDULED. Comparing the full
+# timestamp alone would have miscounted Cash Margin as a returning lead.
+def _reschedule_of(prior, new_start):
+    prior_start = prior.get("hs_meeting_start_time") or ""
+    if prior_start and new_start and prior_start[:10] == new_start[:10]:
+        return True
+    return (prior.get("hs_meeting_outcome") or "").upper() == "RESCHEDULED"
+
+
+def returning_lead(contact_id, booking):
+    """Is this counted booking a RETURNING lead rather than a new one?
+
+    The routine counts by booking date, so a lead who first came through outbound
+    months ago and books again now — via a reply to an old thread, a referral, the
+    website, whatever — lands in the week as if new sending produced it. Nothing new
+    is created in HubSpot, so Command Center never shows it, and the week reads one
+    call high. GrowthScribe (first booked 2026-06-05, booked again 2026-09-04) is the
+    case that exposed it.
+
+    The contact's own booking history is the signal: a PRIOR Chili Piper booking for
+    a DIFFERENT slot means we have already spoken to (or had on the calendar) this
+    account, so the new call is a return, not new pipeline. Returns
+    (reason, first_prior_date) or (None, None).
+    """
+    prior = prior_bookings(contact_id, booking["booked_at"])
+    start = booking.get("meeting_start") or ""
+    prior = [p for p in prior if not _reschedule_of(p, start)]
+    if not prior:
+        return None, None
+    first = prior[0]
+    when = (first.get("hs_createdate") or "")[:10]
+    outcome = (first.get("hs_meeting_outcome") or "").upper()
+    detail = f" ({outcome.lower()})" if outcome else ""
+    return (f"returning lead — account already booked {when}{detail}; "
+            f"not new email-outreach pipeline"), when
 
 
 def main():
@@ -182,6 +246,9 @@ def main():
     ap.add_argument("--out", default="bookings.json")
     ap.add_argument("--no-review", action="store_true",
                     help="skip the review sweep (saves ~2 requests, loses the flags)")
+    ap.add_argument("--no-repeat-check", action="store_true",
+                    help="skip the returning-lead check (counts repeat bookings as "
+                         "new pipeline — matches pre-2026-09 behaviour)")
     a = ap.parse_args()
 
     lo, hi = resolve_week([a.week] if a.week else [])
@@ -213,6 +280,18 @@ def main():
     # is one ("sync: Near & Cactus"), and a company silently missing from the report
     # is worse than one Gaston deletes. They are marked so they stay out of the
     # headline until he adjudicates them.
+    # A counted booking whose contact has booked before is a RETURNING lead, not new
+    # email-outreach pipeline. It is demoted to a flagged row rather than dropped,
+    # so it still appears in the sheet and Slack with its reason — a silent drop is
+    # exactly as hard to notice as the silent over-count it replaces.
+    if not a.no_repeat_check:
+        for cid, row in rows.items():
+            reason, first = returning_lead(cid, row)
+            if reason:
+                row["counted"] = False
+                row["flag_reason"] = reason
+                row["returning_since"] = first
+
     flagged, dropped = (uncounted_candidates(lo, hi, rows) if not a.no_review
                         else ([], []))
     bookings = sorted(list(rows.values()) + flagged, key=lambda r: r["booked_at"])

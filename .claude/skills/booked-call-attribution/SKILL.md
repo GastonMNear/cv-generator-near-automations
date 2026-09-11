@@ -121,6 +121,49 @@ weekly series as directional. If you build a chart, encode call volume in bar le
 so a thin bar cannot be misread as a strong week, and state the Mon-00:00-ET
 boundary on it.
 
+## Returning leads — the repeat-booking trap
+
+**The source tag is sticky; the pipeline question is not.** A contact tagged
+`Email Outreach` in June keeps that tag forever. If they come back in September
+through any other channel — a reply to an old thread, a referral, the website — the
+booking still reads as `Email Outreach`, and a routine that counts by booking date
+counts it as new outbound pipeline.
+
+This is invisible from the report, and **invisible from Command Center too**: nothing
+new is created in HubSpot for a returning lead, so Command Center shows nothing while
+the routine shows one extra call. That divergence is the symptom.
+
+GrowthScribe is the case that exposed it — first booked 2026-06-05, booked again
+2026-09-04, and made the 08-31 week read **13 instead of 12**. Its first Smartlead
+reply was 2026-06-01, so it would have landed in `PREV` and inflated the
+"harvesting the backlog" half of the metric.
+
+**The signal is the contact's own booking history**, not the tag and not the reply
+date. `returning_lead()` in `fetch_booked_calls.py` asks: does this contact have an
+earlier Chili Piper booking? If yes, the row is demoted to flagged.
+
+**A reschedule is not a return** — this is the one that will bite a naive fix. Two
+shapes, both of which must stay counted:
+
+| Account | Shape | Why it is not a return |
+|---|---|---|
+| Whitehorse Partners | books 08-18 21:37 **and** 08-18 21:40, both for 08-25 14:30 | one booking recorded twice — identical start time |
+| Cash Margin Partners | books 07-28 for 08-24 **17:30** (outcome `RESCHEDULED`), then 08-14 for 08-24 **19:00** | same call moved later the same day |
+
+So a prior booking is discounted when it targets the **same calendar day** as the new
+one, or when HubSpot already marked it `RESCHEDULED`. Comparing full timestamps alone
+miscounts Cash Margin; comparing only the outcome misses Whitehorse's double-write.
+
+**It flags rather than drops.** A silent drop is exactly as hard to notice as the
+silent over-count it replaces, so the row still appears in the sheet and in Slack
+with its reason and the prior booking date, and Gaston keeps or deletes it. Whitehorse
+Partners booked again on 09-08 for a genuinely separate 09-09 call — a real second
+conversation, and his call whether it counts.
+
+Measured over the ten weeks 07-06 → 09-07, this changes **two** weeks: 08-31
+(13 → 12, GrowthScribe) and 09-07 (8 → 7, Whitehorse). The 08-24 baseline week is
+untouched at 12. `--no-repeat-check` restores the old behaviour.
+
 ## Filtering to Email Outreach
 
 The source lives on the **contact**, in `meeting_source__standardized_`. Match it
@@ -141,8 +184,14 @@ report. So every Email Outreach meeting in the week is written as a row; the one
 that are not confirmed bookings are marked and held out of the headline.
 
 **Counted** — contact tagged exactly `Email Outreach`, meeting is a real Chili Piper
-booking (`hs_activity_type` present). These get `SAME` / `PREV` / `UNRESOLVED` and
-drive the percentages.
+booking (`hs_activity_type` present), **and the contact has not booked before**.
+These get `SAME` / `PREV` / `UNRESOLVED` and drive the percentages.
+
+**Flagged `returning lead — …`** — a booking whose contact already has an earlier
+Chili Piper booking. This is a *new* call for an account we have already spoken to,
+so it is not new email-outreach pipeline even when the contact is still tagged
+`Email Outreach` from the original cold email months ago. See "Returning leads"
+below.
 
 **Dropped as delivery** — a non-booking meeting whose title marks it as post-sale
 work. No property separates these from a real call: lifecycle stage does not (Sana
@@ -248,6 +297,11 @@ oauth2.googleapis.com   # refreshing the Google token
 Every one of these cost real time. `references/api-notes.md` has the verified
 endpoint shapes; these are the ones that produce a *confidently wrong* answer.
 
+**A returning lead is not new pipeline, and the `Email Outreach` tag will not tell
+you.** The tag is sticky from the original cold email; the contact's prior booking
+history is the only signal. Counting by booking date alone made the 08-31 week read
+13 instead of 12. See "Returning leads" above.
+
 **`last_reply_at` is the last reply, not the first.** The single most tempting wrong
 field in this job. It would mis-bucket Hype Proxies (last 08-27, first 08-21) and
 USAD (last 08-26, first 07-15).
@@ -319,8 +373,9 @@ that hand-built roster, including the three bookings the manual list missed.
 ## Self-annealing
 
 On failure: read the error, fix the script, re-run against the baseline week
-(`./scripts/run.sh 2026-08-24 --dry-run` should give 12 bookings), and update the
-traps above with whatever changed.
+(`./scripts/run.sh 2026-08-24 --dry-run` should give 12 bookings, 0 flagged as
+returning), and update the traps above with whatever changed. The 08-31 week is the
+second anchor: **12 counted + GrowthScribe flagged as returning**, never 13.
 
 On success, cache what you learned at runtime: new source values seen in
 `meeting_source__standardized_`, new address-mismatch pairs, new junk domains, and
