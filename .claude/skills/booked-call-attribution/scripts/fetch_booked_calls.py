@@ -224,8 +224,16 @@ def returning_lead(contact_id, booking):
 
     The contact's own booking history is the signal: a PRIOR Chili Piper booking for
     a DIFFERENT slot means we have already spoken to (or had on the calendar) this
-    account, so the new call is a return, not new pipeline. Returns
-    (reason, first_prior_date) or (None, None).
+    account, so the new call is a return, not new pipeline.
+
+    ONLY FIRST BOOKINGS COUNT. This is not a judgement call per row — a second
+    booking is excluded even when it is a genuine new conversation with a real
+    prior call behind it (Whitehorse Partners booked 08-18 for an 08-25 call, then
+    again 09-08 for a separate 09-09 call; the 09-08 one does not count). The metric
+    asks what NEW email outreach produced, and an account that has already been on
+    our calendar cannot answer it whichever channel brought them back.
+
+    Returns (reason, first_prior_date) or (None, None).
     """
     prior = prior_bookings(contact_id, booking["booked_at"])
     start = booking.get("meeting_start") or ""
@@ -281,9 +289,11 @@ def main():
     # is worse than one Gaston deletes. They are marked so they stay out of the
     # headline until he adjudicates them.
     # A counted booking whose contact has booked before is a RETURNING lead, not new
-    # email-outreach pipeline. It is demoted to a flagged row rather than dropped,
-    # so it still appears in the sheet and Slack with its reason — a silent drop is
-    # exactly as hard to notice as the silent over-count it replaces.
+    # email-outreach pipeline, and is excluded — only FIRST bookings count. It is
+    # carried as a flagged row rather than dropped so it still appears in the sheet
+    # and Slack with its reason: a silent drop is exactly as hard to notice as the
+    # silent over-count it replaces. The row is not a question for Gaston, though —
+    # the exclusion is the rule, and the row is there to show the rule firing.
     if not a.no_repeat_check:
         for cid, row in rows.items():
             reason, first = returning_lead(cid, row)

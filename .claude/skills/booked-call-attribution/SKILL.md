@@ -154,11 +154,18 @@ So a prior booking is discounted when it targets the **same calendar day** as th
 one, or when HubSpot already marked it `RESCHEDULED`. Comparing full timestamps alone
 miscounts Cash Margin; comparing only the outcome misses Whitehorse's double-write.
 
+**Only FIRST bookings count — this is a rule, not a per-row judgement.** A second
+booking is excluded even when it is a genuine new conversation with a real prior call
+behind it. Whitehorse Partners booked 08-18 for an 08-25 call, then again 09-08 for a
+separate 09-09 call: the 09-08 booking does **not** count. The metric asks what new
+email outreach produced, and an account already on our calendar cannot answer that
+whichever channel brought it back.
+
 **It flags rather than drops.** A silent drop is exactly as hard to notice as the
-silent over-count it replaces, so the row still appears in the sheet and in Slack
-with its reason and the prior booking date, and Gaston keeps or deletes it. Whitehorse
-Partners booked again on 09-08 for a genuinely separate 09-09 call — a real second
-conversation, and his call whether it counts.
+silent over-count it replaces, so the row still appears in the sheet and in Slack with
+its reason and the prior booking date. It is there to show the rule firing, not to ask
+a question — Slack reports these under "excluded as returning leads", separately from
+the `REVIEW` rows that genuinely need adjudication.
 
 Measured over the ten weeks 07-06 → 09-07, this changes **two** weeks: 08-31
 (13 → 12, GrowthScribe) and 09-07 (8 → 7, Whitehorse). The 08-24 baseline week is
@@ -187,11 +194,11 @@ that are not confirmed bookings are marked and held out of the headline.
 booking (`hs_activity_type` present), **and the contact has not booked before**.
 These get `SAME` / `PREV` / `UNRESOLVED` and drive the percentages.
 
-**Flagged `returning lead — …`** — a booking whose contact already has an earlier
-Chili Piper booking. This is a *new* call for an account we have already spoken to,
-so it is not new email-outreach pipeline even when the contact is still tagged
-`Email Outreach` from the original cold email months ago. See "Returning leads"
-below.
+**Excluded as `returning lead — …`** — a booking whose contact already has an earlier
+Chili Piper booking. Only first bookings count, so this is excluded outright, even
+when it is a genuine second conversation. The contact stays tagged `Email Outreach`
+from the original cold email months ago, which is exactly why the tag cannot be
+trusted here. See "Returning leads" below.
 
 **Dropped as delivery** — a non-booking meeting whose title marks it as post-sale
 work. No property separates these from a real call: lifecycle stage does not (Sana

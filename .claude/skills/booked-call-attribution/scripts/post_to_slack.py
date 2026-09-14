@@ -60,12 +60,21 @@ def build_message(data, sheet_url):
     rows, review = data["rows"], data.get("review") or []
     attributed = s["same_week"] + s["prev_week"]
 
+    # Split the headline's parenthetical the same way the sections below are split:
+    # a returning lead is excluded by rule, not awaiting review, and saying
+    # "flagged for review" of a settled exclusion invites a second look that is not
+    # wanted.
+    n_returning = sum(1 for r in rows
+                      if not r.get("counted", True) and r.get("returning_since"))
+    n_review = (s.get("flagged") or 0) - n_returning
+    notes = ([f"+{n_returning} returning"] if n_returning else []) + \
+            ([f"+{n_review} flagged for review"] if n_review > 0 else [])
     lines = [
         f"*Booked-call pipeline attribution — {s['week_start']} → {s['week_end']}*",
         "",
         f"*{s['total_booked']}* calls booked from Email Outreach "
         f"across *{s['companies']}* {'company' if s['companies'] == 1 else 'companies'}."
-        + (f" (+{s['flagged']} flagged for review)" if s.get("flagged") else ""),
+        + (f" ({', '.join(notes)})" if notes else ""),
     ]
     if attributed:
         lines += [
@@ -86,14 +95,23 @@ def build_message(data, sheet_url):
         lines += ["", f"⚠️ *{s['unresolved']} unresolved* (no Smartlead lead found): "
                       f"{names}. Percentages are of the {attributed} attributed."]
 
-    # Rows written to the sheet but held out of the headline. They are in the sheet
-    # marked "REVIEW – …" so no company goes missing; naming them here is what turns
-    # a silent exclusion into a decision Gaston actually makes.
+    # Rows written to the sheet but held out of the headline, split by whether they
+    # are a rule firing or a question. Returning leads are settled policy — only
+    # FIRST bookings count — so they are reported as excluded, not as something to
+    # adjudicate. The rest are genuinely undecided and say so.
     flagged = [r for r in rows if not r.get("counted", True)]
-    if flagged:
-        lines += ["", f"🔎 *{len(flagged)} in the sheet as `REVIEW`* — a real call "
+    returning = [r for r in flagged if r.get("returning_since")]
+    undecided = [r for r in flagged if not r.get("returning_since")]
+    if returning:
+        lines += ["", f"🔁 *{len(returning)} excluded as returning leads* — the "
+                      "account booked with us before, so this is not new outbound:"]
+        for r in returning:
+            lines.append(f"    • {r['company_name'] or r['booker_email']} — "
+                         f"first booked {r.get('returning_since', '?')}")
+    if undecided:
+        lines += ["", f"🔎 *{len(undecided)} in the sheet as `REVIEW`* — a real call "
                       "or not; keep or delete the row:"]
-        for r in flagged:
+        for r in undecided:
             lines.append(f"    • {r['company_name'] or r['booker_email']} — "
                          f"{r.get('flag_reason', '')}")
 

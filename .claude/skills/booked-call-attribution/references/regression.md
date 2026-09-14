@@ -116,7 +116,10 @@ regression cases for any future change to this check:
   full-timestamp comparison flags this wrongly. Must stay **counted**.
 * **Whitehorse Partners (08-18)** — two objects written three minutes apart for the
   identical 08-25 14:30 slot. Must stay **counted**; its later 09-08 booking for the
-  separate 09-09 call is a genuine return and **is** flagged.
+  separate 09-09 call is a genuine return and is **excluded**. Confirmed by Gaston
+  2026-09-14: only first bookings count, so a second booking is excluded even when a
+  real second conversation sits behind it. Do not reintroduce this as a judgement
+  call.
 
 GrowthScribe's first Smartlead reply is 2026-06-01 23:48 ET, so before this fix it
 was counted as `PREV` — it inflated the backlog half of the split, not the same-week
