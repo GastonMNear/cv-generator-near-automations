@@ -13,7 +13,7 @@ tab gid `1651055580`. Written by `scripts/write_to_sheet.py`.
 | F | Contact | who booked, per HubSpot |
 | G | Email | the **Smartlead** address we measured |
 | H | Bucket (SAME/PREV) | the metric |
-| I | Campaign | Smartlead campaign name(s), deduped |
+| I | Campaign | Smartlead campaign name(s), deduped — **only campaigns with ≥1 email in the thread** |
 | J | First reply (ET) | earliest REPLY across all campaigns — decides the bucket |
 | K | Booked (ET) | `hs_createdate` — puts the row in this week |
 
@@ -32,6 +32,14 @@ written as `RETURNING – first booked 2026-08-25` instead. That is a settled
 exclusion, not a question: leave the row as the record of the rule firing. The date
 is in the label because the tab has no `Note` column — `REVIEW – PREV` alone made
 Quieto (09-21 week) look like an error.
+
+**The Campaign column skips campaigns that never emailed the lead.** Smartlead
+enrolls leads in sub-sequences (`SUB | …`) that often send nothing, and
+`/leads/?email=` still lists them. A lead with an empty message history in a
+campaign is not really in it: MP2A (09-21 week) showed an `[EXP012] US OJ …` follow-up
+with 0 emails next to the LATAM campaign it actually replied to. First-reply
+measurement is unaffected; it already reads every campaign's history. If no campaign
+has an email, the cell is left blank.
 
 ## Columns are resolved by header name, not position
 

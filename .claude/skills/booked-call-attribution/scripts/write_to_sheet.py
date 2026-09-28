@@ -143,9 +143,16 @@ def booked_et(row):
 
 def campaign_label(row):
     """Campaign names, deduped and in order. Falls back to the id when a name is
-    missing so the cell is never silently empty."""
+    missing so the cell is never silently empty.
+
+    Only campaigns with at least one message in the thread are listed: a lead
+    enrolled in a campaign that never emailed them is not really in it. Sub-sequences
+    enroll leads and often send nothing — MP2A sat in an EXP012 follow-up with an
+    empty history, which read as if that campaign had worked the lead."""
     seen, out = set(), []
     for c in row.get("campaigns") or []:
+        if (c.get("messages") or 0) < 1:
+            continue
         name = (c.get("campaign_name") or "").strip() or str(c.get("campaign_id"))
         if name not in seen:
             seen.add(name)
