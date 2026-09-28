@@ -27,6 +27,12 @@ percentages until adjudicated — delete the row, or strip the `REVIEW – ` pre
 keep it. The reason for each is named in the Slack message, and populates a `Note`
 column automatically if you add that header.
 
+A **returning lead** (the contact booked before, so only its first booking counts) is
+written as `RETURNING – first booked 2026-08-25` instead. That is a settled
+exclusion, not a question: leave the row as the record of the rule firing. The date
+is in the label because the tab has no `Note` column — `REVIEW – PREV` alone made
+Quieto (09-21 week) look like an error.
+
 ## Columns are resolved by header name, not position
 
 `write_to_sheet.py` finds the header row by locating `Week` in column B, then maps

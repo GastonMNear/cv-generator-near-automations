@@ -153,6 +153,17 @@ def campaign_label(row):
     return ", ".join(out)
 
 
+def bucket_label(row):
+    """SAME / PREV / UNRESOLVED for counted rows; `RETURNING – first booked <date>`
+    for a returning lead; `REVIEW – <bucket>` for a meeting awaiting adjudication.
+    None of the flagged labels equal SAME or PREV, so the Totals COUNTIFs skip them."""
+    if row.get("counted", True):
+        return row.get("bucket") or ""
+    if row.get("returning_since"):
+        return f"RETURNING – first booked {row['returning_since']}"
+    return f"REVIEW – {row.get('bucket') or ''}"
+
+
 def match_label(row):
     """Match method, naming the measured lead when it is not the person who booked.
 
@@ -195,8 +206,10 @@ def build_records(data):
             "email": r.get("smartlead_email") or r.get("booker_email") or "",
             # Flagged rows are written so no company goes missing, but the bucket
             # cell says so — one column, sortable, and obvious enough to delete.
-            "bucket": (r.get("bucket") or "") if r.get("counted", True)
-                      else f"REVIEW – {r.get('bucket') or ''}",
+            # A returning lead is a settled exclusion, not a question, so it gets
+            # its own label carrying the reason: the tab has no Note column, and
+            # `REVIEW – PREV` alone read as an unexplained error (Quieto, 09-21).
+            "bucket": bucket_label(r),
             "note": r.get("flag_reason") or "",
             "campaign": campaign_label(r),
             "first_reply": et_short(r.get("first_reply_et")),

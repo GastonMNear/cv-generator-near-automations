@@ -167,6 +167,12 @@ its reason and the prior booking date. It is there to show the rule firing, not 
 a question — Slack reports these under "excluded as returning leads", separately from
 the `REVIEW` rows that genuinely need adjudication.
 
+**In the sheet the bucket cell reads `RETURNING – first booked <date>`**, never
+`REVIEW – …`. Quieto (09-21 week, first booked 08-25) was written as `REVIEW – PREV`
+and read as an unexplained error: the tab has no Note column, so the reason never
+reached the sheet. The label now carries it. It matches neither `SAME` nor `PREV`, so
+the Totals formulas leave it out without any change.
+
 Measured over the ten weeks 07-06 → 09-07, this changes **two** weeks: 08-31
 (13 → 12, GrowthScribe) and 09-07 (8 → 7, Whitehorse). The 08-24 baseline week is
 untouched at 12. `--no-repeat-check` restores the old behaviour.
@@ -194,7 +200,7 @@ that are not confirmed bookings are marked and held out of the headline.
 booking (`hs_activity_type` present), **and the contact has not booked before**.
 These get `SAME` / `PREV` / `UNRESOLVED` and drive the percentages.
 
-**Excluded as `returning lead — …`** — a booking whose contact already has an earlier
+**Excluded as `returning lead — …`** (sheet bucket `RETURNING – first booked <date>`) — a booking whose contact already has an earlier
 Chili Piper booking. Only first bookings count, so this is excluded outright, even
 when it is a genuine second conversation. The contact stays tagged `Email Outreach`
 from the original cold email months ago, which is exactly why the tag cannot be
