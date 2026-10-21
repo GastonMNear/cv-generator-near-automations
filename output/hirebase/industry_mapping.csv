@@ -1,0 +1,488 @@
+hubspot_industry,hirebase_industry,hirebase_sub_industry,confidence,note
+Computer Software,"Tech, Software & IT Services",Software Development & Engineering,high,
+Computer Software,"Tech, Software & IT Services",Enterprise Software & Solutions,high,
+Computer Software,"Tech, Software & IT Services",Cloud Technologies,high,
+Computer Software,"Tech, Software & IT Services",AI & ML,high,
+Computer Software,"Tech, Software & IT Services",Data Management & Analytics,med,
+Computer Software,"Tech, Software & IT Services",Emerging Technologies,med,
+Computer Software,"Tech, Software & IT Services",Legal & Compliance Technology,med,vertical SaaS
+Computer Software,"Tech, Software & IT Services",Health Information Technology,med,vertical SaaS
+Computer Software,"Tech, Software & IT Services",Educational Technology (EdTech),med,vertical SaaS
+Computer Software,"Tech, Software & IT Services",Retail & Point of Sale Technology,med,vertical SaaS
+Computer Software,"Tech, Software & IT Services",Energy & Utilities Technology,med,vertical SaaS
+Computer Software,"Tech, Software & IT Services",Real Estate Technology,med,proptech; same string also under Real Estate
+Computer Software,"Tech, Software & IT Services",Web3/Crypto,med,
+Computer Software,Construction,Construction Technology & Automation,med,contech
+Computer Software,Healthcare,Healthcare Technology,med,
+Computer Software,Finance,Fintech,med,
+Computer Software,Recreation & Travel,Travel Technology,med,
+Computer Software,Agriculture,Agri-Tech & Digital Agriculture,med,
+Computer Software,Wellness & Fitness,Wellness Apps & Digital Platforms,med,
+Marketing and Advertising,Corporate Services,Marketing & Advertising,high,
+Marketing and Advertising,Media & Communications,Advertising & Marketing,high,
+Marketing and Advertising,Real Estate,Real Estate Marketing & Advertising,med,
+Information Technology and Services,"Tech, Software & IT Services",IT Services,high,
+Information Technology and Services,"Tech, Software & IT Services",Cloud Technologies,med,
+Information Technology and Services,"Tech, Software & IT Services",Data Management & Analytics,med,
+Information Technology and Services,"Tech, Software & IT Services",Internet of Things (IoT),med,
+Management Consulting,Corporate Services,Management Consulting,high,
+Management Consulting,Healthcare,Healthcare Consulting & Management,med,
+Management Consulting,Real Estate,Real Estate Consulting,med,
+Management Consulting,Transportation & Logistics,Transportation Consulting & Services,med,
+Management Consulting,Wellness & Fitness,Health & Wellness Consulting,low,
+Management Consulting,Recreation & Travel,Travel R&C,low,'R&C' undefined in docs; assumed research & consulting
+Financial Services,Finance,Credit & Lending,high,"lenders, not banks (Banking excluded)"
+Financial Services,Finance,Payment Systems & Services,high,
+Financial Services,Finance,Fintech,high,
+Financial Services,Finance,Financial Planning & Advisory,high,
+Financial Services,Finance,Finance Risk Management,med,
+Financial Services,Finance,Leasing & Equipment Finance,med,
+Financial Services,Finance,Real Estate Finance,med,
+Financial Services,Corporate Services,Financial Services for Corporates,high,
+Financial Services,Real Estate,Real Estate Financing,med,
+Financial Services,"Tech, Software & IT Services",Web3/Crypto,low,
+Real Estate,Real Estate,Residential Real Estate,high,
+Real Estate,Real Estate,Commercial Real Estate,high,
+Real Estate,Real Estate,Industrial Real Estate,high,
+Real Estate,Real Estate,Land Development,high,
+Real Estate,Real Estate,Real Estate Investing,high,
+Real Estate,Real Estate,Property Management,high,
+Real Estate,Real Estate,Real Estate Brokerage & Sales,high,
+Real Estate,Real Estate,Real Estate Financing,high,
+Real Estate,Real Estate,Real Estate Appraisal & Valuation,high,
+Real Estate,Real Estate,Real Estate Marketing & Advertising,high,
+Real Estate,Real Estate,Real Estate Legal Services,high,
+Real Estate,Real Estate,Real Estate Consulting,high,
+Real Estate,Real Estate,Sustainable Real Estate,high,
+Real Estate,Real Estate,Real Estate Technology,high,
+Real Estate,Real Estate,Vacation & Short-term Rentals,high,
+Real Estate,Real Estate,Student Housing,high,
+Real Estate,Real Estate,Agricultural Real Estate,cut,second pass: farm / agriculture operations
+Real Estate,Real Estate,Historic Property Real Estate,high,
+Real Estate,Real Estate,Foreclosure & Distressed Properties,high,
+Real Estate,Real Estate,Luxury Real Estate,high,
+Real Estate,Construction,Real Estate Development & Management,med,
+Real Estate,Corporate Services,Real Estate Services,high,
+Retail,Retail & Wholesale,Online Retail,high,
+Retail,Retail & Wholesale,Specialty Retail,high,
+Retail,Retail & Wholesale,Clothing & Apparel Stores,high,
+Retail,Retail & Wholesale,Electronics & Appliance Stores,high,
+Retail,Retail & Wholesale,Furniture & Home Furnishings Stores,high,
+Retail,Retail & Wholesale,General Merchandise Stores,high,
+Retail,Retail & Wholesale,Health & Personal Care Stores,high,
+Retail,Retail & Wholesale,"Sporting Goods, Hobby, Book & Music Stores",high,
+Retail,Media & Communications,Media Retail,med,
+Retail,Wellness & Fitness,Sporting Goods & Retail,med,
+Accounting,Corporate Services,Accounting,high,
+Accounting,Finance,Accounting & Auditing,high,
+Consumer Services,"Tech, Software & IT Services",E-Commerce & Internet Services,low,no consumer-services bucket in Hirebase
+Consumer Services,Consumer Goods,Personal Care & Household,low,keyword: 'home services' / 'consumer services'
+Construction,Construction,Building Construction,high,
+Construction,Construction,Heavy & Civil Engineering,high,
+Construction,Construction,Specialty Trade Contractors,high,
+Construction,Construction,Infrastructure,high,
+Construction,Construction,Construction Services,high,
+Construction,Construction,Construction Materials & Equipment,high,
+Construction,Construction,Real Estate Development & Management,high,
+Construction,Construction,Green & Sustainable Construction,high,
+Construction,Construction,Construction Technology & Automation,high,
+Construction,Construction,Restoration & Renovation,high,
+Construction,Construction,Disaster Relief & Reconstruction,cut,second pass: disaster relief
+Construction,Construction,Modular & Prefabricated Construction,cut,second pass: extraction / commodity plant work
+Hospital & Health Care,Healthcare,Hospitals,high,
+Hospital & Health Care,Healthcare,Medical Practices,med,
+Hospital & Health Care,Healthcare,Home Health Care,med,
+Hospital & Health Care,Healthcare,Ambulatory Care,med,
+Hospital & Health Care,Healthcare,Rehabilitation,med,
+Hospital & Health Care,Healthcare,Medical & Diagnostic Labs,cut,second pass: in-person-only service
+Hospital & Health Care,Healthcare,Healthcare Support Services,med,
+Hospital & Health Care,Healthcare,Telemedicine,med,
+Hospital & Health Care,Healthcare,Healthcare Consulting & Management,med,
+Hospital & Health Care,Healthcare,Medical Education & Training,med,
+Business Supplies and Equipment,Corporate Services,Business Supplies & Equipment,high,
+Business Supplies and Equipment,Consumer Goods,Stationery & Office Supplies,med,
+Consumer Goods,Consumer Goods,Food & Beverage,high,
+Consumer Goods,Consumer Goods,Personal Care & Household,high,
+Consumer Goods,Consumer Goods,Apparel & Textiles,high,
+Consumer Goods,Consumer Goods,Consumer Electronics,high,
+Consumer Goods,Consumer Goods,Home Furnishings & Improvement,cut,second pass: low-fit product niche
+Consumer Goods,Consumer Goods,Toys & Recreational Products,high,
+Consumer Goods,Consumer Goods,Automobiles & Auto Parts,high,
+Consumer Goods,Consumer Goods,Luxury Goods,high,
+Consumer Goods,Consumer Goods,Pet Products,high,
+Consumer Goods,Consumer Goods,Baby Products,high,
+Consumer Goods,Consumer Goods,Health & Wellness Products,high,
+Consumer Goods,Consumer Goods,Stationery & Office Supplies,high,
+Consumer Goods,Consumer Goods,Durables & Products,cut,second pass: low-fit product niche
+Consumer Goods,Consumer Goods,Travel Goods,high,
+Consumer Goods,Manufacturing,Consumer Goods Manufacturing,high,
+Consumer Goods,Manufacturing,Tobacco Manufacturing,cut,second pass: extraction / commodity plant work
+Venture Capital & Private Equity,Finance,Investment,med,VC/PE sits inside Investment; keyword: 'venture capital' / 'private equity'
+Venture Capital & Private Equity,Real Estate,Real Estate Investing,low,
+Hospitality,Recreation & Travel,Hospitality,high,
+Hospitality,Real Estate,Vacation & Short-term Rentals,med,
+Apparel & Fashion,Consumer Goods,Apparel & Textiles,high,
+Apparel & Fashion,Manufacturing,Apparel Manufacturing,cut,second pass: extraction / commodity plant work
+Apparel & Fashion,Design,Fashion Design,cut,second pass: fashion / craft design niche
+Apparel & Fashion,Retail & Wholesale,Clothing & Apparel Stores,high,
+Apparel & Fashion,Arts,Fashion & Textile Arts,cut,second pass: fashion / craft design niche
+Apparel & Fashion,Consumer Goods,Luxury Goods,med,
+Apparel & Fashion,Design,Jewelry Design,cut,second pass: fashion / craft design niche
+Apparel & Fashion,Manufacturing,Jewelry & Silverware Manufacturing,cut,second pass: extraction / commodity plant work
+Apparel & Fashion,Manufacturing,Leather & Allied Product Manufacturing,cut,second pass: extraction / commodity plant work
+Apparel & Fashion,Entertainment,Fashion & Lifestyle Entertainment,cut,second pass: fashion / craft design niche
+Capital Markets,Finance,Financial Markets,high,
+Capital Markets,Finance,Securities Brokerage & Trading,high,
+"Health, Wellness and Fitness",Wellness & Fitness,Fitness Centers & Gyms,high,
+"Health, Wellness and Fitness",Wellness & Fitness,Personal Training & Coaching,cut,second pass: in-person-only service
+"Health, Wellness and Fitness",Wellness & Fitness,Nutrition & Dietetics,cut,second pass: in-person-only service
+"Health, Wellness and Fitness",Wellness & Fitness,Health & Wellness Retreats,cut,second pass: in-person-only service
+"Health, Wellness and Fitness",Wellness & Fitness,Yoga & Pilates Studios,cut,second pass: in-person-only service
+"Health, Wellness and Fitness",Wellness & Fitness,Physical Therapy & Rehabilitation,high,
+"Health, Wellness and Fitness",Wellness & Fitness,Sports Training,cut,second pass: in-person-only service
+"Health, Wellness and Fitness",Wellness & Fitness,Mental Wellness Programs,high,
+"Health, Wellness and Fitness",Wellness & Fitness,Wellness Apps & Digital Platforms,high,
+"Health, Wellness and Fitness",Wellness & Fitness,Corporate Wellness Programs,high,
+"Health, Wellness and Fitness",Wellness & Fitness,Alternative Therapies,high,
+"Health, Wellness and Fitness",Wellness & Fitness,Fitness & Wellness Equipment,high,
+"Health, Wellness and Fitness",Wellness & Fitness,Supplements & Nutraceuticals,high,
+"Health, Wellness and Fitness",Wellness & Fitness,Sporting Goods & Retail,high,
+"Health, Wellness and Fitness",Wellness & Fitness,Wellness Tourism,cut,second pass: in-person-only service
+"Health, Wellness and Fitness",Wellness & Fitness,Health Clubs & Community Centers,high,
+"Health, Wellness and Fitness",Wellness & Fitness,Online Fitness & Wellness Courses,high,
+"Health, Wellness and Fitness",Wellness & Fitness,Health & Wellness Consulting,high,
+"Health, Wellness and Fitness",Wellness & Fitness,Fitness & Wellness Events & Expositions,cut,second pass: in-person-only service
+"Health, Wellness and Fitness",Wellness & Fitness,Wellness Publications & Media,high,
+"Health, Wellness and Fitness",Healthcare,Nutrition & Weight Loss,cut,second pass: in-person-only service
+"Health, Wellness and Fitness",Recreation & Travel,Wellness & Spa,med,
+"Health, Wellness and Fitness",Consumer Goods,Health & Wellness Products,med,
+"Health, Wellness and Fitness",Nonprofit,Health & Wellness Promotion,low,
+Insurance,Finance,Insurance,high,
+Insurance,Healthcare,Health Insurance,high,
+Insurance,Recreation & Travel,Travel Insurance & Safety,med,
+Investment Management,Finance,Wealth Management,high,
+Investment Management,Finance,Investment,high,
+Investment Management,Finance,Pension Funds & Retirement Plans,med,
+Professional Training & Coaching,Corporate Services,Professional Training & Coaching,high,
+Professional Training & Coaching,Education,Corporate Training,high,
+Professional Training & Coaching,Education,Professional Education,med,
+Professional Training & Coaching,Education,Continuing Education,med,
+Food & Beverages,Consumer Goods,Food & Beverage,high,same string also under Recreation & Travel
+Food & Beverages,Recreation & Travel,Food & Beverage,high,
+Food & Beverages,Manufacturing,Food & Beverage Manufacturing,med,
+Facilities Services,Corporate Services,Facilities Services,high,
+Facilities Services,Real Estate,Property Management,med,
+Transportation/Trucking/Railroad,Transportation & Logistics,Road Transportation,high,
+Transportation/Trucking/Railroad,Transportation & Logistics,Rail Transportation,high,
+Transportation/Trucking/Railroad,Transportation & Logistics,Specialized Transportation Services,med,
+Transportation/Trucking/Railroad,Transportation & Logistics,Intermodal & Multimodal Transportation,med,
+Transportation/Trucking/Railroad,Transportation & Logistics,Support Services & Infrastructure,med,
+Transportation/Trucking/Railroad,Transportation & Logistics,Postal Services,low,couriers/parcel
+Transportation/Trucking/Railroad,Manufacturing,Railroad Rolling Stock Manufacturing,cut,second pass: extraction / commodity plant work
+Transportation/Trucking/Railroad,Recreation & Travel,Transportation for Travel,cut,second pass: in-person-only service
+Legal Services,Real Estate,Real Estate Legal Services,high,
+Legal Services,"Tech, Software & IT Services",Legal & Compliance Technology,med,
+Legal Services,Legal,Corporate Law,med,law-firm practice areas; also mapped under Law Practice
+Legal Services,Legal,Criminal Law,med,law-firm practice areas; also mapped under Law Practice
+Legal Services,Legal,Civil Litigation,med,law-firm practice areas; also mapped under Law Practice
+Legal Services,Legal,Family Law,med,law-firm practice areas; also mapped under Law Practice
+Legal Services,Legal,Estate Planning & Probate Law,med,law-firm practice areas; also mapped under Law Practice
+Legal Services,Legal,Intellectual Property Law,med,law-firm practice areas; also mapped under Law Practice
+Legal Services,Legal,Real Estate Law,med,law-firm practice areas; also mapped under Law Practice
+Legal Services,Legal,Tax Law,med,law-firm practice areas; also mapped under Law Practice
+Legal Services,Legal,Employment & Labor Law,med,law-firm practice areas; also mapped under Law Practice
+Legal Services,Legal,Environmental Law,med,law-firm practice areas; also mapped under Law Practice
+Legal Services,Legal,International Law,med,law-firm practice areas; also mapped under Law Practice
+Legal Services,Legal,Healthcare Law,med,law-firm practice areas; also mapped under Law Practice
+Legal Services,Legal,Bankruptcy Law,med,law-firm practice areas; also mapped under Law Practice
+Legal Services,Legal,Immigration Law,med,law-firm practice areas; also mapped under Law Practice
+Legal Services,Legal,Maritime Law,med,law-firm practice areas; also mapped under Law Practice
+Legal Services,Legal,Sports & Entertainment Law,med,law-firm practice areas; also mapped under Law Practice
+Legal Services,Legal,Consumer Law,med,law-firm practice areas; also mapped under Law Practice
+Legal Services,Legal,Education Law,med,law-firm practice areas; also mapped under Law Practice
+Legal Services,Legal,Insurance Law,med,law-firm practice areas; also mapped under Law Practice
+Legal Services,Legal,Administrative Law,med,law-firm practice areas; also mapped under Law Practice
+Legal Services,Legal,Antitrust Law,med,law-firm practice areas; also mapped under Law Practice
+Legal Services,Legal,Telecommunications Law,med,law-firm practice areas; also mapped under Law Practice
+Legal Services,Legal,Human Rights Law,med,law-firm practice areas; also mapped under Law Practice
+Legal Services,Legal,Media Law,med,law-firm practice areas; also mapped under Law Practice
+Legal Services,Legal,E-Commerce Law,med,law-firm practice areas; also mapped under Law Practice
+Research,Education,Research,high,
+Research,Corporate Services,R&D Services,high,
+Research,Healthcare,Medical R&D,med,
+Research,Nonprofit,Science & Technology Research,med,
+Research,Nonprofit,Education and Research,med,
+Research,Agriculture,Agricultural R&D,cut,second pass: farm / agriculture operations
+Automotive,Manufacturing,Automotive Manufacturing,high,
+Automotive,Consumer Goods,Automobiles & Auto Parts,high,
+Automotive,Design,Automotive Design,med,
+Food Production,Manufacturing,Food & Beverage Manufacturing,high,
+Food Production,Agriculture,Agro-Processing,cut,second pass: farm / agriculture operations
+E-Learning,Education,E-Learning,high,
+E-Learning,"Tech, Software & IT Services",Educational Technology (EdTech),high,
+E-Learning,Media & Communications,Media Education & Training,med,
+E-Learning,Wellness & Fitness,Online Fitness & Wellness Courses,low,
+Electrical/Electronic Manufacturing,Manufacturing,Electronics Manufacturing,high,
+Electrical/Electronic Manufacturing,Manufacturing,"Electrical Equipment, Appliance & Component Manufacturing",high,
+Electrical/Electronic Manufacturing,Manufacturing,Computer & Peripheral Equipment Manufacturing,med,overlaps Computer Hardware (excluded) but also electronics
+Broadcast Media,Media & Communications,Broadcasting,high,
+Broadcast Media,Entertainment,Television,high,
+Broadcast Media,Entertainment,Radio & Audio Entertainment,high,
+Broadcast Media,Nonprofit,Public Broadcasting & Media,med,
+Entertainment,Entertainment,Film & Movies,high,
+Entertainment,Entertainment,Television,high,
+Entertainment,Entertainment,Music,high,
+Entertainment,Entertainment,Video Games,high,
+Entertainment,Entertainment,Digital & Online Media,high,
+Entertainment,Entertainment,Events & Live Entertainment,high,
+Entertainment,Entertainment,Animation,high,
+Entertainment,Entertainment,Radio & Audio Entertainment,high,
+Entertainment,Entertainment,VR & AR Entertainment,high,
+Entertainment,Entertainment,Sports Entertainment,med,
+Entertainment,Entertainment,Themed Entertainment,cut,second pass: in-person-only service
+Entertainment,Entertainment,Literary Entertainment,low,
+Entertainment,Media & Communications,Film & Entertainment,high,
+Entertainment,Media & Communications,Music Industry,high,
+Entertainment,Media & Communications,Gaming & Interactive Entertainment,high,
+Entertainment,Recreation & Travel,Attractions & Entertainment,med,
+Logistics and Supply Chain,Transportation & Logistics,Logistics & Supply Chain,high,
+Logistics and Supply Chain,Transportation & Logistics,Intermodal & Multimodal Transportation,med,
+Logistics and Supply Chain,Transportation & Logistics,Emerging Transportation Technologies,med,
+Logistics and Supply Chain,Transportation & Logistics,Support Services & Infrastructure,med,
+Logistics and Supply Chain,Transportation & Logistics,Transportation Consulting & Services,med,
+Investment Banking,Finance,Financial Markets,med,no IB bucket; keyword: 'investment banking' / 'M&A advisory'
+Investment Banking,Finance,Securities Brokerage & Trading,med,
+Investment Banking,Finance,Investment,med,
+Building Materials,Construction,Construction Materials & Equipment,high,
+Building Materials,Manufacturing,Nonmetallic Mineral Product Manufacturing,cut,second pass: extraction / commodity plant work
+Building Materials,Manufacturing,Glass & Ceramic Manufacturing,cut,second pass: extraction / commodity plant work
+Building Materials,Manufacturing,Wood Product Manufacturing,cut,second pass: extraction / commodity plant work
+Pharmaceuticals,Healthcare,Pharmaceuticals,high,
+Pharmaceuticals,Wellness & Fitness,Supplements & Nutraceuticals,med,
+Pharmaceuticals,Consumer Goods,Health & Wellness Products,low,
+Cosmetics,Consumer Goods,Personal Care & Household,med,beauty mixed with household; keyword: 'cosmetics' / 'beauty' / 'skincare'
+Cosmetics,Retail & Wholesale,Health & Personal Care Stores,med,
+Education Management,Education,Education Management,high,
+Education Management,Education,Educational Support Services,med,
+Renewables & Environment,Energy & Mining,Renewable Energy,high,
+Renewables & Environment,Energy & Mining,Alternative Energy Sources,high,
+Renewables & Environment,Construction,Green & Sustainable Construction,med,
+Renewables & Environment,Real Estate,Sustainable Real Estate,med,
+Renewables & Environment,Design,Sustainable/Green Design,low,
+Renewables & Environment,Nonprofit,Environment & Wildlife,low,
+Wholesale,Retail & Wholesale,Wholesale,high,
+Wholesale,Agriculture,Farm Supplies Wholesaling,cut,second pass: farm / agriculture operations
+Environmental Services,Corporate Services,Environmental Services,high,
+Environmental Services,Nonprofit,Environment & Wildlife,low,
+Machinery,Manufacturing,Machinery Manufacturing,high,
+Machinery,Manufacturing,Heavy Machinery Manufacturing,cut,second pass: extraction / commodity plant work
+Machinery,Agriculture,Agricultural Machinery,cut,second pass: farm / agriculture operations
+Machinery,Energy & Mining,Mining Equipment & Technology,med,
+Machinery,Manufacturing,Energy Equipment Manufacturing,cut,second pass: extraction / commodity plant work
+Medical Devices,Healthcare,Medical Devices,high,
+Medical Devices,Manufacturing,Medical Device Manufacturing,high,
+Mental Health Care,Healthcare,Mental Health Care,high,
+Mental Health Care,Wellness & Fitness,Mental Wellness Programs,med,
+Media Production,Entertainment,Film & Movies,med,
+Media Production,Media & Communications,Film & Entertainment,med,
+Media Production,Media & Communications,Digital Media,med,
+Media Production,Arts,Digital & Multimedia Arts,med,
+Media Production,Arts,Cinematic Arts,med,
+Media Production,Design,Motion Graphics Design,med,
+Media Production,Arts,Photography,low,
+Media Production,Design,Sound Design,low,keyword: 'production company' / 'video production'
+Design,Design,Graphic Design,high,
+Design,Design,Web Design,high,
+Design,Design,Interior Design,high,
+Design,Design,Fashion Design,cut,second pass: fashion / craft design niche
+Design,Design,Industrial Design,high,
+Design,Design,Motion Graphics Design,high,
+Design,Design,Game Design,high,
+Design,Design,Environmental Graphic Design,high,
+Design,Design,UX/UI Design,high,
+Design,Design,Automotive Design,high,
+Design,Design,Jewelry Design,cut,second pass: fashion / craft design niche
+Design,Design,Textile Design,cut,second pass: fashion / craft design niche
+Design,Design,Packaging Design,cut,second pass: fashion / craft design niche
+Design,Design,Illustration,high,
+Design,Design,Animation & 3D Design,high,
+Design,Design,Furniture Design,high,
+Design,Design,Exhibition Design,high,
+Design,Design,Lighting Design,high,
+Design,Design,Sound Design,high,
+Design,Design,Typeface Design,high,
+Design,Design,Service Design,high,
+Design,Design,Sustainable/Green Design,high,
+Design,Design,Toy Design,high,
+Design,Arts,Architecture & Design,med,"string also under Real Estate; kept for the Design side, not Architecture & Planning"
+Design,Real Estate,Architecture & Design,med,same string as Arts
+Consumer Electronics,Consumer Goods,Consumer Electronics,high,
+Consumer Electronics,Retail & Wholesale,Electronics & Appliance Stores,med,
+Consumer Electronics,"Tech, Software & IT Services",Hardware & Equipment,med,overlaps Computer Hardware (excluded)
+Consumer Electronics,Manufacturing,Computer & Peripheral Equipment Manufacturing,med,
+Utilities,Energy & Mining,Electricity Generation & Distribution,high,
+Utilities,Energy & Mining,Nuclear Power,med,
+Utilities,"Tech, Software & IT Services",Energy & Utilities Technology,med,
+Utilities,Transportation & Logistics,Pipeline Transportation,cut,second pass: extraction / commodity plant work
+Mechanical or Industrial Engineering,Construction,Heavy & Civil Engineering,med,
+Mechanical or Industrial Engineering,Design,Industrial Design,med,
+Mechanical or Industrial Engineering,Manufacturing,Machinery Manufacturing,low,
+Mechanical or Industrial Engineering,Energy & Mining,Energy Equipment & Services,low,keyword: 'engineering services'
+Events Services,Corporate Services,Events Services,high,
+Events Services,Media & Communications,Events & Conferences,high,
+Events Services,Entertainment,Events & Live Entertainment,med,
+Events Services,Arts,Event & Festival Management,med,
+Events Services,Design,Exhibition Design,low,
+Events Services,Wellness & Fitness,Fitness & Wellness Events & Expositions,cut,second pass: in-person-only service
+Computer & Network Security,"Tech, Software & IT Services",Cybersecurity,high,
+Telecommunications,Media & Communications,Telecommunications,high,
+Telecommunications,"Tech, Software & IT Services",Networking & Communications,med,
+Restaurants,Recreation & Travel,Food & Beverage,med,no restaurant bucket; keyword: 'restaurant' / 'hospitality group'
+Internet,"Tech, Software & IT Services",E-Commerce & Internet Services,high,
+Internet,Media & Communications,Digital Media,med,
+Internet,Entertainment,Digital & Online Media,med,
+Internet,Retail & Wholesale,Online Retail,med,
+Furniture,Manufacturing,Furniture Manufacturing,high,
+Furniture,Consumer Goods,Home Furnishings & Improvement,cut,second pass: low-fit product niche
+Furniture,Retail & Wholesale,Furniture & Home Furnishings Stores,high,
+Furniture,Design,Furniture Design,med,
+Furniture,Design,Interior Design,low,
+"Leisure, Travel & Tourism",Recreation & Travel,Tourism,high,
+"Leisure, Travel & Tourism",Recreation & Travel,Travel Services,high,
+"Leisure, Travel & Tourism",Recreation & Travel,Specialty Travel,med,
+"Leisure, Travel & Tourism",Recreation & Travel,Travel Ancillary Services,med,
+"Leisure, Travel & Tourism",Recreation & Travel,Travel Media & Publications,med,
+"Leisure, Travel & Tourism",Real Estate,Vacation & Short-term Rentals,med,
+"Leisure, Travel & Tourism",Wellness & Fitness,Wellness Tourism,cut,second pass: in-person-only service
+"Leisure, Travel & Tourism",Wellness & Fitness,Health & Wellness Retreats,cut,second pass: in-person-only service
+Law Practice,Legal,Corporate Law,high,
+Law Practice,Legal,Criminal Law,high,
+Law Practice,Legal,Civil Litigation,high,
+Law Practice,Legal,Family Law,high,
+Law Practice,Legal,Estate Planning & Probate Law,high,
+Law Practice,Legal,Intellectual Property Law,high,
+Law Practice,Legal,Real Estate Law,high,
+Law Practice,Legal,Tax Law,high,
+Law Practice,Legal,Employment & Labor Law,high,
+Law Practice,Legal,Environmental Law,high,
+Law Practice,Legal,International Law,high,
+Law Practice,Legal,Healthcare Law,high,
+Law Practice,Legal,Bankruptcy Law,high,
+Law Practice,Legal,Immigration Law,high,
+Law Practice,Legal,Maritime Law,high,
+Law Practice,Legal,Sports & Entertainment Law,high,
+Law Practice,Legal,Consumer Law,high,
+Law Practice,Legal,Education Law,high,
+Law Practice,Legal,Insurance Law,high,
+Law Practice,Legal,Administrative Law,high,
+Law Practice,Legal,Antitrust Law,high,
+Law Practice,Legal,Telecommunications Law,high,
+Law Practice,Legal,Human Rights Law,high,
+Law Practice,Legal,Media Law,high,
+Law Practice,Legal,E-Commerce Law,high,
+Biotechnology,Healthcare,Biotechnology,high,
+Biotechnology,Healthcare,Medical R&D,med,
+Sporting Goods,Manufacturing,Sporting & Athletic Goods Manufacturing,high,
+Sporting Goods,Wellness & Fitness,Sporting Goods & Retail,high,
+Sporting Goods,Recreation & Travel,Recreational Products & Equipment,high,
+Sporting Goods,Consumer Goods,Toys & Recreational Products,med,
+Sporting Goods,Retail & Wholesale,"Sporting Goods, Hobby, Book & Music Stores",med,
+Sporting Goods,Wellness & Fitness,Fitness & Wellness Equipment,med,
+Primary/Secondary Education,Education,Primary/Secondary Education,high,
+Wine and Spirits,Consumer Goods,Wine & Spirits,high,
+Public Relations and Communications,Corporate Services,Corporate Communications,high,
+Public Relations and Communications,Corporate Services,Public Affairs & Lobbying,med,
+Security and Investigations,Corporate Services,Security & Investigations,high,
+Online Media,Media & Communications,Digital Media,high,
+Online Media,Entertainment,Digital & Online Media,high,
+Online Media,"Tech, Software & IT Services",Digital Media & Entertainment,high,
+Online Media,Corporate Services,Information Services,med,
+Online Media,Media & Communications,Media Information Services,med,
+Online Media,Media & Communications,Media Technology,med,
+Oil & Energy,Energy & Mining,Oil & Gas Exploration & Production,high,
+Oil & Energy,Energy & Mining,Oil & Gas Refining & Marketing,high,
+Oil & Energy,Energy & Mining,Energy Equipment & Services,high,
+Oil & Energy,Manufacturing,Petroleum & Coal Products Manufacturing,cut,second pass: extraction / commodity plant work
+Oil & Energy,Manufacturing,Energy Equipment Manufacturing,cut,second pass: extraction / commodity plant work
+Oil & Energy,Transportation & Logistics,Pipeline Transportation,cut,second pass: extraction / commodity plant work
+Non-Profit Organization Management,Nonprofit,Nonprofit Organization Management,high,
+Non-Profit Organization Management,Nonprofit,Philanthropy,high,
+Non-Profit Organization Management,Nonprofit,Fundraising,high,
+Non-Profit Organization Management,Nonprofit,Community and Economic Development,med,
+Non-Profit Organization Management,Nonprofit,International Affairs & Development,med,
+Non-Profit Organization Management,Nonprofit,Healthcare and Medical Research,med,
+Non-Profit Organization Management,Nonprofit,Social Services,med,
+Non-Profit Organization Management,Nonprofit,Special Interest & Advocacy,low,
+Non-Profit Organization Management,Nonprofit,Disaster Relief & Humanitarian Aid,cut,second pass: disaster relief
+Non-Profit Organization Management,Nonprofit,Environment & Wildlife,low,
+Non-Profit Organization Management,Nonprofit,Health & Wellness Promotion,low,
+Farming,Agriculture,Agri-Tech & Digital Agriculture,excluded,HubSpot industry excluded by Gaston 2026-10-20
+Farming,Agriculture,Agro-Processing,excluded,HubSpot industry excluded by Gaston 2026-10-20
+Farming,Agriculture,Agricultural R&D,excluded,HubSpot industry excluded by Gaston 2026-10-20
+Farming,Agriculture,Agricultural Chemicals,excluded,HubSpot industry excluded by Gaston 2026-10-20
+Think Tanks,Nonprofit,Public Policy and Advocacy,high,
+Think Tanks,Nonprofit,Science & Technology Research,med,
+Think Tanks,Nonprofit,Education and Research,med,
+Think Tanks,Nonprofit,International Affairs & Development,med,
+Recreational Facilities and Services,Recreation & Travel,Attractions & Entertainment,high,
+Recreational Facilities and Services,Recreation & Travel,Outdoor Recreation,med,
+Recreational Facilities and Services,Wellness & Fitness,Health Clubs & Community Centers,med,
+Recreational Facilities and Services,Wellness & Fitness,Fitness Centers & Gyms,med,
+Recreational Facilities and Services,Entertainment,Themed Entertainment,cut,second pass: in-person-only service
+Recreational Facilities and Services,Entertainment,Sports Entertainment,low,
+Medical Practice,Healthcare,Medical Practices,high,
+Medical Practice,Healthcare,Dental,high,
+Medical Practice,Healthcare,Vision Care,high,
+Medical Practice,Healthcare,Ambulatory Care,med,
+Market Research,Corporate Services,Information Services,med,no market-research bucket; keyword: 'market research' / 'consumer insights'
+Market Research,Corporate Services,R&D Services,low,
+Market Research,Media & Communications,Media Information Services,low,
+Human Resources,Corporate Services,Human Resources,excluded,HubSpot industry excluded by Gaston 2026-10-20
+Human Resources,Wellness & Fitness,Corporate Wellness Programs,excluded,HubSpot industry excluded by Gaston 2026-10-20
+Publishing,Media & Communications,Publishing,high,same string also under Entertainment
+Publishing,Entertainment,Publishing,high,
+Publishing,Manufacturing,Printing & Publishing,med,
+Publishing,Entertainment,Literary Entertainment,low,
+Newspapers,Media & Communications,Publishing,med,no news bucket; keyword: 'newspaper' / 'news media'
+Newspapers,Media & Communications,Digital Media,low,
+Mining & Metals,Energy & Mining,Metal Mining,cut,second pass: extraction / commodity plant work
+Mining & Metals,Energy & Mining,Mining & Metals Processing,high,
+Mining & Metals,Manufacturing,Metal Manufacturing,cut,second pass: extraction / commodity plant work
+Mining & Metals,Energy & Mining,Non-Metallic Mineral Mining,cut,second pass: extraction / commodity plant work
+Mining & Metals,Energy & Mining,Coal Mining,cut,second pass: extraction / commodity plant work
+Mining & Metals,Energy & Mining,Mining Support Activities,cut,second pass: extraction / commodity plant work
+Mining & Metals,Energy & Mining,Specialized Mining,cut,second pass: extraction / commodity plant work
+Mining & Metals,Energy & Mining,Mining Equipment & Technology,med,field-heavy; corporate roles only
+Higher Education,Education,Higher Education,high,
+Computer Networking,"Tech, Software & IT Services",Networking & Communications,high,
+Computer Networking,"Tech, Software & IT Services",Hardware & Equipment,med,
+Chemicals,Manufacturing,Chemical Manufacturing,high,
+Chemicals,Manufacturing,Plastic & Rubber Manufacturing,cut,second pass: extraction / commodity plant work
+Chemicals,Agriculture,Agricultural Chemicals,cut,second pass: farm / agriculture operations
+Alternative Medicine,Healthcare,Alternative Medicine,high,
+Alternative Medicine,Wellness & Fitness,Alternative Therapies,high,
+Wireless,Media & Communications,Telecommunications,med,keyword: 'wireless'
+Wireless,"Tech, Software & IT Services",Networking & Communications,med,
+Veterinary,Healthcare,Veterinary,high,
+Veterinary,Consumer Goods,Pet Products,low,
+Translation and Localization,Corporate Services,Translation & Interpretation Services,high,
+Translation and Localization,Education,Language Education,low,
+Textiles,Manufacturing,Textile Manufacturing,cut,second pass: extraction / commodity plant work
+Textiles,Consumer Goods,Apparel & Textiles,med,
+Textiles,Design,Textile Design,cut,second pass: fashion / craft design niche
+Religious Institutions,Nonprofit,Religious Institutions,high,
+Printing,Manufacturing,Printing & Publishing,high,
+Printing,Manufacturing,Paper Manufacturing,cut,second pass: extraction / commodity plant work
+Motion Pictures and Film,Entertainment,Film & Movies,high,
+Motion Pictures and Film,Media & Communications,Film & Entertainment,high,
+Motion Pictures and Film,Arts,Cinematic Arts,med,
+Industrial Automation,Construction,Construction Technology & Automation,med,no automation bucket; keyword: 'industrial automation' / 'robotics'
+Industrial Automation,"Tech, Software & IT Services",Internet of Things (IoT),med,
+Industrial Automation,Manufacturing,"Electrical Equipment, Appliance & Component Manufacturing",med,
+Industrial Automation,Manufacturing,Machinery Manufacturing,low,
+Individual & Family Services,Nonprofit,Social Services,high,
+Individual & Family Services,Nonprofit,Youth Development & Services,med,
+Individual & Family Services,Healthcare,Home Health Care,med,
+Animation,Entertainment,Animation,high,
+Animation,Design,Animation & 3D Design,high,
+Animation,Design,Motion Graphics Design,med,

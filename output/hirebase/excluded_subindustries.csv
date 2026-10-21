@@ -1,0 +1,150 @@
+hirebase_industry,hirebase_sub_industry,reason
+Agriculture,Crop Production,farmers
+Agriculture,Animal Production,farmers
+Agriculture,Forestry & Logging,field work
+Agriculture,Fishing & Hunting,field work
+Agriculture,Agricultural Support Activities,farm labor services
+Agriculture,Organic Farming,farmers
+Agriculture,Sustainable Agriculture,farmers
+Agriculture,Urban Agriculture,farmers
+Agriculture,Agricultural Education & Training,"niche, little remote hiring"
+Agriculture,Agro-Processing,second pass (Gaston 2026-10-20): farm / agriculture operations
+Agriculture,Agricultural Machinery,second pass (Gaston 2026-10-20): farm / agriculture operations
+Agriculture,Agricultural Chemicals,second pass (Gaston 2026-10-20): farm / agriculture operations
+Agriculture,Farm Supplies Wholesaling,second pass (Gaston 2026-10-20): farm / agriculture operations
+Agriculture,Agricultural R&D,second pass (Gaston 2026-10-20): farm / agriculture operations
+Arts,Visual Arts,individual artists/galleries
+Arts,Performing Arts,"theaters, in-person"
+Arts,Literary Arts,individual writers
+Arts,Crafts,"makers, tiny"
+Arts,Art Education & Therapy,in-person
+Arts,Cultural Heritage & Preservation,museums/government
+Arts,Arts Administration & Management,"arts orgs, low budget"
+Arts,Art Criticism & Journalism,niche
+Arts,Fashion & Textile Arts,second pass (Gaston 2026-10-20): fashion / craft design niche
+Corporate Services,Staffing & Recruiting,competitor
+Corporate Services,Human Resources,excluded by Gaston 2026-10-20 (PEO/HR-outsourcing overlap)
+Corporate Services,Executive Office,government executive office
+Corporate Services,Outsourcing/Offshoring,BPO/nearshore = competitor
+Design,Architecture,Architecture & Planning (0 placements)
+Design,Landscape Design,Architecture & Planning (0 placements)
+Design,Fashion Design,second pass (Gaston 2026-10-20): fashion / craft design niche
+Design,Jewelry Design,second pass (Gaston 2026-10-20): fashion / craft design niche
+Design,Textile Design,second pass (Gaston 2026-10-20): fashion / craft design niche
+Design,Packaging Design,second pass (Gaston 2026-10-20): fashion / craft design niche
+Education,Early Childhood Education,"daycares, in-person"
+Education,Special Education,in-person
+Education,Extracurricular Education,in-person
+Education,Environmental Education,niche
+Education,Health & Sex Education,niche
+Education,Religious Education,religious schools; Religious Institutions covered via Nonprofit
+Entertainment,Visual Arts & Exhibitions,galleries
+Entertainment,Comedy & Variety Entertainment,performers
+Entertainment,Cultural & Heritage Entertainment,museums
+Entertainment,Themed Entertainment,second pass (Gaston 2026-10-20): in-person-only service
+Entertainment,Fashion & Lifestyle Entertainment,second pass (Gaston 2026-10-20): fashion / craft design niche
+Finance,Banking,0 placements
+Finance,Regulatory Bodies & Organizations,government
+Healthcare,Nursing & Residential Care,nursing homes
+Healthcare,Public Health,government
+Healthcare,Medical & Diagnostic Labs,second pass (Gaston 2026-10-20): in-person-only service
+Healthcare,Nutrition & Weight Loss,second pass (Gaston 2026-10-20): in-person-only service
+Manufacturing,Aerospace Manufacturing,Defense & Space / Aviation (0 placements)
+Manufacturing,Defense Manufacturing,Defense & Space (0 placements)
+Manufacturing,Shipbuilding & Repair,Maritime (0 placements)
+Manufacturing,Textile Manufacturing,second pass (Gaston 2026-10-20): extraction / commodity plant work
+Manufacturing,Paper Manufacturing,second pass (Gaston 2026-10-20): extraction / commodity plant work
+Manufacturing,Plastic & Rubber Manufacturing,second pass (Gaston 2026-10-20): extraction / commodity plant work
+Manufacturing,Metal Manufacturing,second pass (Gaston 2026-10-20): extraction / commodity plant work
+Manufacturing,Railroad Rolling Stock Manufacturing,second pass (Gaston 2026-10-20): extraction / commodity plant work
+Manufacturing,Energy Equipment Manufacturing,second pass (Gaston 2026-10-20): extraction / commodity plant work
+Manufacturing,Heavy Machinery Manufacturing,second pass (Gaston 2026-10-20): extraction / commodity plant work
+Manufacturing,Glass & Ceramic Manufacturing,second pass (Gaston 2026-10-20): extraction / commodity plant work
+Manufacturing,Petroleum & Coal Products Manufacturing,second pass (Gaston 2026-10-20): extraction / commodity plant work
+Manufacturing,Leather & Allied Product Manufacturing,second pass (Gaston 2026-10-20): extraction / commodity plant work
+Manufacturing,Nonmetallic Mineral Product Manufacturing,second pass (Gaston 2026-10-20): extraction / commodity plant work
+Manufacturing,Wood Product Manufacturing,second pass (Gaston 2026-10-20): extraction / commodity plant work
+Manufacturing,Apparel Manufacturing,second pass (Gaston 2026-10-20): extraction / commodity plant work
+Manufacturing,Tobacco Manufacturing,second pass (Gaston 2026-10-20): extraction / commodity plant work
+Manufacturing,Jewelry & Silverware Manufacturing,second pass (Gaston 2026-10-20): extraction / commodity plant work
+Media & Communications,Media Regulation,government
+Nonprofit,Libraries,public sector
+Nonprofit,"Arts, Culture & Humanities",small arts nonprofits
+Nonprofit,Civic & Social Organization,0 placements
+Nonprofit,Voluntary & Membership Organizations,same as Civic & Social
+Nonprofit,Animal Welfare,"shelters, in-person"
+Nonprofit,"Sports, Recreation & Leisure",community sports orgs
+Nonprofit,Veterans & Military Support,defense-adjacent
+Nonprofit,Disaster Relief & Humanitarian Aid,second pass (Gaston 2026-10-20): disaster relief
+Public Administration,Legislative Functions,government
+Public Administration,Executive Office,government
+Public Administration,Public Finance Management,government
+Public Administration,Government Administration,government
+Public Administration,Government Relations,government
+Public Administration,International Affairs,government
+Public Administration,Judiciary,government
+Public Administration,Legislative Office,government
+Public Administration,Political Organization,government
+Public Administration,Public Policy,government
+Public Administration,Defense & Civil Protection,government
+Public Administration,"Public Order, Safety & Justice",government
+Public Administration,Foreign Affairs,government
+Public Administration,Public Health Administration,government
+Public Administration,Education Administration,government
+Public Administration,Social Services Administration,government
+Public Administration,Environment & Wildlife Administration,government
+Public Administration,Housing & Community Development,government
+Public Administration,Environmental Management & Protection,government
+Public Administration,Transportation Administration,government
+Public Administration,Economic & Labor Affairs Administration,government
+Public Administration,"Cultural, Recreational & Religious Affairs",government
+Public Administration,Urban & Regional Planning,government
+Public Administration,Emergency Services & Management,government
+Public Administration,Public Utilities Regulation,government
+Public Administration,Veterans' Affairs & Services,government
+Public Administration,Regulatory Agencies,government
+Public Administration,Government R&D,government
+Public Administration,Census & Population Statistics,government
+Public Administration,Government Communications & PR,government
+Public Safety,Law Enforcement,government/public safety
+Public Safety,Military,government/public safety
+Public Safety,Fire Services,government/public safety
+Public Safety,Emergency Medical Services (EMS),government/public safety
+Public Safety,Emergency Management,government/public safety
+Public Safety,Public Safety Communications,government/public safety
+Public Safety,Homeland Security,government/public safety
+Public Safety,Corrections & Rehabilitation,government/public safety
+Public Safety,Judicial & Legal Services,government/public safety
+Public Safety,Search & Rescue Operations,government/public safety
+Public Safety,Public Health & Safety,government/public safety
+Public Safety,Animal Control & Welfare,government/public safety
+Public Safety,Traffic & Road Safety,government/public safety
+Public Safety,Public Safety Training & Education,government/public safety
+Public Safety,Public Safety R&D,government/public safety
+Public Safety,Public Safety Community Services & Support,government/public safety
+Real Estate,Senior & Assisted Living Real Estate,nursing-home operators
+Real Estate,Agricultural Real Estate,second pass (Gaston 2026-10-20): farm / agriculture operations
+Retail & Wholesale,Grocery Stores,excluded by Gaston 2026-10-20 (in-store hiring)
+Retail & Wholesale,Supermarkets,excluded by Gaston 2026-10-20 (in-store hiring)
+Recreation & Travel,Education & Training in Travel & Recreation,niche
+Recreation & Travel,Travel Regulation,government
+Recreation & Travel,Transportation for Travel,second pass (Gaston 2026-10-20): in-person-only service
+Transportation & Logistics,Air Transportation,Airlines/Aviation (0 placements)
+Transportation & Logistics,Maritime & Water Transportation,Maritime (0 placements)
+Transportation & Logistics,Pipeline Transportation,second pass (Gaston 2026-10-20): extraction / commodity plant work
+Construction,Disaster Relief & Reconstruction,second pass (Gaston 2026-10-20): disaster relief
+Construction,Modular & Prefabricated Construction,second pass (Gaston 2026-10-20): extraction / commodity plant work
+Consumer Goods,Home Furnishings & Improvement,second pass (Gaston 2026-10-20): low-fit product niche
+Consumer Goods,Durables & Products,second pass (Gaston 2026-10-20): low-fit product niche
+Energy & Mining,Metal Mining,second pass (Gaston 2026-10-20): extraction / commodity plant work
+Energy & Mining,Non-Metallic Mineral Mining,second pass (Gaston 2026-10-20): extraction / commodity plant work
+Energy & Mining,Coal Mining,second pass (Gaston 2026-10-20): extraction / commodity plant work
+Energy & Mining,Mining Support Activities,second pass (Gaston 2026-10-20): extraction / commodity plant work
+Energy & Mining,Specialized Mining,second pass (Gaston 2026-10-20): extraction / commodity plant work
+Wellness & Fitness,Personal Training & Coaching,second pass (Gaston 2026-10-20): in-person-only service
+Wellness & Fitness,Nutrition & Dietetics,second pass (Gaston 2026-10-20): in-person-only service
+Wellness & Fitness,Health & Wellness Retreats,second pass (Gaston 2026-10-20): in-person-only service
+Wellness & Fitness,Yoga & Pilates Studios,second pass (Gaston 2026-10-20): in-person-only service
+Wellness & Fitness,Sports Training,second pass (Gaston 2026-10-20): in-person-only service
+Wellness & Fitness,Wellness Tourism,second pass (Gaston 2026-10-20): in-person-only service
+Wellness & Fitness,Fitness & Wellness Events & Expositions,second pass (Gaston 2026-10-20): in-person-only service
