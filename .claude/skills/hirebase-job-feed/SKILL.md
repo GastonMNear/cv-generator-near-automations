@@ -92,3 +92,13 @@ Both must be in the repo `.env` (local) and in the routine's cloud environment.
 - Rows arriving by webhook cost no Clay credits. Credits go on enrichment, so gate paid columns
   behind filters, and find the HM **once per company** (many companies post several jobs).
 - At ~18k rows/month, watch the table's row cap and roll to a new table periodically.
+
+## Cloud routine (live)
+
+`trig_01YKNX5PsqwEh6s6N5LVo2sk`, "Hirebase Job Feed (daily 16:03 UTC)": cron `3 16 * * *`
+(12:03 ET in summer time, 11:03 ET from Nov 1), model claude-sonnet-5-5, no connectors. It clones
+`GastonMNear/cv-generator-near-automations` (main) into environment `env_01DVzad9AipkSb49SRKPteVL`
+and runs `run.sh --live` for yesterday (UTC), plus one `--resend` if posts failed. It never refetches.
+Noon is chosen so yesterday is mostly indexed (see Late indexing). The environment needs
+`HIREBASE_API_KEY` and `CLAY_HIREBASE_WEBHOOK_URL`, and allowed domains `api.hirebase.org` and
+`api.clay.com`. First run: 2026-10-22, for 2026-10-21.
