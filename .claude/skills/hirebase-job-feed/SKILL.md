@@ -97,7 +97,7 @@ Both must be in the repo `.env` (local) and in the routine's cloud environment.
 
 `trig_01YKNX5PsqwEh6s6N5LVo2sk`, "Hirebase Job Feed (daily 16:03 UTC)": cron `3 16 * * *`
 (12:03 ET in summer time, 11:03 ET from Nov 1), model claude-sonnet-5-5, no connectors. It clones
-`GastonMNear/cv-generator-near-automations` (main) into environment `env_01DVzad9AipkSb49SRKPteVL`
+`GastonMNear/cv-generator-near-automations` (main) into its own environment `env_01P5pofgfYkKGgiroxZxoWWC` (".env | HireBase")
 and runs `run.sh --live` for yesterday (UTC), plus one `--resend` if posts failed. It never refetches.
 Noon is chosen so yesterday is mostly indexed (see Late indexing). The environment needs
 `HIREBASE_API_KEY` and `CLAY_HIREBASE_WEBHOOK_URL`, and allowed domains `api.hirebase.org` and
