@@ -1,0 +1,11 @@
+{
+  "skill_name": "weekly-slack-update",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "write my end of week update for slack, what did we get done this week",
+      "expected_output": "Friday Slack message to Andr\u00e9s in the Oct 9 format: opening line with decision count + pointers, ~5-8 numbered workstream items 'Topic \u2192 Owner (status)', 2-4 sentences each, closes loops from the Oct 9 update and Oct 19 1:1 entry, explicit yes/no ask on any decision, no metrics block, ends 'Let me know if everything's clear!'",
+      "files": []
+    }
+  ]
+}

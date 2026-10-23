@@ -1,0 +1,51 @@
+{
+  "_comment": "Smartlead campaign name (exactly as in column B of 'Email Campaign Metrics (Weekly)') -> group row on the 'How we used email capacity' slide. Agreed with Gaston on 2026-10-13; EXP-012 and EXP-013 became their own groups on 2026-10-23. Names are matched with runs of spaces collapsed. A campaign that sends and is not listed here stops the run: ask Gaston which group it belongs to, then add it here. Sends that aren't in any breakdown row ('unassigned') go to Open Jobs until we find their source.",
+  "unassigned_to": "Open Jobs",
+  "other_group": "Other sends",
+  "groups": {
+    "Open Jobs": [
+      "US Open Jobs No HM",
+      "US Open Jobs - HMs",
+      "Latam Open Jobs No HMs",
+      "Latam Open Jobs - HMs",
+      "Canada Open Jobs - HMs",
+      "Canada Open Jobs - No HMs - All openings",
+      "Open jobs from current clients",
+      "Coworkers | US OJ HMs",
+      "Asia Open Jobs | <50 emp | No HMs",
+      "Asia Open Jobs | <50 emp | HMs",
+      "Asia Open Jobs | +50 emp | No HMs",
+      "Asia Open Jobs | +50 emp | HMs",
+      "[EXP006] US Open Jobs - HMs - Need Confirmation Angle",
+      "[EXP006] US Open Jobs - HMs -Baseline",
+      "HubSpot Cold Accounts OJ - NO HMs",
+      "HubSpot Cold Accounts OJ - HMs",
+      "[EXP011] US Open Jobs - CEOs from HM OJ"
+    ],
+    "EXP-008A/B": [
+      "[EXP008 A] US Open Jobs - NO HMs - Personalized E2-3 - B inboxes",
+      "[EXP008 B] US Open Jobs - NO HMs - 7 Email Seq - B inboxes"
+    ],
+    "EXP-009": [
+      "[EXP009] CEOs MultiRole Savings | Challenger",
+      "[EXP009] CEOs MultiRole Savings | Baseline"
+    ],
+    "Fresh Apollo": [
+      "[EXP010] Apollo Open Jobs No HM | B inboxes",
+      "[EXP010] Apollo Open Jobs HMs | B inboxes"
+    ],
+    "EXP-012": [
+      "[EXP012] US OJ No HM Priority Segments | Sales/GTM",
+      "[EXP012] US OJ No HM Priority Segments | Marketing",
+      "[EXP012] US OJ No HM Priority Segments | Engineering"
+    ],
+    "EXP-013": [
+      "[EXP013] US OJ No HM | All Openings | Recruiting Leaders"
+    ],
+    "Other sends": [
+      "RB2B Retargeting",
+      "RB2B Retargeting | Open Jobs - Visitor + DMU",
+      "RB2B Retargeting | Individual visitor - No OJ"
+    ]
+  }
+}
