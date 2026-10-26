@@ -28,10 +28,10 @@ keep it. The reason for each is named in the Slack message, and populates a `Not
 column automatically if you add that header.
 
 A **returning lead** (the contact booked before, so only its first booking counts) is
-written as `RETURNING – first booked 2026-08-25` instead. That is a settled
-exclusion, not a question: leave the row as the record of the rule firing. The date
-is in the label because the tab has no `Note` column — `REVIEW – PREV` alone made
-Quieto (09-21 week) look like an error.
+**not written** — it is listed in Slack only, as of 2026-10-26. As rows they read as
+counted calls (Stroll and Tidwell, 10-19 week). Blocks written before that date may
+still hold `RETURNING – first booked <date>` rows (Raborn Media, 10-05); those match
+neither `SAME` nor `PREV`, so the Totals formulas ignore them.
 
 **The Campaign column skips campaigns that never emailed the lead.** Smartlead
 enrolls leads in sub-sequences (`SUB | …`) that often send nothing, and

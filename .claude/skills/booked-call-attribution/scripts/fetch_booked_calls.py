@@ -167,9 +167,8 @@ def prior_bookings(contact_id, before_iso):
       * Is a *counted* booking actually a RETURNING lead re-booking? That is the
         GrowthScribe case, and it needs the gap and the prior outcome to judge.
 
-    `hs_meeting_start_time` and `hs_meeting_outcome` matter as much as the booked
-    date, because a reschedule looks identical to a return from the booked date
-    alone — see `_reschedule_of`.
+    `hs_meeting_outcome` is carried for the flag text only; a reschedule is
+    excluded like any other prior booking — see the RESCHEDULE note below.
     """
     res = hubspot(f"/crm/v4/objects/contacts/{contact_id}/associations/meetings")
     ids = [str(r["toObjectId"]) for r in (res.get("results") or [])][:50]
@@ -192,24 +191,39 @@ def earlier_booking(contact_id, before_iso):
     return prior[0]["hs_createdate"] if prior else None
 
 
-# A RESCHEDULE is not a return — it is the same call, moved. Two shapes occur and
-# both must survive the returning-lead check:
+# A RESCHEDULE keeps the ORIGINAL booking date. It is the same call, moved, and the
+# call already belongs to the week it was first booked — counting the new booking
+# would attribute one call twice, in two weeks. Stroll booked 10-14 for 10-19 (held
+# in the 10-12 week as PREV), then booked again 10-21 for 10-26: the 10-21 booking
+# does not count. So there is no reschedule exemption: any earlier booking excludes.
 #
-#   Whitehorse Partners  books 08-18 21:37 and 08-18 21:40, both for 08-25 14:30
-#                        -> identical start time, one booking recorded twice
-#   Cash Margin Partners books 07-28 for 08-24 17:30 (outcome RESCHEDULED), then
-#                        08-14 for 08-24 19:00
-#                        -> different start TIME, same calendar DAY, and the prior
-#                           booking is explicitly marked RESCHEDULED
-#
-# So a prior booking is discounted when it points at the same calendar day as the
-# new one, or when HubSpot already labelled it RESCHEDULED. Comparing the full
-# timestamp alone would have miscounted Cash Margin as a returning lead.
-def _reschedule_of(prior, new_start):
-    prior_start = prior.get("hs_meeting_start_time") or ""
-    if prior_start and new_start and prior_start[:10] == new_start[:10]:
-        return True
-    return (prior.get("hs_meeting_outcome") or "").upper() == "RESCHEDULED"
+# An earlier version exempted a prior booking on the same calendar day or marked
+# RESCHEDULED (Cash Margin: booked 07-28 for 08-24 17:30, rebooked 08-14 for 08-24
+# 19:00). That re-attributed Cash Margin into the 08-10 week on top of its 07-27
+# count. A same-week double-write (Whitehorse 08-18 21:37 + 21:40) needs no
+# exemption: rows are keyed by contact and keep the earliest, which has no prior.
+def original_source(contact_id, before_iso):
+    """The source as it stood just BEFORE this booking, i.e. where the account came
+    from. Every Chili Piper booking overwrites the property, so a returning lead's
+    current value describes its latest booking form, not its origin:
+
+      Tidwell Bookkeeping   LLM (10-13), overwritten to Email Outreach on 10-22 by
+                            its 10-21 booking
+      Cash Margin Partners  LinkedIn Outreach (07-29, set by hand), overwritten to
+                            Email Outreach on 08-14 by its 08-14 booking
+
+    The last value before the booking, not the earliest ever, so a manual fix made
+    between bookings is respected. Falls back to the earliest value when nothing
+    was set before the booking."""
+    res = hubspot(f"/crm/v3/objects/contacts/{contact_id}"
+                  f"?propertiesWithHistory={SOURCE_PROP}")
+    hist = (res.get("propertiesWithHistory") or {}).get(SOURCE_PROP) or []
+    hist = sorted((h for h in hist if (h.get("value") or "").strip()),
+                  key=lambda h: h.get("timestamp", ""))
+    if not hist:
+        return ""
+    before = [h for h in hist if h.get("timestamp", "") < before_iso]
+    return (before[-1] if before else hist[0])["value"].strip()
 
 
 def returning_lead(contact_id, booking):
@@ -222,8 +236,8 @@ def returning_lead(contact_id, booking):
     call high. GrowthScribe (first booked 2026-06-05, booked again 2026-09-04) is the
     case that exposed it.
 
-    The contact's own booking history is the signal: a PRIOR Chili Piper booking for
-    a DIFFERENT slot means we have already spoken to (or had on the calendar) this
+    The contact's own booking history is the signal: ANY prior Chili Piper booking,
+    reschedules included, means we have already spoken to (or had on the calendar) this
     account, so the new call is a return, not new pipeline.
 
     ONLY FIRST BOOKINGS COUNT. This is not a judgement call per row — a second
@@ -236,8 +250,6 @@ def returning_lead(contact_id, booking):
     Returns (reason, first_prior_date) or (None, None).
     """
     prior = prior_bookings(contact_id, booking["booked_at"])
-    start = booking.get("meeting_start") or ""
-    prior = [p for p in prior if not _reschedule_of(p, start)]
     if not prior:
         return None, None
     first = prior[0]
@@ -294,15 +306,28 @@ def main():
     # and Slack with its reason: a silent drop is exactly as hard to notice as the
     # silent over-count it replaces. The row is not a question for Gaston, though —
     # the exclusion is the rule, and the row is there to show the rule firing.
+    #
+    # A returning lead whose FIRST booking was not Email Outreach is not ours at all
+    # — its tag was overwritten by the later booking form — so it is dropped rather
+    # than reported (Tidwell Bookkeeping: LLM, re-tagged by its 10-21 booking).
+    not_ours = []
     if not a.no_repeat_check:
-        for cid, row in rows.items():
+        for cid, row in list(rows.items()):
             reason, first = returning_lead(cid, row)
             if reason:
+                orig = original_source(cid, row["booked_at"])
+                if orig != TARGET_SOURCE:
+                    not_ours.append((row, orig))
+                    del rows[cid]
+                    continue
                 row["counted"] = False
                 row["flag_reason"] = reason
                 row["returning_since"] = first
 
-    flagged, dropped = (uncounted_candidates(lo, hi, rows) if not a.no_review
+    # Dropped contacts are passed along too, so their calendar copies are not
+    # re-flagged as REVIEW rows.
+    seen = set(rows) | {r["contact_id"] for r, _ in not_ours}
+    flagged, dropped = (uncounted_candidates(lo, hi, seen) if not a.no_review
                         else ([], []))
     bookings = sorted(list(rows.values()) + flagged, key=lambda r: r["booked_at"])
 
@@ -329,6 +354,9 @@ def main():
         print(f"  {mark}{b['booked_at'][:10]}  {b['company_name'][:26]:26} "
               f"{b['booker_email'][:34]:34} {b['flag_reason'][:60]}",
               file=sys.stderr)
+    for r, orig in not_ours:
+        print(f"  x {r['company_name'][:26]:26} dropped: re-tagged returning lead, "
+              f"first booked as '{orig or 'no source'}'", file=sys.stderr)
     for d in dropped:
         print(f"  x {d['company_name'][:26]:26} dropped as delivery "
               f"({d['marker']}): {d['meeting_title'][:44]}", file=sys.stderr)

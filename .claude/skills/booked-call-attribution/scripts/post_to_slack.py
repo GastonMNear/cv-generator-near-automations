@@ -95,10 +95,10 @@ def build_message(data, sheet_url):
         lines += ["", f"⚠️ *{s['unresolved']} unresolved* (no Smartlead lead found): "
                       f"{names}. Percentages are of the {attributed} attributed."]
 
-    # Rows written to the sheet but held out of the headline, split by whether they
-    # are a rule firing or a question. Returning leads are settled policy — only
-    # FIRST bookings count — so they are reported as excluded, not as something to
-    # adjudicate. The rest are genuinely undecided and say so.
+    # Rows held out of the headline, split by whether they are a rule firing or a
+    # question. Returning leads are settled policy — only FIRST bookings count — so
+    # they are reported here as excluded and are NOT written to the sheet. The rest
+    # are REVIEW rows in the sheet, genuinely undecided, and say so.
     flagged = [r for r in rows if not r.get("counted", True)]
     returning = [r for r in flagged if r.get("returning_since")]
     undecided = [r for r in flagged if not r.get("returning_since")]

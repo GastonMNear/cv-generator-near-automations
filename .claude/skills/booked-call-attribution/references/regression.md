@@ -102,7 +102,7 @@ is sticky and the routine counts by booking date. Backtested over ten weeks
 | 2026-07-20 | 12 | 12 | — |
 | 2026-07-27 | 11 | 11 | — |
 | 2026-08-03 | 6 | 6 | — |
-| 2026-08-10 | 8 | 8 | — (Cash Margin is a reschedule, not a return) |
+| 2026-08-10 | 8 | 8 → **7** | Cash Margin — reschedule counted twice; dropped 2026-10-26 (see below) |
 | 2026-08-17 | 11 | 11 | — |
 | **2026-08-24** | **12** | **12** | — (baseline anchor, unchanged) |
 | 2026-08-31 | 13 | **12** | GrowthScribe — prior booking 2026-06-05 |
@@ -112,8 +112,10 @@ Two false positives were found and fixed during the backtest; both are permanent
 regression cases for any future change to this check:
 
 * **Cash Margin Partners** — booked 07-28 for 08-24 17:30 (`RESCHEDULED`), rebooked
-  08-14 for 08-24 **19:00**. Different start timestamp, same calendar day. A
-  full-timestamp comparison flags this wrongly. Must stay **counted**.
+  08-14 for 08-24 **19:00**. *Superseded 2026-10-26:* Gaston ruled a reschedule
+  keeps the original booking date, so the 08-14 booking is **excluded** (it counts
+  once, in the 07-27 week). It is now dropped outright from 08-10 because its source
+  before the re-booking was `LinkedIn Outreach` (hand-set 07-29); 08-10 reads 7.
 * **Whitehorse Partners (08-18)** — two objects written three minutes apart for the
   identical 08-25 14:30 slot. Must stay **counted**; its later 09-08 booking for the
   separate 09-09 call is a genuine return and is **excluded**. Confirmed by Gaston

@@ -161,13 +161,11 @@ def campaign_label(row):
 
 
 def bucket_label(row):
-    """SAME / PREV / UNRESOLVED for counted rows; `RETURNING – first booked <date>`
-    for a returning lead; `REVIEW – <bucket>` for a meeting awaiting adjudication.
-    None of the flagged labels equal SAME or PREV, so the Totals COUNTIFs skip them."""
+    """SAME / PREV / UNRESOLVED for counted rows; `REVIEW – <bucket>` for a meeting
+    awaiting adjudication. Returning leads never reach the sheet (see build_records).
+    The REVIEW label never equals SAME or PREV, so the Totals COUNTIFs skip it."""
     if row.get("counted", True):
         return row.get("bucket") or ""
-    if row.get("returning_since"):
-        return f"RETURNING – first booked {row['returning_since']}"
     return f"REVIEW – {row.get('bucket') or ''}"
 
 
@@ -197,8 +195,11 @@ def build_records(data):
     ey, em, ed = (int(x) for x in end_iso.split("-"))
     label = f"Mon {sm}/{sd} → Sun {em:02d}/{ed:02d}/{ey}"
 
+    # Returning leads are reported in Slack only. In the sheet they read as counted
+    # bookings (Stroll and Tidwell, 10-19 week, both marked "Delete" by hand), and
+    # the exclusion is settled policy, so there is nothing to adjudicate there.
     order = {"SAME": 0, "PREV": 1, "UNRESOLVED": 2}
-    rows = sorted(data["rows"],
+    rows = sorted((r for r in data["rows"] if not r.get("returning_since")),
                   key=lambda r: (0 if r.get("counted", True) else 1,
                                  order.get(r["bucket"], 3), r["booked_at"]))
     recs = []
@@ -213,9 +214,6 @@ def build_records(data):
             "email": r.get("smartlead_email") or r.get("booker_email") or "",
             # Flagged rows are written so no company goes missing, but the bucket
             # cell says so — one column, sortable, and obvious enough to delete.
-            # A returning lead is a settled exclusion, not a question, so it gets
-            # its own label carrying the reason: the tab has no Note column, and
-            # `REVIEW – PREV` alone read as an unexplained error (Quieto, 09-21).
             "bucket": bucket_label(r),
             "note": r.get("flag_reason") or "",
             "campaign": campaign_label(r),

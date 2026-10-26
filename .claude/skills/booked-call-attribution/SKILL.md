@@ -142,17 +142,15 @@ reply was 2026-06-01, so it would have landed in `PREV` and inflated the
 date. `returning_lead()` in `fetch_booked_calls.py` asks: does this contact have an
 earlier Chili Piper booking? If yes, the row is demoted to flagged.
 
-**A reschedule is not a return** — this is the one that will bite a naive fix. Two
-shapes, both of which must stay counted:
-
-| Account | Shape | Why it is not a return |
-|---|---|---|
-| Whitehorse Partners | books 08-18 21:37 **and** 08-18 21:40, both for 08-25 14:30 | one booking recorded twice — identical start time |
-| Cash Margin Partners | books 07-28 for 08-24 **17:30** (outcome `RESCHEDULED`), then 08-14 for 08-24 **19:00** | same call moved later the same day |
-
-So a prior booking is discounted when it targets the **same calendar day** as the new
-one, or when HubSpot already marked it `RESCHEDULED`. Comparing full timestamps alone
-miscounts Cash Margin; comparing only the outcome misses Whitehorse's double-write.
+**A reschedule keeps the original booking date — there is no reschedule exemption.**
+A moved call already belongs to the week it was first booked; counting the new
+booking attributes one call twice, in two weeks. Confirmed by Gaston 2026-10-26 on
+Stroll: booked 10-14 for 10-19 (counted in the 10-12 week as `PREV`), booked again
+10-21 for 10-26 — the 10-21 booking does not count. An earlier version exempted a
+prior booking on the same calendar day or marked `RESCHEDULED`; that re-counted Cash
+Margin Partners (07-28, rebooked 08-14) in the 08-10 week on top of the 07-27 week.
+A same-week double-write (Whitehorse 08-18 21:37 + 21:40, same slot) needs no
+exemption: rows are keyed by contact and keep the earliest, which has no prior.
 
 **Only FIRST bookings count — this is a rule, not a per-row judgement.** A second
 booking is excluded even when it is a genuine new conversation with a real prior call
@@ -161,21 +159,35 @@ separate 09-09 call: the 09-08 booking does **not** count. The metric asks what 
 email outreach produced, and an account already on our calendar cannot answer that
 whichever channel brought it back.
 
-**It flags rather than drops.** A silent drop is exactly as hard to notice as the
-silent over-count it replaces, so the row still appears in the sheet and in Slack with
-its reason and the prior booking date. It is there to show the rule firing, not to ask
-a question — Slack reports these under "excluded as returning leads", separately from
-the `REVIEW` rows that genuinely need adjudication.
+**Returning leads go to Slack only, never to the sheet.** Slack lists them under
+"excluded as returning leads" with the first booking date, separately from the
+`REVIEW` rows that need adjudication. They used to be written as
+`RETURNING – first booked <date>` rows, but in the sheet they read as counted calls
+(Stroll and Tidwell, 10-19 week, were both marked "Delete" by hand), so as of
+2026-10-26 `write_to_sheet.py` skips them. Older blocks (e.g. Raborn Media, 10-05)
+still carry the label; weeks are frozen, so they were not rewritten.
 
-**In the sheet the bucket cell reads `RETURNING – first booked <date>`**, never
-`REVIEW – …`. Quieto (09-21 week, first booked 08-25) was written as `REVIEW – PREV`
-and read as an unexplained error: the tab has no Note column, so the reason never
-reached the sheet. The label now carries it. It matches neither `SAME` nor `PREV`, so
-the Totals formulas leave it out without any change.
+**The source tag is overwritten by every booking form, so read it as of before the
+re-booking.** Tidwell Bookkeeping came in through `LLM` (10-12 booking), and its 10-21
+booking rewrote the contact to `Email Outreach`. `original_source()` takes the last
+value set *before* the new booking (from the property history); if that is not
+`Email Outreach` the account was never ours and the row is dropped outright, not even
+listed as returning — only printed to stderr. Same shape: Cash Margin (hand-tagged
+`LinkedIn Outreach` 07-29, re-tagged by its 08-14 booking) and Raborn Media
+(`Webinar`). Using the last value before the booking, not the earliest ever, keeps a
+manual correction made between bookings.
+
+**Known gap:** the history check runs only for returning leads. A *first* booking
+uses the current tag, so re-running an old week after the contact re-booked can still
+count it under the new form's answer (Cash Margin still counts in the 07-27 week on a
+re-run). Weeks are frozen once written, so this only bites a backfill.
 
 Measured over the ten weeks 07-06 → 09-07, this changes **two** weeks: 08-31
 (13 → 12, GrowthScribe) and 09-07 (8 → 7, Whitehorse). The 08-24 baseline week is
-untouched at 12. `--no-repeat-check` restores the old behaviour.
+untouched at 12. The 2026-10-26 change (no reschedule exemption + source as of before
+the re-booking) moved only 08-10 (8 → 7, Cash Margin dropped as `LinkedIn Outreach`)
+over 07-06 → 10-19; 10-05 loses Raborn's flag row, and 10-19 stays 14 counted with
+Stroll in Slack and Tidwell dropped. `--no-repeat-check` restores the old behaviour.
 
 ## Filtering to Email Outreach
 
@@ -200,9 +212,11 @@ that are not confirmed bookings are marked and held out of the headline.
 booking (`hs_activity_type` present), **and the contact has not booked before**.
 These get `SAME` / `PREV` / `UNRESOLVED` and drive the percentages.
 
-**Excluded as `returning lead — …`** (sheet bucket `RETURNING – first booked <date>`) — a booking whose contact already has an earlier
-Chili Piper booking. Only first bookings count, so this is excluded outright, even
-when it is a genuine second conversation. The contact stays tagged `Email Outreach`
+**Excluded as `returning lead — …`** (Slack only, not written to the sheet) — a
+booking whose contact already has an earlier Chili Piper booking, reschedules
+included. Only first bookings count, so this is excluded outright, even when it is a
+genuine second conversation. If the source before this booking was not
+`Email Outreach`, it is dropped without a mention. The contact stays tagged `Email Outreach`
 from the original cold email months ago, which is exactly why the tag cannot be
 trusted here. See "Returning leads" below.
 
