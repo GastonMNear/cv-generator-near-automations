@@ -22,6 +22,7 @@ Skills live in `.claude/skills/<name>/SKILL.md`. Invoke with `/<skill-name>` or 
 | `weekly-slack-update` | Draft the Friday Slack wrap-up to Andrés: numbered workstreams (owner, status, next step) + decisions needed |
 | `weekly-volume-session` | Build the bi-weekly Tuesday outbound huddle deck: duplicate the last session's Slides, refresh the last 2 weeks' metrics |
 | `offweek-outbound-update` | Draft the off-week Tuesday update for #outbound-ripping: headlines, email metrics vs last week + why, CC/LinkedIn pasted verbatim |
+| `outbound-campaign-review` | Monday per-campaign email review: top/best/stalled campaigns, noise vs real, ≥1 call/wk levers → `wiki/outbound/campaign-insights.md` |
 | `call-prep-workflow` | Google Doc URL + lead email + campaign → fills call prep doc |
 | `call-prep-doc-filler` | Fill a specific Google Doc table with lead data |
 | `hirebase-job-feed` | Daily routine: yesterday's matching Hirebase jobs → Clay webhook table, one row per job |
