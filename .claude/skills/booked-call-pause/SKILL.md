@@ -123,6 +123,14 @@ indexed `company_url`. Two very different causes:
 mailboxes; it rejects clear cross-company cases. Found because a Huntington test run matched
 JPMorgan and Veritex leads.
 
+**Every lead is also indexed under its own email domain** when `company_url` names a
+different one. Before 2026-10-29 a lead was filed only under `company_url`, so a branch or
+brand-variant URL hid it from its own company's lookup: the 10-28 ICAT Logistics booking was
+made by `daniel.cser@icatlogistics.com`, whose `company_url` is `icatlogisticsdtw.com`
+(ICAT: Detroit Agency). The run paused six colleagues and missed him, plus `renee.sarb@` and
+`katie.cser@` (same Detroit URL). After the fix the `icatlogistics.com` dry run matches 9
+leads instead of 6.
+
 ## Reversing a mistake
 
 Pausing is fully reversible — same path with `resume`:

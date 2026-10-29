@@ -214,13 +214,15 @@ class LeadIndex:
     def add(self, lead):
         email = norm_email(lead.get("email"))
 
+        email_domain = norm_domain(lead.get("email_domain")) or norm_domain(email)
+        if email_domain in JUNK_DOMAINS:
+            email_domain = ""
+
         domain = norm_domain(lead.get("company_url"))
         if domain in JUNK_DOMAINS:
             domain = ""
         if not domain:
-            cand = norm_domain(lead.get("email_domain")) or norm_domain(email)
-            if cand and cand not in JUNK_DOMAINS:
-                domain = cand
+            domain = email_domain
 
         cf = lead.get("custom_fields") or {}
         linkedin = norm_linkedin(cf.get("company_linkedin_url"))
@@ -233,6 +235,12 @@ class LeadIndex:
         }
         if domain:
             self.by_domain[domain].append(rec)
+        # Also file the lead under its own email domain when company_url names a
+        # different one (a branch, a brand variant). daniel.cser@icatlogistics.com
+        # has company_url icatlogisticsdtw.com, so the 2026-10-28 ICAT booking (him)
+        # missed him while pausing six colleagues.
+        if email_domain and email_domain != domain:
+            self.by_domain[email_domain].append(rec)
         if linkedin:
             self.by_linkedin[linkedin].append(rec)
         if email:
