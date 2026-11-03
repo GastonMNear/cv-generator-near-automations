@@ -96,6 +96,11 @@ search returns 422.
 - `/v2/jobs/estimate` is free and accepts the same body (`limit: 0` → total count).
 - Billing: 1 unit per job returned by search. A plan-quota 429 has `X-Billing-Code: limit_exceeded`
   and is not retried.
+- Checking usage: only `/search` returns the `Hirebase-Usage-*` headers (`Included-Limit/-Used/-Remaining`,
+  `Period-Start/-End`); `/estimate` doesn't and there is no usage endpoint. A `limit: 1` search with
+  `search_filters.json` reads them for 1 unit. As of 2026-10-28: 2,000,000 included per period,
+  period 2026-10-20 → 2026-11-03, overage mode `meter` (the trial; moving to a 25k units/month plan in
+  Nov 2026). `feed.py`'s size-band guard reads `-Included-Remaining` and `-Period-End` from these headers.
 - Rate limit 100 req/min (search). The `/data/*` taxonomy endpoints observed at ~25/min.
 - `Other` and `Retail` are listed as industries but `/subindustries` 404s on both.
 - Filter fields (tested 2026-11-03 via estimate). **Unknown fields return 422 `extra_forbidden`**:
