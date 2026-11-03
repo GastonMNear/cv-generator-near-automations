@@ -3,7 +3,7 @@ name: hirebase-job-feed
 description: >
   Daily feed of hiring-intent leads: pulls yesterday's US remote, full-time jobs at 1-500 employee
   companies in Near's qualified sub-industries from the Hirebase API and posts each job to a Clay
-  webhook table as its own row. Runs once a day as a Claude routine. Use this whenever asked about
+  webhook table as its own row, smallest companies first. Runs once a day as a Claude routine. Use this whenever asked about
   the Hirebase feed, the open-jobs / hiring-intent lead source, "new jobs in Clay", backfilling a
   missed day, changing the job-search filters or sub-industry list, or Hirebase spend.
 ---
@@ -16,11 +16,24 @@ Companies posting jobs = hiring intent = outbound targets for the US open-jobs c
 ## Pipeline
 
 ```
-1. POST /v2/jobs/estimate   free: upper bound for the run → abort if > --max-jobs
-2. POST /v2/jobs/search     oldest first, limit=100; stop at the first job dated after the target day
+1. POST /v2/jobs/estimate   free, one per size band: upper bound for the run → abort if > --max-jobs
+2. POST /v2/jobs/search     one band at a time, smallest first (1-10, 11-50, 51-200, 201-500);
+                            oldest first, limit=100; stop at the first job dated after the target day
 3. save the fetched jobs to a run file (before posting)
 4. POST <Clay webhook>      one flat JSON object per job = one Clay row
 ```
+
+**Size priority (Gaston, 2026-11-03):** 1-10 and 11-50 reply best (historic No-HM positive rate 3.2% /
+0.9% vs 0.26% at 51-200 and 0.13% at 201-500), so they are always fetched. Larger companies only fill
+spare credits. Before 51-200 and 201-500, `feed.py` checks `Hirebase-Usage-Included-Remaining` (from
+the last search response) and skips the band if its estimate would cut into the reserve:
+`PRIORITY_DAILY` (200 units) × days left until `Hirebase-Usage-Period-End`. The skip is logged
+(`skip 201-500: ...`) and the run still exits 0. Tune `PRIORITY_BANDS` / `PRIORITY_DAILY` in `feed.py`.
+
+**A failed search page never wastes units:** jobs already fetched are saved and posted, the run exits 1
+and prints `run.sh --live --date D --resume BAND:PAGE`. That command skips the bands and pages already
+paid for. On 2026-11-03 a plan-cap 429 at page 6 threw away 500 billed units and the rerun paid for
+them again; this is the fix. After a `limit_exceeded` 429, resume only once the quota is back.
 
 ```bash
 ./scripts/run.sh                    # DRY RUN: free estimate only
@@ -28,6 +41,7 @@ Companies posting jobs = hiring intent = outbound targets for the US open-jobs c
 ./scripts/run.sh --live --sample 3  # cheap end-to-end test (3 job units)
 ./scripts/run.sh --live --date 2026-10-19   # backfill one missed day
 ./scripts/run.sh --live --resend FILE       # re-post saved jobs to Clay, no Hirebase cost
+./scripts/run.sh --live --date D --resume 51-200:3   # finish a run whose search page failed
 ```
 
 Network errors are retried with backoff (incl. SSL "bad record mac", which killed the first full
@@ -40,7 +54,19 @@ and is gone after the routine ends.
 
 `references/search_filters.json`: Full Time, Remote, country United States (`strict`),
 company size 1-10 / 11-50 / 51-200 / 201-500, `hide_recruiting_agencies`, and **276
-sub-industries**. The run adds `date_posted` itself.
+sub-industries**. The run adds `date_posted` itself and splits `company_types` into one search per band.
+`company_types` order is the fetch priority, so keep it smallest first.
+
+Exclusions (Gaston, 2026-11-03; analysis in `output/hirebase/optimization/report.md`), about −10% units, −0.2% leads:
+- `job_titles`: 31 `-word` negations (nurse, RN, therapist, physician, attorney, licensed, participants,
+  field trades…). Clay's role check rejects 96% of these jobs, and they gave 4 of 2,305 leads.
+  Deliberately not excluded, because Near places some of them: technician, driver, paralegal, construction.
+- `company_keywords: ["-blackbox"]`: Clients Blackbox, a Monday-burst mass poster (654 jobs since Oct 20),
+  all HubSpot do-not-contact, 0 leads. This replaces the 2026-10-21 "no company exclusions" rule.
+
+Before changing filters, price the new body with the free estimate (`./scripts/run.sh --date D`) and
+compare it with the old one. The expansion candidate (Hybrid, 1-50 employees, ~4.8k units/month) is
+priced in `output/hirebase/optimization/expansion_search_filters.json` and not live.
 
 The sub-industry list comes from mapping Near's 89 placement industries (HubSpot/LinkedIn labels)
 to Hirebase's taxonomy. The mapping, exclusion reasons and generator live in
@@ -61,8 +87,8 @@ search returns 422.
 - Volume: ~600-700 jobs on weekdays, ~20-90 on weekends, Monday spike (~1,350).
 - **Same role, many postings:** Hirebase lists each location/requisition separately (unique `_id`
   and URL). 10-20: 1,249 jobs = 570 unique `title - company` (one company posted 630). The Clay
-  table's `Dedupe` column (`title - company`) collapses them; that's intended. No company exclusions
-  (Gaston, 2026-10-21).
+  table's `Dedupe` column (`title - company`) collapses them; that's intended. That one company was
+  Clients Blackbox, now excluded (Gaston 2026-11-03; it was "no company exclusions" on 2026-10-21).
 - `days_ago` is unreliable (`days_ago: 0` returned 1 job when today had 96). Don't use it.
 - `sub_industry` works without `industry`. It matches on the **company's** tags, any-of. Companies
   carry several tags, so cutting a sub only removes companies whose tags are *all* cut.
@@ -72,6 +98,16 @@ search returns 422.
   and is not retried.
 - Rate limit 100 req/min (search). The `/data/*` taxonomy endpoints observed at ~25/min.
 - `Other` and `Retail` are listed as industries but `/subindustries` 404s on both.
+- Filter fields (tested 2026-11-03 via estimate). **Unknown fields return 422 `extra_forbidden`**:
+  - Work: `job_titles` (`-word` negation, works on its own), `company_keywords` (`-word` negation),
+    `keywords` (`-word`), `experience` (Entry/Junior/Mid/Senior/Executive), `job_category` (exact names
+    from `/data/categories`), `salary {min,max}`, `yoe`, `signals: ["reposted"]`, `ingested_after`.
+  - Include-only: `company_name` (`-X` returns 0 jobs, not an exclusion).
+  - 422: `job_categories`, `experience_level`, `job_boards`, `exclude_company_names`, `min_salary`.
+    `experience_levels` returns 200 but is ignored.
+  - `job_category` and `experience` include-lists drop untagged jobs (12% / 16%).
+  - `-` exclusions are word-level: `-"clients blackbox"` removed every job whose company says "clients" (2,017).
+- `sub_industry` is a weak lever: dropping it entirely adds only +1.7% (multi-tagged companies).
 
 ## Secrets
 

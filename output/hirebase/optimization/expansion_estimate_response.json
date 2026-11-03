@@ -1,0 +1,30 @@
+{
+  "label": "expansion: Hybrid, 1-50 employees (separate search, run in addition to core)",
+  "endpoint": "POST https://api.hirebase.org/v2/jobs/estimate (free, limit 0; date_posted = on or after)",
+  "responses": [
+    {
+      "date_posted": "2026-10-20",
+      "http_status": 200,
+      "body": {
+        "cost": 2039.0
+      },
+      "requested_at": "2026-11-03T16:30:51-0300"
+    },
+    {
+      "date_posted": "2026-10-27",
+      "http_status": 200,
+      "body": {
+        "cost": 1130.0
+      },
+      "requested_at": "2026-11-03T16:30:55-0300"
+    },
+    {
+      "date_posted": "2026-11-02",
+      "http_status": 200,
+      "body": {
+        "cost": 245.0
+      },
+      "requested_at": "2026-11-03T16:30:58-0300"
+    }
+  ]
+}

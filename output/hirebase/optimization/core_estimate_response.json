@@ -1,0 +1,30 @@
+{
+  "label": "core",
+  "endpoint": "POST https://api.hirebase.org/v2/jobs/estimate (free, limit 0; date_posted = on or after)",
+  "responses": [
+    {
+      "date_posted": "2026-10-20",
+      "http_status": 200,
+      "body": {
+        "cost": 7421.0
+      },
+      "requested_at": "2026-11-03T16:30:38-0300"
+    },
+    {
+      "date_posted": "2026-10-27",
+      "http_status": 200,
+      "body": {
+        "cost": 4272.0
+      },
+      "requested_at": "2026-11-03T16:30:41-0300"
+    },
+    {
+      "date_posted": "2026-11-02",
+      "http_status": 200,
+      "body": {
+        "cost": 871.0
+      },
+      "requested_at": "2026-11-03T16:30:46-0300"
+    }
+  ]
+}
