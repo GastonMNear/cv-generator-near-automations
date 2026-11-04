@@ -16,9 +16,11 @@ Companies posting jobs = hiring intent = outbound targets for the US open-jobs c
 ## Pipeline
 
 ```
-1. POST /v2/jobs/estimate   free, one per size band: upper bound for the run → abort if > --max-jobs
+1. POST /v2/jobs/estimate   free, 9 calls: per band for day and day+1 (exact count = difference),
+                            plus a 7-day window to confirm date_posted is on-or-after → abort if > --max-jobs
 2. POST /v2/jobs/search     one band at a time, smallest first (1-10, 11-50, 51-200, 201-500);
-                            oldest first, limit=100; stop at the first job dated after the target day
+                            oldest first; pages sized to the band's exact count, stop at that count
+                            or at the first job dated after the target day
 3. save the fetched jobs to a run file (before posting)
 4. POST <Clay webhook>      one flat JSON object per job = one Clay row
 ```
@@ -31,9 +33,18 @@ the last search response) and skips the band if its estimate would cut into the 
 (`skip 201-500: ...`) and the run still exits 0. Tune `PRIORITY_BANDS` / `PRIORITY_DAILY` in `feed.py`.
 
 **A failed search page never wastes units:** jobs already fetched are saved and posted, the run exits 1
-and prints `run.sh --live --date D --resume BAND:PAGE`. That command skips the bands and pages already
-paid for. On 2026-11-03 a plan-cap 429 at page 6 threw away 500 billed units and the rerun paid for
-them again; this is the fix. After a `limit_exceeded` 429, resume only once the quota is back.
+and prints `run.sh --live --date D --resume BAND:PAGE:LIMIT`. That command skips the bands and pages already
+paid for (LIMIT keeps the page offsets identical). On 2026-11-03 a plan-cap 429 at page 6 threw away 500
+billed units and the rerun paid for them again; this is the fix. After a `limit_exceeded` 429, resume only
+once the quota is back.
+
+**No next-day jobs on the last page:** `date_posted` is "on or after", so a full last page of 100 also
+returns jobs from the next day. They can't be kept and skipped tomorrow: tomorrow's search returns and
+bills them again, and late indexing shifts offsets within a day. So each band uses equal pages that end on
+the day's last job (201 jobs → 3 × 67) and stops at the count. On 2026-11-04 the four bands paid for 121
+next-day jobs (1,143 units for 1,022 jobs); now the waste is only rounding, a few units per band. If the
+7-day check fails (date_posted flipped back to exact-day), it logs a WARNING and uses full pages +
+stop-at-next-day, which is correct under both semantics.
 
 ```bash
 ./scripts/run.sh                    # DRY RUN: free estimate only
@@ -41,7 +52,7 @@ them again; this is the fix. After a `limit_exceeded` 429, resume only once the 
 ./scripts/run.sh --live --sample 3  # cheap end-to-end test (3 job units)
 ./scripts/run.sh --live --date 2026-10-19   # backfill one missed day
 ./scripts/run.sh --live --resend FILE       # re-post saved jobs to Clay, no Hirebase cost
-./scripts/run.sh --live --date D --resume 51-200:3   # finish a run whose search page failed
+./scripts/run.sh --live --date D --resume 51-200:3:84   # finish a run whose search page failed
 ```
 
 Network errors are retried with backoff (incl. SSL "bad record mac", which killed the first full

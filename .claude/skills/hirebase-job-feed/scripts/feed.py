@@ -16,6 +16,10 @@ Hirebase bills one unit per job RETURNED by /v2/jobs/search, so this script:
      billing period (Gaston 2026-11-03: small companies always, larger ones with spare credits).
   6. if a search page fails (e.g. the plan-quota 429), keeps and posts what was already paid
      for and prints a --resume command that starts at the failed band/page.
+  7. sizes each band's pages to the day's exact count (estimate(day) - estimate(day+1), both free)
+     and stops at that count, so the last page doesn't pay for next-day jobs (2026-11-04: 121 of
+     1,143 units were next-day jobs). Only when date_posted is confirmed on-or-after (a 7-day
+     window must be >2x the day); otherwise it falls back to full pages + stop-at-next-day.
 
 DRY RUN by default: only the free estimates run. --live fetches and posts.
 
@@ -25,13 +29,14 @@ Usage:
     python3 feed.py --live --sample 3       # fetch only 3 jobs (cheap end-to-end test)
     python3 feed.py --date 2026-10-19       # a specific day (backfill after a missed run)
     python3 feed.py --live --resend FILE    # re-post a saved run to Clay (no Hirebase cost)
-    python3 feed.py --live --date D --resume 51-200:3   # after a failed page: skip what was paid for
+    python3 feed.py --live --date D --resume 51-200:3:67   # after a failed page: skip what was paid for
 Env: HIREBASE_API_KEY, CLAY_HIREBASE_WEBHOOK_URL (live only)
 """
 import argparse
 import html
 import http.client
 import json
+import math
 import os
 import re
 import sys
@@ -148,7 +153,7 @@ def main():
                          "estimate can include later days when date_posted acts as on-or-after)")
     ap.add_argument("--sample", type=int, help="live: fetch only this many jobs (end-to-end test)")
     ap.add_argument("--resend", help="live: post jobs from a saved run file to Clay; skips Hirebase")
-    ap.add_argument("--resume", help="live: BAND:PAGE printed by a failed run; skips bands/pages already paid for")
+    ap.add_argument("--resume", help="live: BAND:PAGE:LIMIT printed by a failed run; skips bands/pages already paid for")
     ap.add_argument("--out-dir", default=os.environ.get("TMPDIR", "/tmp"), help="where the run file is saved")
     args = ap.parse_args()
 
@@ -169,27 +174,40 @@ def main():
     body["date_posted"] = day  # exact-day or on-or-after: see docstring, step 3
     body["sort_by"], body["sort_order"] = "date_posted", "asc"
     bands = body["company_types"]  # fetch order = priority order (step 5)
-    resume_band, resume_page = (args.resume.rsplit(":", 1) + ["1"])[:2] if args.resume else (bands[0], "1")
+    resume_band, resume_page, resume_limit = (args.resume.split(":") + ["1", ""])[:3] if args.resume \
+        else (bands[0], "1", "")
     if resume_band not in bands:
         sys.exit(f"--resume band {resume_band!r} is not in company_types {bands}")
     bands = bands[bands.index(resume_band):]
 
     print(f"== hirebase-job-feed date_posted={day} {'LIVE' if args.live else '(dry run)'} ==")
 
-    est = {}
-    for band in bands:
-        st, res, _ = request(f"{API}/estimate", {**body, "company_types": [band], "limit": 0}, auth)
+    def estimate(d, types):
+        st, res, _ = request(f"{API}/estimate", {**body, "date_posted": d, "company_types": types, "limit": 0}, auth)
         if st != 200:
-            sys.exit(f"estimate failed for {band}: HTTP {st} {str(res)[:300]}")
-        est[band] = int(res["cost"])
+            sys.exit(f"estimate failed for {types} {d}: HTTP {st} {str(res)[:300]}")
         time.sleep(HIREBASE_PAUSE)
+        return int(res["cost"])
+
+    nxt = (datetime.strptime(day, "%Y-%m-%d") + timedelta(days=1)).strftime("%Y-%m-%d")
+    est = {b: estimate(day, [b]) for b in bands}
     total = sum(est.values())
+    # Step 7: exact per-day counts are only valid if date_posted means "on or after".
+    week = estimate((datetime.strptime(day, "%Y-%m-%d") - timedelta(days=6)).strftime("%Y-%m-%d"), bands)
+    exact = {b: est[b] - estimate(nxt, [b]) for b in bands} if week > 2 * total else {}
     print(f"estimate: {total} jobs dated {day} or later (free; upper bound) by band: "
           + ", ".join(f"{b} {n}" for b, n in est.items()))
+    if exact:
+        print(f"dated exactly {day}: {sum(exact.values())} by band: "
+              + ", ".join(f"{b} {n}" for b, n in exact.items()))
+    else:
+        print(f"WARNING: date_posted no longer looks on-or-after (7-day window {week} vs day {total}); "
+              "using full pages + stop-at-next-day")
     if total > args.max_jobs and not args.sample:
         sys.exit(f"ABORT: {total} > --max-jobs {args.max_jobs}. Check the filters, or rerun with a higher cap.")
     if not args.live:
-        print(f"dry run: a live run would consume at most {total} Hirebase job units. Nothing fetched or posted.")
+        print(f"dry run: a live run would consume about {sum(exact.values()) if exact else total} Hirebase "
+              "job units. Nothing fetched or posted.")
         return
     if total == 0:
         print("nothing to fetch")
@@ -199,7 +217,6 @@ def main():
         sys.exit("CLAY_HIREBASE_WEBHOOK_URL not set (checked before spending anything)")
 
     want = min(total, args.sample) if args.sample else total
-    limit = min(PAGE_SIZE, want)  # constant: page N is offset (N-1)*limit
     fetched_at = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
     jobs, seen, remaining, period_end, units = [], set(), None, None, 0
     skipped, failed = [], None
@@ -208,17 +225,28 @@ def main():
             break
         if band not in PRIORITY_BANDS and remaining is not None:
             reserve = PRIORITY_DAILY * days_left(period_end, day)
-            if est[band] > remaining - reserve:
-                print(f"  skip {band}: needs ~{est[band]}, {remaining} left, {reserve} reserved for 1-50 "
+            need = exact.get(band, est[band])
+            if need > remaining - reserve:
+                print(f"  skip {band}: needs ~{need}, {remaining} left, {reserve} reserved for 1-50 "
                       f"until the period ends")
                 skipped.append(band)
                 continue
-        page = int(resume_page) if band == resume_band else 1
+        n = exact.get(band)  # jobs dated exactly `day` in this band, or None (unknown)
+        if n == 0:
+            print(f"  {band}: no jobs dated {day}")
+            continue
+        # Constant per band (page N is offset (N-1)*limit): equal pages that end on the day's last job.
+        limit = PAGE_SIZE if n is None else math.ceil(n / math.ceil(n / PAGE_SIZE))
+        page = 1
+        if band == resume_band and args.resume:
+            page, limit = int(resume_page), int(resume_limit or limit)
+        limit = min(limit, want - len(jobs))
+        band_kept = (page - 1) * limit  # jobs of this band already fetched by an earlier run
         while len(jobs) < want:
             st, res, hdr = request(f"{API}/search", {**body, "company_types": [band], "page": page,
                                                      "limit": limit}, auth)
             if st != 200:
-                failed = (band, page, st, str(res)[:300])
+                failed = (band, page, limit, st, str(res)[:300])
                 break
             if hdr.get("Hirebase-Usage-Included-Remaining") is not None:
                 remaining = int(float(hdr["Hirebase-Usage-Included-Remaining"]))
@@ -230,12 +258,13 @@ def main():
                 if (j.get("date_posted") or "") > day:
                     later = True   # sorted oldest first: everything after this is a later day
                     break
+                band_kept += 1
                 if j.get("_id") not in seen:
                     seen.add(j.get("_id"))
                     jobs.append(j)
             print(f"  {band} page {page}: {len(batch)} returned, {len(jobs)} kept so far", flush=True)
             time.sleep(HIREBASE_PAUSE)
-            if later or page >= (res.get("total_pages") or 0) or not batch:
+            if later or page >= (res.get("total_pages") or 0) or not batch or (n and band_kept >= n):
                 break
             page += 1
         if failed:
@@ -251,9 +280,9 @@ def main():
 
     if failed:
         # Jobs already fetched were paid for: post them, then resume from the failed page only.
-        band, page, st, res = failed
+        band, page, limit, st, res = failed
         print(f"search failed at {band} page {page}: HTTP {st} {res}", file=sys.stderr)
-        print(f"after fixing the cause, finish with: run.sh --live --date {day} --resume {band}:{page}",
+        print(f"after fixing the cause, finish with: run.sh --live --date {day} --resume {band}:{page}:{limit}",
               file=sys.stderr)
     post_to_clay(jobs, fetched_at, remaining)
     if failed:
