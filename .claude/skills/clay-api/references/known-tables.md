@@ -188,6 +188,82 @@ enrichment has not resolved one yet) — those rows cannot be matched by email.
 
 ---
 
+## 1g-1. EXP013 — US OJ No HMs, Recruiting/HR Leaders *(added 2026-11-09)*
+
+Workbook `wb_0tmnk5aYo6DqcHJTehN`. Leads table `t_0tmnk753vAbSUUPxSNz` "[EXP013] Leads - US OJ No HMs | Recruiting Leaders"
+(~2.5k rows). Views: All rows `gv_0tdyrp04isKxA6MpfRj`, Default `gv_TgwDWXPdg8Ci`, Errored Rows `gv_UAchMQstUgXy`.
+
+| Field | ID |
+|---|---|
+| Work Email | `f_0tc2a2qEFRZthdct3Cs` |
+| Full Name (cleaned) | `f_rOj3SQqDVF8U` |
+| Company Name | `f_0tdysmvaFsDXQPs4Ubi` |
+| Look up lead in campaign (Smartlead) | `f_0tkr3wncT6NGvFNPZrN` |
+| Add Lead to EXP013 Campaign (Smartlead) | `f_q97azby9qkPE` — runs on Subject + Email One/Two/three, NOT gated by the lookup |
+| Created At | `f_created_at` |
+
+**Add Lead `ERROR_RUN_CONDITION_NOT_MET` (2026-11-09, OJ lead-supply analysis):** in the No-HM leads tables (LATAM, Canada, EXP012, HireBase) Add Lead requires Subject + Email One/Two/three, and `Cold Email Creation` requires `!{Look up lead in campaign}?.id`. So run-condition-not-met with an email = lead already in a Smartlead campaign (same meaning as "Could not add"). ~40% of found leads land in one of these two buckets.
+
+**Smartlead error triage (2026-11-09):** a lookup cell with "Account rate limit exceeded" does not matter when the
+Add cell succeeded. Add statuses: `ERROR_NUMBER_OF_RETRIES_EXCEEDED` "Rate limited by Smartlead" = never added →
+rerun; `SUCCESS` "❌ Could not add lead" = fullValue shows `existingLeadsInOtherCampaigns` (deliberate dedupe) → do NOT
+rerun. Lookup errors do NOT block emails here: Cold Email Creation `f_zhSirppXa2dV` runs on `!lookup?.id`, and an errored
+lookup has no id (verified: all 33 lookup-error rows got emails). Other workflows may gate differently, so check each
+table's run condition (2026-11-09 sweep of 22 tables in 11 workflows: no lookup error blocked a lead anywhere; all
+failures were on Add; ~60% of rate-limited reruns turned out already in another campaign). Read the reason with `GET /v3/tables/{t}/records/{r}` → `cells[f].externalContent.fullValue`.
+
+---
+
+## 1g-2. EXP014 — US OJ No HM, Engineering Segment + MoltSets (Email 1 experiment) *(added 2026-11-06)*
+
+Workbook `wb_0to30ny9K4KKH9JRRsG`, cloned from EXP012 Engineering (same field IDs). Not launched yet
+as of 2026-11-06. Smartlead: Baseline table → `4341415` `[EXP014] - Baseline | …`, Challenger table → `4341416`
+`[EXP014] - Challenger1 | …` (both DRAFTED; set 2026-11-06 on `Add Lead to Campaign` `f_q97azby9qkPE`).
+Build log: `Near Work Partner/logs/2026-11-06-eng-email1-experiment-build.md`.
+
+| Table | Table ID | Notes |
+|---|---|---|
+| Jobs "Remote Jobs, US, Recent" | `t_0to30ofHnKwJCxBjsmK` | AUTO_RUN off. Source `s_0to30p2sqvCR5cvSrFe` (93 eng title keywords, 3 days) |
+| Engineering \| Companies Table (moved in from EXP012 Eng 2026-11-06; the test tables were deleted) | `t_0tkqxf9f2mPpYx6V2GU` | 10.8k rows. `A/B Output` `f_0to3782hMRnb4yHF2q5` = 50/50 "Baseline"/"Challenger" (qualified only). Also still fed by EXP012's jobs table |
+| Leads [Baseline1] - US OJ No HMs \| Routing CTA | `t_0to30ofXUvuvCmfFXx5` | Baseline arm |
+| Leads [Challenger] - US OJ No HMs \| Dept focused | `t_0to32hk9NUSCytAykwK` | Challenger arm, a duplicate of baseline; only Cold Email Creation differs |
+
+Key field IDs (the same in both leads tables): Cold Email Creation `f_zhSirppXa2dV` · Email One `f_dWUgCoGRG2RD` ·
+Subject Line `f_VX8hfWJ28i7g` · Email 2 draft `f_7DNge2NPZWUm` · Email Two `f_v8Q9RiHtiQTY` · Email 3 draft `f_gEaUqxfuTyrQ` ·
+email_three `f_MWiMXxrgUCeC` · Email Overview `f_najVDpzDZU5i` · Final Work Email `f_0tnzx7d5m7PoG8pfywt` ·
+Add Lead to Campaign `f_q97azby9qkPE` · source field `f_0tdyrtbYupMAJFX4pPY` · Industry (merge) `f_0tk503aTUeszC5gsh6t`.
+Jobs: Lead Title Search `f_0t5mo6xyqJ4tcApKWbm` · Job Compensation `f_0t5mrbnpYPQtcquV7EZ` · A/B Output `f_0tk4zudGw2j3pgBX3Ex` ·
+pay benchmark lookup `f_0thevwyioxcrtPMMh2g` → Compensation Guides (2026) `t_0theva5JjGp7cXT3z4A`.
+Companies: lookup `Find in Companies Table` `f_0thesu2VpqS8bGWiEJP` → `t_0tkqxf9f2mPpYx6V2GU` (the only one; `(2)` was deleted) · `Send To Companies Table` `f_0to379cGgsdNEC6qhfX`.
+⚠ `add-route-to-table` auto-creates pass-through columns in the destination for every mapped name it lacks. Check and clean up after using it.
+Routes Baseline: `f_0thg9haSyzx9tm6zkNK` / `f_0thgae6mHfpVTYdgpTA` / `f_0thgahvubpxc5BG6qgY` / `f_0tnzvmr5XWU5VCiwRCj`.
+Routes Challenger (re-created 2026-11-06): `f_0to34hn9wCoB8x5DStv` / `f_0to34igheoka5M68DkN` / `f_0to34ijFVkcpZv7GpWe` / `f_0to34k6ZmSP3r9rhFJB`. A route destination can't be changed after creation (`sourceId` error); create a new one with `POST /v3/447061/workbooks/{wb}/add-route-to-table`.
+
+**Write API (verified 2026-11-06):** `PATCH /v3/workspaces/447061/tables/{t}/fields/{f}?skipActionFieldRuns=true`,
+body `{typeSettings}` (same shape as GET). The query flag is Clay's save-without-running option. Check that nothing ran with
+`GET /v3/tables/{t}/views/{v}/fields/{f}/runstatus`.
+
+## 1g-3. EXP014 — Sales/GTM + Marketing segments (Email 1 experiment) *(added 2026-11-06)*
+
+Duplicated by Gaston from EXP014 Engineering (1g-2), so **every field ID matches 1g-2** (Lead Title Search, Cold Email
+Creation, Add Lead to Campaign, routes, A/B Output in jobs, Find in Companies Table `f_0thesu2VpqS8bGWiEJP`…). Not launched
+as of build; launched 2026-11-06. Build log: `Near Work Partner/logs/2026-11-06-exp014-sales-marketing-build.md`.
+
+| Table | Sales/GTM (`wb_0to3a8tnaiMVHUdoZHW`) | Marketing (`wb_0to3a8le5e8q6NG2mnE`) |
+|---|---|---|
+| Jobs "Remote Jobs, US, Recent" | `t_0to3a8tXoZJsRSGCcN4` (source `s_0to3a9hKBXymuc5QeSn`, daily 07:00 Bogota) | `t_0to3a8lgc8tQgwvUYKK` (source `s_0to3a9bPCGGdBy7UXwN`, daily) |
+| Companies (EXP012's, moved in) | `t_0tkr5r1e7whbPvSzc6r` "Sales/GTM \| Companies Table" · A/B Output `f_0to3bpwTPCbGCkCyCNc` | `t_0tkr47cdWRPKaYJhSQ4` "Marketing \| Companies Table" · A/B Output `f_0to3bpxoCjaDsxUfTD3` |
+| Companies duplicate (**orphan, "Don't use"**) | `t_0to3a8tfC3FMYNkUcRT` | `t_0to3a8lCxUwvWsFUdEz` |
+| Leads Baseline | `t_0to3a8tTHdQweSNHbk6` | `t_0to3a8lkgN4KaHiB8Xh` |
+| Leads Challenger | `t_0to3a8tbWEA8JDyvgAg` | `t_0to3a8ldXt8NPsGZjA5` |
+| Send To Companies Table (jobs, re-created) | `f_0to3bs3UJhJXJWZyayY` | `f_0to3bukkWEMStMGPB5E` |
+
+The EXP012 companies tables are still also fed by the EXP012 jobs tables (`Send To Companies Table` `f_0thesmksRnfe8NYcyuE`).
+Leads tables' `Add Lead to Campaign` `f_q97azby9qkPE` (set 2026-11-06): Sales Baseline → `4344071`, Sales Challenger → `4344081`,
+Marketing Baseline → `4344087`, Marketing Challenger → `4344090` (all ACTIVE since 2026-11-06).
+
+---
+
 ## 1h. EXP010 — Apollo Open Jobs (No HM)
 
 > Smartlead campaigns: `[EXP010] Apollo Open Jobs No HM` and `[EXP010] Apollo Open Jobs HMs`.
@@ -457,3 +533,21 @@ When writing a one-off Clay script rather than using `scripts/fetch_lead.py`:
 3. **`timeout` is not available on macOS** — don't wrap long scans in it; pass a Bash tool timeout.
 4. Reuse `scripts/find_by_domain.py` instead of rewriting a scanner; it already handles auth,
    the table registry, fallback chains and batching.
+
+## Run-condition patterns in the Clay UI (verified 2026-10-22)
+
+Contact-finding chain (Find Contacts at Company → Relevant Employees Array (Claygent) → Find people
+at company by job title (Apollo)) was changed from "stop at first hit" to "top up to 3 contacts":
+
+- AI runs if Clay finished and `({{Find Contacts at Company}}?.people || []).length < 3`.
+- Apollo runs if AI finished and Clay `.people.length` + AI `.employees.length` < 3.
+- "Finished" = `["SUCCESS","SUCCESS_NO_DATA","ERROR"].includes(Clay.getCellStatus({{col}}))`.
+- Output paths: Clay `.people`, Claygent `.employees`, Apollo `.results.people`.
+- `Clay.getCellStatus` values seen: `SUCCESS`, `SUCCESS_NO_DATA`, `ERROR_RUN_CONDITION_NOT_MET`,
+  `UNKNOWN` (not run yet).
+- A column whose run condition references several upstream columns waits until all of them have
+  settled (finished or condition-not-met) before running — no double run / double credit.
+- The plain-English condition box can drift from the compiled formula below it; only the formula runs.
+- Cross-provider dedupe is deliberately NOT done in this chain (decided 2026-10-22): Apollo can't
+  exclude people, and duplicates are removed in the leads table by LinkedIn URL. Known side effect:
+  if AI returns someone Clay already found, the raw count can reach 3 and Apollo is skipped.

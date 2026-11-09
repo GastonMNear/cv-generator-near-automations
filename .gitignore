@@ -54,3 +54,8 @@ nul
 
 # Reply-time KPI run artifact (regenerated each run; contains lead names/emails)
 .claude/skills/smartlead-weekly-response-kpi/scripts/kpi_output.json
+
+# Lead exports / Smartlead test dumps (contain lead names/emails — never commit)
+exports/
+output/smartdelivery-tests-2026-08/
+output/campaigns/

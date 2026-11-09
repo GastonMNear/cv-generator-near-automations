@@ -59,6 +59,13 @@ HubSpot, Salesforce, Apollo.io, LinkedIn, Google Sheets, Airtable, Smartlead AI,
 
 ## Authentication
 
+> **Current method (Nov 2026):** the curl login below returns `400 Unable to login`. Use Gaston's own session in the
+> in-app browser on app.clay.com and call `fetch('https://api.clay.com/v3/…', {credentials:'include'})`. Check
+> `/v3/me` first; on 401 ask him to sign in. **Write endpoints** (update/create fields without running, create routes,
+> run status, full record values) are in `references/write-api.md`. Workflow building/auditing itself is the
+> `clay-experiment-builder` skill.
+
+
 ### Session Cookie (Full Access — Primary Method)
 
 To authenticate with Clay, POST to the login endpoint and capture the `claysession` cookie from the `Set-Cookie` response header.

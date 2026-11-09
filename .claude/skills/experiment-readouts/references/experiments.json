@@ -1,0 +1,241 @@
+{
+  "_note": "Live experiments and their Smartlead parent campaigns. Subsequences are found by parent_campaign_id at run time (their names are unreliable). Update this file when an experiment launches, stops or gets a new arm. threshold = leads per arm/segment. Benchmarks with first_e1_from/to are cohorts: only leads whose first Email 1 was sent in that window count. Default No-HM benchmark is us_oj_nohm_historic (Gaston 2026-10-29: compare to the historic baseline, not the same time period). For step tests use its step rates (Oct 29: Email 2-3 add 0.29%, Email 3 alone 0.07%).",
+  "benchmarks": {
+    "nohm_presplit": {
+      "label": "No-HM Routing CTA, pre-split cohort",
+      "campaign_ids": [
+        3804786
+      ],
+      "first_e1_from": "2026-08-14",
+      "first_e1_to": "2026-09-01",
+      "why": "3804786's population changed on 2026-09-02/04 (CEO/founder <50 emp stays, everyone else goes to Exp 12). Use the pre-split cohort for Exp 12/13 and any No-HM persona test."
+    },
+    "nohm_since_aug24": {
+      "label": "No-HM Routing CTA, leads since Aug 24",
+      "campaign_ids": [
+        3804786
+      ],
+      "first_e1_from": "2026-08-24",
+      "why": "Step-level comparison for 008A/008B (Email 2-3, Email 3 alone). Directional: population changed Sep 2."
+    },
+    "nohm_postsplit": {
+      "label": "No-HM Routing CTA, post-split (CEO/founders <50)",
+      "campaign_ids": [
+        3804786
+      ],
+      "first_e1_from": "2026-09-02",
+      "why": "Only for CEO-persona tests (009)."
+    },
+    "nohm_concurrent_oct22": {
+      "label": "Other No-HM campaigns, same window (Routing CTA + EXP-012, first Email 1 since Oct 22)",
+      "campaign_ids": [
+        3804786,
+        3889858,
+        3896110,
+        3895951
+      ],
+      "first_e1_from": "2026-10-22",
+      "why": "For HireBase (a lead-source test): same weeks, same No-HM motion, leads from LinkedIn OJ / Apollo. Directional: copy and personas differ (Routing CTA is CEO/founders <50, Exp 12 is role copy; HireBase is the Candidate-led angle)."
+    },
+    "hm_baseline": {
+      "label": "HM baseline (EXP006 Baseline, B inboxes)",
+      "campaign_ids": [
+        3804823
+      ],
+      "first_e1_from": "2026-08-28",
+      "why": "For 011 (CEOs added on HM jobs). Different persona, so directional."
+    },
+    "us_oj_nohm_historic": {
+      "label": "US OJ No-HM historic baseline (all baseline / Candidate-led / Routing CTA campaigns, A+B)",
+      "campaign_ids": [
+        2676153,
+        2812730,
+        3570933,
+        3804793,
+        3570999,
+        3804786
+      ],
+      "why": "Gaston's benchmark (2026-10-29) for Apollo, HireBase and Exp 12. 2026-10-29 pull: 101,373 contacted, 2.81% actual replies, 789 positives (0.78%), 123 booked (0.12%). Excludes Weekend Angle 3621298 and +50 DMU Baseline 3474391. Rates fell over time: Nov-Jun 'All openings' A/B 0.98% pos, 0.14% booked; Jun 30+ campaigns 0.52% pos, 0.10% booked. Not Qualified only exists since 2026-08-05."
+    },
+    "us_oj_hm_all": {
+      "label": "All US Open Jobs HM campaigns (16, A+B)",
+      "campaign_ids": [
+        2679710,
+        2812710,
+        3653351,
+        3656194,
+        3675765,
+        3717116,
+        3717123,
+        3717593,
+        3757233,
+        3804823,
+        3804833,
+        3281582,
+        3881467,
+        3821375,
+        3704342,
+        3902375
+      ],
+      "why": "Gaston 2026-10-29: compare EXP-011 CEOs to all HMs, not one campaign. 2026-10-29 pull: 25,301 contacted, 2.55% positive, 0.32% booked."
+    }
+  },
+  "experiments": [
+    {
+      "id": "EXP-008A",
+      "name": "Personalized Email 2 and Email 3",
+      "tests": "Whether personalized Email 2-3 beats the baseline follow-ups on No-HM open jobs.",
+      "status": "running",
+      "arms": [
+        {
+          "label": "Personalized E2-3",
+          "campaign_ids": [
+            3838661
+          ]
+        }
+      ],
+      "benchmark": "us_oj_nohm_historic",
+      "threshold": 3600,
+      "focus_steps": [
+        2,
+        3
+      ]
+    },
+    {
+      "id": "EXP-008B",
+      "name": "Adding Email 4 through Email 7",
+      "tests": "Whether four extra follow-ups (Email 4-7) add positives worth the send capacity and the extra DNC/Not Interested replies.",
+      "status": "running",
+      "arms": [
+        {
+          "label": "7-email sequence",
+          "campaign_ids": [
+            3838665
+          ]
+        }
+      ],
+      "benchmark": "us_oj_nohm_historic",
+      "threshold": 3600,
+      "focus_steps": [
+        4,
+        5,
+        6,
+        7
+      ]
+    },
+    {
+      "id": "EXP-009",
+      "name": "CEO multi-role savings message",
+      "tests": "Whether a multi-role savings message gets CEOs to reply positively.",
+      "status": "stopped 2026-10-06 (archive once in-flight leads finish Email 3)",
+      "arms": [
+        {
+          "label": "Baseline",
+          "campaign_ids": [
+            3795112
+          ]
+        },
+        {
+          "label": "Challenger",
+          "campaign_ids": [
+            3796733
+          ]
+        }
+      ],
+      "benchmark": "us_oj_nohm_historic",
+      "threshold": 3600
+    },
+    {
+      "id": "EXP-011",
+      "name": "Adding the CEO when we already know the Hiring Manager",
+      "tests": "Whether emailing the CEO on HM open jobs adds positives the HM didn't give.",
+      "status": "always-on (Gaston 2026-10-29): CEOs book like HMs (0.37% vs 0.32%) and only 1 of 11 CEO-positive companies also had a positive HM; scale it (e.g. MoltSets)",
+      "arms": [
+        {
+          "label": "CEOs",
+          "campaign_ids": [
+            3872715
+          ]
+        }
+      ],
+      "benchmark": "us_oj_hm_all",
+      "threshold": 3600
+    },
+    {
+      "id": "EXP-012",
+      "name": "Different copy for Engineering, Sales/GTM and Marketing",
+      "tests": "Whether role-group-specific copy beats the generic No-HM copy. 3,600 per segment.",
+      "status": "winding down (Gaston 2026-10-29): all three segments are below the historic No-HM baseline; replace with heads-of-department copy and let in-flight leads run out",
+      "arms": [
+        {
+          "label": "Engineering",
+          "campaign_ids": [
+            3889858
+          ]
+        },
+        {
+          "label": "Sales/GTM",
+          "campaign_ids": [
+            3896110
+          ]
+        },
+        {
+          "label": "Marketing",
+          "campaign_ids": [
+            3895951
+          ]
+        }
+      ],
+      "benchmark": "us_oj_nohm_historic",
+      "threshold": 3600
+    },
+    {
+      "id": "EXP-013",
+      "name": "Recruiting leaders on No-HM open jobs",
+      "tests": "Whether HR / recruiting leaders (carved out of Exp 12) reply positively when we don't know the Hiring Manager.",
+      "status": "running (DRAFTED with 0 leads on 2026-10-13; ACTIVE by 2026-10-28)",
+      "arms": [
+        {
+          "label": "Recruiting leaders",
+          "campaign_ids": [
+            4114413
+          ]
+        }
+      ],
+      "benchmark": "us_oj_nohm_historic",
+      "threshold": 3600,
+      "secondary_benchmark": {
+        "label": "HR / Talent contacts in No-HM production campaigns (Jan 1 - Aug 20, 2026)",
+        "static": {
+          "contacted": 4756,
+          "actual_replies": 155,
+          "reply_rate_pct": 3.26,
+          "positives": 20,
+          "positive_rate_pct": 0.42,
+          "negative_share_of_replies_pct": 83.9,
+          "booked": 3,
+          "booked_rate_pct": 0.063,
+          "wrong_person_share_of_replies_pct": 18.2
+        },
+        "source": "near-outbound-analytics-agent/analysis/oj_nhm_functional_owner_2026/open_jobs_no_hm_functional_owner_2026_decision_report.md §5 (production, US+LATAM+Canada+Asia; CB = HubSpot entity-deduped; positives predate Not Qualified)",
+        "why": "Gaston 2026-10-29: the No-HM baseline mixes in founders/CEOs who convert far better, so HR sits below it regardless of copy. EXP-013 wins if it beats this HR/Talent baseline, even while below the No-HM baseline. Show both. Not pulled by pull_stats (static)."
+      }
+    },
+    {
+      "id": "HIREBASE",
+      "name": "HireBase as a new open-jobs lead source",
+      "tests": "Whether No-HM leads from HireBase-sourced open jobs (2-week trial, feed live Oct 22) reply and book like leads from our current sources (LinkedIn OJ + Apollo), so HireBase can add send volume.",
+      "status": "running (trial; first readout 2026-10-28)",
+      "arms": [
+        {
+          "label": "HireBase Candidate-led",
+          "campaign_ids": [
+            4217467
+          ]
+        }
+      ],
+      "benchmark": "us_oj_nohm_historic",
+      "threshold": 3600
+    }
+  ]
+}

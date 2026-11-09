@@ -1,0 +1,219 @@
+{
+  "main": {
+    "id": "45bea827faf95c72",
+    "type": "split",
+    "children": [
+      {
+        "id": "6a81b3d648666abe",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "58aed1d6f5e29c32",
+            "type": "leaf",
+            "state": {
+              "type": "empty",
+              "state": {},
+              "icon": "lucide-file",
+              "title": "New tab"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "vertical"
+  },
+  "left": {
+    "id": "4543030143929df5",
+    "type": "split",
+    "children": [
+      {
+        "id": "3c310eca9e34b732",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "3718670584b20340",
+            "type": "leaf",
+            "state": {
+              "type": "file-explorer",
+              "state": {
+                "sortOrder": "alphabetical",
+                "autoReveal": false
+              },
+              "icon": "lucide-folder-closed",
+              "title": "Files"
+            }
+          },
+          {
+            "id": "2c555576845fad13",
+            "type": "leaf",
+            "state": {
+              "type": "search",
+              "state": {
+                "query": "",
+                "matchingCase": false,
+                "explainSearch": false,
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical"
+              },
+              "icon": "lucide-search",
+              "title": "Search"
+            }
+          },
+          {
+            "id": "f8a6802c367770d2",
+            "type": "leaf",
+            "state": {
+              "type": "bookmarks",
+              "state": {},
+              "icon": "lucide-bookmark",
+              "title": "Bookmarks"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300
+  },
+  "right": {
+    "id": "fa3e13f3af51c769",
+    "type": "split",
+    "children": [
+      {
+        "id": "a8433a910bcd904b",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "e207fea62d340fe0",
+            "type": "leaf",
+            "state": {
+              "type": "backlink",
+              "state": {
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical",
+                "showSearch": false,
+                "searchQuery": "",
+                "backlinkCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-coming-in",
+              "title": "Backlinks"
+            }
+          },
+          {
+            "id": "ac4a2175dbe66e51",
+            "type": "leaf",
+            "state": {
+              "type": "outgoing-link",
+              "state": {
+                "linksCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-going-out",
+              "title": "Outgoing links"
+            }
+          },
+          {
+            "id": "90e907d981b34cd0",
+            "type": "leaf",
+            "state": {
+              "type": "tag",
+              "state": {
+                "sortOrder": "frequency",
+                "useHierarchy": true,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-tags",
+              "title": "Tags"
+            }
+          },
+          {
+            "id": "4fc2f16c87ff4862",
+            "type": "leaf",
+            "state": {
+              "type": "all-properties",
+              "state": {
+                "sortOrder": "frequency",
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-archive",
+              "title": "All properties"
+            }
+          },
+          {
+            "id": "1ae98896a467888c",
+            "type": "leaf",
+            "state": {
+              "type": "outline",
+              "state": {
+                "followCursor": false,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-list",
+              "title": "Outline"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300,
+    "collapsed": true
+  },
+  "left-ribbon": {
+    "hiddenItems": {
+      "switcher:Open quick switcher": false,
+      "graph:Open graph view": false,
+      "canvas:Create new canvas": false,
+      "daily-notes:Open today's daily note": false,
+      "templates:Insert template": false,
+      "command-palette:Open command palette": false,
+      "bases:Create new base": false
+    }
+  },
+  "active": "58aed1d6f5e29c32",
+  "lastOpenFiles": [
+    "Near Work Partner/wiki/context/my-role.md",
+    "Near Work Partner/wiki/tasks/2026-06-10-propose-narrow-campaign-experiments.md",
+    "Near Work Partner/wiki/tasks/2026-06-10-track-response-rate-by-persona.md",
+    "Near Work Partner/wiki/tasks/2026-06-10-migrate-makecom-to-claude-code-routines.md",
+    "Near Work Partner/wiki/tasks/2026-06-10-meet-paz-attribution-ooo-backup.md",
+    "Near Work Partner/wiki/tasks/2026-06-10-meet-dani-ooo-clay-credits.md",
+    "Near Work Partner/wiki/tasks/2026-06-10-ooo-coverage-plan.md",
+    "Near Work Partner/wiki/tasks/2026-06-10-sync-ray-campaign-prioritization.md",
+    "Near Work Partner/wiki/tools/linkedin.md",
+    "Near Work Partner/wiki/tools/unify.md",
+    "Near Work Partner/wiki/tools/make.md",
+    "Near Work Partner/wiki/tools/hubspot.md",
+    "Near Work Partner/wiki/tools/apollo.md",
+    "Near Work Partner/wiki/context/team.md",
+    "Near Work Partner/wiki/context/outbound-engine.md",
+    "Untitled.canvas",
+    "Near Work Partner/wiki/context/outreach-playbook.md",
+    "Near Work Partner/wiki/context/company.md",
+    "Near Work Partner/wiki/ai-learnings/improvement-backlog.md",
+    "Near Work Partner/wiki/ai-learnings/_index.md",
+    "Near Work Partner/WIKI.md",
+    "Near Work Partner/CLAUDE.md",
+    "AGENTS.md",
+    "CLAUDE.md",
+    "sample-gpt5-prompt-anatomy.md",
+    "No AI Slop - Team Instructions (ChatGPT + Claude).md",
+    "Near Work Partner/wiki/tasks/2026-06-08-scrape-new-companies-for-campaigns.md",
+    "Near Work Partner/wiki/tasks/done",
+    "Near Work Partner/wiki/tools",
+    "Near Work Partner/wiki/tasks",
+    "Near Work Partner/wiki/meetings",
+    "Near Work Partner/wiki/context",
+    "Near Work Partner/wiki/ai-learnings",
+    "Near Work Partner/wiki",
+    "Near Work Partner/logs",
+    "Near Work Partner/bibliography",
+    "Near Work Partner"
+  ]
+}

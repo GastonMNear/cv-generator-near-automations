@@ -1,0 +1,11 @@
+{
+  "name": "near-ai-agent",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test:clay-to-bigquery": "DRY_RUN=true node scripts/insert_clay_lead_to_bigquery.mjs"
+  },
+  "dependencies": {
+    "@google-cloud/bigquery": "^8.0.0"
+  }
+}

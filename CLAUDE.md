@@ -17,12 +17,15 @@ Skills live in `.claude/skills/<name>/SKILL.md`. Invoke with `/<skill-name>` or 
 | `task-manager` | Create, list, complete, or review tasks |
 | `ai-learnings` | AI articles/blogs → extract agent improvements |
 | `clay-api` | Read/write Clay tables, fetch leads, field ID lookups |
-| `smartlead-campaign-creator` | Create a new Smartlead campaign (sequences, schedule, inboxes, manual step) — create-only |
+| `clay-daily-control` | Daily Clay maintenance check: rows/sources vs 50k, company/leads tables, Exclusion Lookup → report + ask before any write |
+| `smartlead-campaign-creator` | Create a new Smartlead campaign (sequences, schedule, inboxes, manual step) — create-only; also clones an existing campaign 1:1 |
+| `clay-experiment-builder` | Launch a Clay experiment from one line, replicate one to new segments (incl. reusing an existing companies table), improve or audit a workflow; Smartlead clone + routing + full lead check, starts campaigns only on request (Gate D). Gated, never runs rows; living skill (proposes its own updates) |
 | `andres-1on1-doc` | Draft the Monday Andrés 1:1 running-doc entry: discussion topics, new tools, concerns, asks — high-level, no status |
 | `weekly-slack-update` | Draft the Friday Slack wrap-up to Andrés: numbered workstreams (owner, status, next step) + decisions needed |
 | `weekly-volume-session` | Build the bi-weekly Tuesday outbound huddle deck: duplicate the last session's Slides, refresh the last 2 weeks' metrics |
 | `offweek-outbound-update` | Draft the off-week Tuesday update for #outbound-ripping: headlines, email metrics vs last week + why, CC/LinkedIn pasted verbatim |
 | `outbound-campaign-review` | Monday per-campaign email review: top/best/stalled campaigns, noise vs real, ≥1 call/wk levers → `wiki/outbound/campaign-insights.md` |
+| `experiment-readouts` | Weekly cold-email experiment readouts: one Google Doc per live experiment (TLDR + decision, performance vs benchmark, progress to 3,600) + exec Slack draft |
 | `call-prep-workflow` | Google Doc URL + lead email + campaign → fills call prep doc |
 | `call-prep-doc-filler` | Fill a specific Google Doc table with lead data |
 | `hirebase-job-feed` | Daily routine: yesterday's matching Hirebase jobs → Clay webhook table, one row per job |
@@ -52,7 +55,7 @@ Near Work Partner/
 
 ## Key Integrations
 
-**Clay** — Internal API `api.clay.com`. Session-cookie auth. Workspace HireWithNear (447061). See `clay-api` skill + `.claude/skills/clay-api/references/known-tables.md` for cached field IDs.
+**Clay** — Internal API `api.clay.com`. Session-cookie auth. Workspace HireWithNear (447061). See `clay-api` skill + `.claude/skills/clay-api/references/known-tables.md` for cached field IDs. Building/changing/auditing workflows: `clay-experiment-builder` (writes via `clay-api/references/write-api.md`).
 **Smartlead** — API-key auth. Cold-email outreach. Maps campaign IDs → Clay workflows.
 **Fathom** — Meeting recording. MCP `mcp__claude_ai_Fathom__*` (authenticate first).
 **Google Docs** — Call prep docs, client deliverables. Google OAuth.

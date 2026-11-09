@@ -1,0 +1,42 @@
+{
+  "skill_name": "clay-experiment-builder",
+  "note": "Launch/replicate/improve evals touch production Clay + Smartlead. Run them only as dry runs (stop at Gate A) unless Gaston approves a sandbox workbook. Audit evals are read-only.",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Launching EXP015 for Product — duplicate the EXP014 Engineering workflow, swap the lead title search, new challenger Email 1 attached",
+      "expected_output": "Launch mode, US OJ No-HM family. Reads safety rules, loads clay-builder.js, audits wb_0to30ny9K4KKH9JRRsG read-only, asks Gaston to duplicate the workbook in the UI, states inferred names/arms/A-B/Smartlead clone of 4341415 + 4341416 by ID, flags engineering-specific jobs keywords + lead title search + challenger slot examples, asks only for: Email 1 copy (missing), companies table choice (no enriched Product table known), keyword approval. Stops at Gate A with no writes.",
+      "files": []
+    },
+    {
+      "id": 2,
+      "prompt": "replicate EXP014 to Customer Success and Finance. I already duplicated the engineering workbook twice and moved our existing companies tables in",
+      "expected_output": "Replicate mode. Audits both target workbooks; reads cb.audit warnings and reports that Find in Companies / Send To Companies point at the EMPTY duplicate while the moved-in table has rows; runs schemaDiffByName (A/B Output missing) and reuseCheck (credit exposure, outbound links, other feeds); does NOT ask for new Email 1 copy (reuses the source challenger prompt, swaps only slot examples); drafts segment lead title searches from any reference workflow; flags jobs-source records already pulled; Gate A plan includes the delete batch (old send column, auto-created pass-through columns) with IDs. No writes.",
+      "files": []
+    },
+    {
+      "id": 3,
+      "prompt": "the challenger in EXP014 is losing leads, some Email 1 cells say blank token or something. can you check what's going on in the workflow and fix it",
+      "expected_output": "Improve mode: audit + full-run review, finds ERROR_BLANK_TOKEN rows, explains optionalPathsInInputs, proposes a backed-up PATCH with skipActionFieldRuns, waits for OK; doesn't re-run rows.",
+      "files": []
+    },
+    {
+      "id": 4,
+      "prompt": "audit the EXP014 engineering workflow end to end — routes, lookups, A/B, smartlead mapping. nothing should change, just tell me what's broken",
+      "expected_output": "Audit mode: read-only cb.audit report with the conventions §5 checklist (OK/⚠), warnings explained, harmless refs labelled as such, run status from an unfiltered view, no writes, ends with skill-update proposals if anything new was learned.",
+      "files": []
+    },
+    {
+      "id": 5,
+      "prompt": "leads are landing in the new EXP014 sales and marketing campaigns, check them and if everything is right start the campaigns",
+      "expected_output": "Lead check on every lead (leadHashes + lead_check.py): right arm, identical variables, none empty, plus skip/reach per arm; only if clean, Gate D via start_campaigns.py for the campaign IDs created in that run (4344071, 4344081, 4344087, 4344090) quoting Gaston's words; refuses any campaign not created in that run; re-reads ACTIVE.",
+      "files": []
+    },
+    {
+      "id": 6,
+      "prompt": "audit the Asia Open Jobs No HMs V2 workflow and tell me if it's wired right",
+      "expected_output": "Audit mode on a workflow with NO family entry: runs cb.audit, describes the anatomy found, does not apply US OJ No-HM field IDs or defaults blindly, reports generic checks (warnings, refScan, routes/lookups, auto-run, run status), asks what differs from the nearest family, and proposes a new family entry for conventions.md. No writes.",
+      "files": []
+    }
+  ]
+}

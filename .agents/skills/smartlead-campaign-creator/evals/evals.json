@@ -1,0 +1,24 @@
+{
+  "skill_name": "smartlead-campaign-creator",
+  "note": "Running these evals creates REAL draft campaigns in the production Smartlead workspace. Only run with Gaston's go-ahead, name every test campaign with the prefix '[AGENT TEST — SAFE TO DELETE]', and list the created campaign IDs afterward so he can delete them.",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Create a Smartlead campaign called '[AGENT TEST — SAFE TO DELETE] US OJ | Fintech 11-50 | Pain-point angle | A Inboxes'. 3 emails: Day 1 subject 'quick question {{first_name}}' body 'Hi {{first_name}}, saw {{company_name}} is hiring. We place LatAm talent at 50% of US cost. Worth a chat?'. Day 4, no subject (same thread), body 'Bumping this up — happy to share a couple of candidate profiles if useful.'. Day 9 subject 'candidates for {{company_name}}' body 'Last note from me — I can send over 2-3 pre-vetted profiles this week if you're open to it.'. Use the A inboxes but exclude any hayden addresses. Everything else standard.",
+      "expected_output": "One new DRAFTED campaign with 4 sequence steps (3 emails with correct delays 0/3/5 + manual 'Send Lead to Justcall' step delay 1), standard schedule/settings, start date = today, ~109 inboxes attached (tag A minus hayden), campaign ID reported back.",
+      "files": []
+    },
+    {
+      "id": 2,
+      "prompt": "Set up a new campaign in Smartlead: '[AGENT TEST — SAFE TO DELETE] Asia OJ replica | B Inboxes'. Same inboxes as campaign 3371169. 2 emails — Day 1: subject 'hiring in Asia?' body 'Hi {{first_name}}, quick one about your open roles.'; Day 6: same thread, body 'Any thoughts on this?'. Also set the sending window to 08:00-17:00 and max 1500 new leads per day.",
+      "expected_output": "New DRAFTED campaign copying the inbox list of campaign 3371169 (read-only fetch, no writes to 3371169), 3 steps (2 emails + manual step), schedule overrides start_hour 08:00 / end_hour 17:00 / max_new_leads_per_day 1500, everything else standard.",
+      "files": []
+    },
+    {
+      "id": 3,
+      "prompt": "Create a smartlead campaign named '[AGENT TEST — SAFE TO DELETE] CEO AI angle'. I'll give you the copy: Day 1 subject 'AI builders' body 'Hi {{first_name}}, we place AI builders from LatAm.' — that's the only email for now.",
+      "expected_output": "The agent must ASK which inboxes to use before creating anything (inbox selection is missing from the request), rather than guessing or creating the campaign.",
+      "files": []
+    }
+  ]
+}

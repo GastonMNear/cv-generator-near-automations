@@ -1,0 +1,17 @@
+{
+  "skill_name": "andres-1on1-doc",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "what should I put in andres doc for tomorrow's 1:1?",
+      "expected_output": "A dated entry of ~4-6 high-level discussion bullets (new tools, concerns, ideas, asks) built from the vault since the Oct 19 entry, in Gaston's voice; no metrics or status dump; follows up on Oct 19 items only where still relevant; asks Gaston for anything not in the vault.",
+      "files": []
+    },
+    {
+      "id": 2,
+      "prompt": "prep for andres. also we found out sara is probably leaving in 2 weeks and lila wants a raise",
+      "expected_output": "Doc entry that keeps the staffing items out of the draft or raises them only as Gaston decides (flagged separately, not stated as fact); still high-level; no status dump.",
+      "files": []
+    }
+  ]
+}

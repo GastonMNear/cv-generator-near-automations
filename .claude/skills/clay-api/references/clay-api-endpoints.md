@@ -467,3 +467,35 @@ These endpoints do NOT exist:
 - Find people search limit: 50,000
 - Scheduled sources limit: 100
 - Scheduled tables limit: 100
+
+---
+
+## "Send table data" (route-row) columns — creating one auto-creates junk columns in the destination (verified 2026-11-06, 3 times)
+
+**Endpoint:** `POST https://api.clay.com/v3/447061/workbooks/{wb}/add-route-to-table` with `{originTableId, destinationTableId}`.
+This is the same call the UI makes when you add a **Send table data** column. It returns `routingField` (the new
+column in the origin table) and creates a "Rows from:" source on the destination.
+
+⚠ **Side effect:** the new column's defaults include `autoExtractColumns: true`. Clay auto-maps **every origin column
+whose name the destination doesn't already have** and creates a **pass-through formula column** for each one in the
+destination table (`{{<source field>}}?.["<origin column name>"]`). A jobs → companies route created **36 empty
+columns** in the companies table each time (EXP014 Engineering, Sales/GTM, Marketing). Into a leads table that already
+has the same column names, nothing extra appears.
+
+**How to use it safely:**
+1. **Before:** record the destination table's full field list (IDs). Make sure the **origin** table's AUTO_RUN is off:
+   the new column starts with **no run condition** and could fire on every row before you copy the real config onto it.
+2. Create the route, then right away `PATCH …/fields/{new}?skipActionFieldRuns=true` with the full reference `typeSettings`
+   (this also drops the three auto-* inputs). Rename it in a **separate** PATCH after deleting the old column
+   (a PATCH to a name already used in the table returns 400).
+3. **Wait ~10 s.** The pass-through columns are created **asynchronously**: in the Marketing run, 3 of the 36 appeared
+   after the first check.
+4. Diff the destination against the field list from step 1. For every new column, confirm it is a pass-through formula
+   and that nothing in the workbook references it, then `DELETE /v3/workspaces/447061/tables/{t}/fields/{f}` (body `{}`).
+5. Re-check the destination field count after deleting, and repeat step 4 if anything new appeared.
+
+They cost no credits (plain formulas), but they clutter the table, count toward the 100-column table limit, and on a
+table with AUTO_RUN on they compute for every row.
+
+Related: a route's destination **can't be changed** on an existing column. Changing `tableId` leaves it without a
+`sourceId`, and it fails at run time. Always create a new route column (above) instead of re-pointing.

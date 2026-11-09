@@ -240,6 +240,12 @@ campaign rows (by 2,041 on Oct 5–11). Until we know where those come from, the
   week columns), and fix only the cells that differ with `set_cell`/`set_shape`. Never
   re-run `update_deck.py --force` for this: it would copy the cleared to-dos onto
   slide 2 and empty Headlines and Issues again.
+  Quickest way to fix only the changed cells (used 2026-10-28): load metrics.json (plus
+  the dashboard block and any number Gaston overrides, e.g. email booked), call
+  `update_deck.plan(P, m, cfg)` with `m["_force"] = True`, print its log filtered to
+  `booked`/`mix`/`weekly_metrics`/`email_overview`/`cap_`, and after his OK send only the
+  requests whose `objectId` is one of those elements (never the to-do tables or the
+  Headlines / Issues boxes). Then run `plan` again: the filtered log should be empty.
 
 ## Gotchas
 
