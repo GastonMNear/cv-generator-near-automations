@@ -56,14 +56,18 @@ PRIORITY_BANDS = {"1-10", "11-50"}   # always fetched (best reply rates, see out
 PRIORITY_DAILY = 200     # units/day the priority bands need (≈2,660 over Oct 20-Nov 2), kept in reserve
 
 
-def request(url, body=None, headers=None, retries=4):
+ESTIMATE_PATIENCE = 180  # s the whole free-estimate phase keeps retrying a down/slow Hirebase
+NOTHING_BILLED_EXIT = 3  # estimate phase failed transiently: nothing was billed, rerunning is free
+
+
+def request(url, body=None, headers=None, retries=4, timeout=60):
     """POST/GET with backoff on 429/5xx. Returns (status, parsed_json_or_text, headers)."""
     data = json.dumps(body).encode() if body is not None else None
     for attempt in range(retries + 1):
         req = urllib.request.Request(url, data=data, method="POST" if data else "GET",
                                      headers={"Content-Type": "application/json", **(headers or {})})
         try:
-            with urllib.request.urlopen(req, timeout=60) as r:
+            with urllib.request.urlopen(req, timeout=timeout) as r:
                 raw = r.read().decode()
                 try:
                     return r.status, json.loads(raw), r.headers
@@ -182,24 +186,58 @@ def main():
 
     print(f"== hirebase-job-feed date_posted={day} {'LIVE' if args.live else '(dry run)'} ==")
 
-    def estimate(d, types):
-        st, res, _ = request(f"{API}/estimate", {**body, "date_posted": d, "company_types": types, "limit": 0}, auth)
-        if st != 200:
-            sys.exit(f"estimate failed for {types} {d}: HTTP {st} {str(res)[:300]}")
-        time.sleep(HIREBASE_PAUSE)
-        return int(res["cost"])
+    # Estimates are free, so a Hirebase outage (HTTP 500 on 2026-11-08, read timeouts on 2026-11-09) is
+    # retried for ESTIMATE_PATIENCE in total. If the day's estimates still fail, exit NOTHING_BILLED_EXIT:
+    # no search ran, so the routine can wait and rerun the same command at no cost.
+    deadline = time.monotonic() + ESTIMATE_PATIENCE
+
+    def estimate(d, types, required=True):
+        wait = 15
+        while True:
+            try:
+                st, res, _ = request(f"{API}/estimate", {**body, "date_posted": d, "company_types": types,
+                                                         "limit": 0}, auth, retries=1, timeout=30)
+            except Exception as e:  # network failure that outlived request()'s own retry
+                st, res = None, repr(e)
+            if st == 200:
+                time.sleep(HIREBASE_PAUSE)
+                return int(res["cost"])
+            transient = st is None or st == 429 or st >= 500
+            if not transient or time.monotonic() + wait > deadline:
+                break
+            print(f"  estimate {d} {types}: HTTP {st} {str(res)[:120]}; retrying in {wait}s", flush=True)
+            time.sleep(wait)
+            wait = min(wait * 2, 60)
+        msg = f"estimate failed for {types} {d}: HTTP {st} {str(res)[:300]}"
+        if not required:
+            print(f"WARNING: {msg}")
+            return None
+        if transient:
+            print(msg, file=sys.stderr)
+            print("NOTHING BILLED: failed before any search; rerunning the same command is free",
+                  file=sys.stderr)
+            sys.exit(NOTHING_BILLED_EXIT)
+        sys.exit(msg)
 
     nxt = (datetime.strptime(day, "%Y-%m-%d") + timedelta(days=1)).strftime("%Y-%m-%d")
     est = {b: estimate(day, [b]) for b in bands}
     total = sum(est.values())
-    # Step 7: exact per-day counts are only valid if date_posted means "on or after".
-    week = estimate((datetime.strptime(day, "%Y-%m-%d") - timedelta(days=6)).strftime("%Y-%m-%d"), bands)
-    exact = {b: est[b] - estimate(nxt, [b]) for b in bands} if week > 2 * total else {}
+    # Step 7: exact per-day counts are only valid if date_posted means "on or after". Optional: if these
+    # estimates fail, fall back to full pages + stop-at-next-day (correct, a few units of overspend).
+    week = estimate((datetime.strptime(day, "%Y-%m-%d") - timedelta(days=6)).strftime("%Y-%m-%d"), bands,
+                    required=False)
+    exact = {}
+    if week is not None and week > 2 * total:
+        nxt_est = {b: estimate(nxt, [b], required=False) for b in bands}
+        if None not in nxt_est.values():
+            exact = {b: est[b] - nxt_est[b] for b in bands}
     print(f"estimate: {total} jobs dated {day} or later (free; upper bound) by band: "
           + ", ".join(f"{b} {n}" for b, n in est.items()))
     if exact:
         print(f"dated exactly {day}: {sum(exact.values())} by band: "
               + ", ".join(f"{b} {n}" for b, n in exact.items()))
+    elif week is None or week > 2 * total:
+        print("WARNING: exact-day count unavailable (estimate failed); using full pages + stop-at-next-day")
     else:
         print(f"WARNING: date_posted no longer looks on-or-after (7-day window {week} vs day {total}); "
               "using full pages + stop-at-next-day")

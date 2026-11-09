@@ -55,6 +55,18 @@ stop-at-next-day, which is correct under both semantics.
 ./scripts/run.sh --live --date D --resume 51-200:3:84   # finish a run whose search page failed
 ```
 
+**A Hirebase outage before any search costs nothing and is retried.** On 2026-11-08 (HTTP 500) and
+2026-11-09 (read timeouts) the estimate step failed, both runs stopped, and Nov 7 and Nov 8 were
+never fetched until a manual backfill. Now the free estimate phase retries for `ESTIMATE_PATIENCE`
+(180 s) in total. If the day's estimates still fail, the run exits **3** and prints `NOTHING BILLED`,
+which means no search ran and rerunning the same command is free. The routine waits about 9 minutes
+and reruns, at most twice. The 7-day and day+1 estimates are optional: if they fail, the run logs a
+WARNING and uses full pages + stop-at-next-day. Exit 1 still means something may have been billed,
+so never blind-rerun it. A day that's still missed after the reruns is **not** caught up
+automatically, because the cloud run keeps no state between days. Backfill it with
+`run.sh --live --date D`. Spot a missed day by HireBase `4217467` adds collapsing in Smartlead or the
+Clay webhook source going quiet for more than 26h.
+
 Network errors are retried with backoff (incl. SSL "bad record mac", which killed the first full
 run on 2026-10-21 at job 567 of 1,249). A job that still fails never stops the run: it goes to an
 `hirebase-unposted-*.json` file, the run exits 1 and prints the exact `--resend` command. **In a
@@ -150,7 +162,10 @@ Both must be in the repo `.env` (local) and in the routine's cloud environment.
 `trig_01YKNX5PsqwEh6s6N5LVo2sk`, "Hirebase Job Feed (daily 16:03 UTC)": cron `3 16 * * *`
 (12:03 ET in summer time, 11:03 ET from Nov 1), model claude-sonnet-5-5, no connectors. It clones
 `GastonMNear/cv-generator-near-automations` (main) into its own environment `env_01P5pofgfYkKGgiroxZxoWWC` (".env | HireBase")
-and runs `run.sh --live` for yesterday (UTC), plus one `--resend` if posts failed. It never refetches.
+and runs `run.sh --live` for yesterday (UTC), plus one `--resend` if posts failed. On exit 3 (nothing
+billed) it sleeps 540 s and reruns, at most twice. It never refetches after exit 1. The session
+status reads "succeeded" even when the feed failed, so read the run log (`RemoteTrigger get_run_log`)
+to see the real outcome.
 Noon is chosen so yesterday is mostly indexed (see Late indexing). The environment needs
 `HIREBASE_API_KEY` and `CLAY_HIREBASE_WEBHOOK_URL`, and allowed domains `api.hirebase.org` and
 `api.clay.com`. First run: 2026-10-22, for 2026-10-21.
